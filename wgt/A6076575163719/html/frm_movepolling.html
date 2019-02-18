@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>工程巡检</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui-pull-refresh.css" />
+    <link rel="stylesheet" type="text/css" href="../css/wj-framework.css" />
+    <style>
+        * {
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            /* Firefox */
+            -webkit-box-sizing: border-box;
+            /* Safari */
+        }
+
+        .empty {
+            text-align: center;
+            padding: 120px 0;
+        }
+
+        body {
+            background-color: #fff;
+            font-size: 0.8rem;
+        }
+
+        .btnlogin {
+            height: 50px;
+            line-height: 50px;
+            font-size: 0.8rem;
+            box-shadow: none;
+            font-family: PingFangSC-Regular, "PingFang SC";
+            font-style: normal;
+            border-width: initial;
+            border-style: none;
+            border-color: initial;
+            border-image: initial;
+            border-radius: 46px;
+        }
+
+        .activeitem {
+            color: rgb(109, 205, 94);
+            /*border-bottom: 2px solid rgb(109, 205, 94);*/
+        }
+
+        .activeline {
+            border-bottom: 2px solid rgb(109, 205, 94);
+        }
+
+        .savebtn {
+            height: 2.5rem !important;
+            line-height: 2.5rem !important;
+            font-size: 0.8rem !important;
+            border-radius: 6px;
+        }
+
+        .tab .active {
+            color: rgb(109, 205, 94);
+        }
+
+        .tab {
+            width: 100%;
+        }
+
+        .tab .item {
+            margin-right: 10px;
+            padding: 5px;
+            display: inline-block;
+            font-size: 0.75rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="content" v-cloak>
+        <section class="aui-refresh-content" style="position: absolute;top:0px;bottom: 0px;left: 0px;right: 0px;">
+            <div style="margin:0.75rem;">
+                <div>
+                    <div style="overflow:hidden;margin-top: 10px;">
+                        <span class="labletitleline" style="float:left;vertical-align: middle;display: inline-block;padding: 4px 0px;">开始</span>
+                    </div>
+                </div>
+                <div style="margin-top:0.75rem;" v-show="listitem&&listitem.length>0">
+                    <ul class="tab">
+                        <li class="item" :class="taskdata.Logid==item.Logid ? 'activeitem' : 'noactiveitem' " v-for="(item,index) in listitem" @click="choicetask(index)">
+                            <span>
+                            <i v-show="taskdata.Logid!=item.Logid" class="aui-iconfont aui-icon-right" style="font-size:0.5rem;font-weight:900;color:#757575;margin-right:4px;"></i>
+                            <i v-show="taskdata.Logid==item.Logid" class="aui-iconfont aui-icon-down" style="font-size:0.5rem;font-weight:900;color:#5CC62B;margin-right:4px;"></i>
+                          </span>
+                            <span :class="taskdata.Logid==item.Logid ? 'activeline' : 'noactiveline' " >{{index|tasknameformat}}</span>
+                        </li>
+                    </ul>
+                    <!-- <img src="../image/rightarrow.png" style="vertical-align: middle;display: inline-block;height:1.2rem;line-height:1.2rem;">
+                    <span v-for="(item,index) in listitem" v-on:click="choicetask(index)" :class="taskdata.Logid==item.Logid ? 'activeitem' : 'noactiveitem' " style="line-height:1.2rem;vertical-align: middle;margin-right:10px;padding:5px;">{{index|tasknameformat}}</span> -->
+                </div>
+                <div style="margin-top:0.75rem;" v-show="listitem&&listitem.length>0">
+                    <img src="../image/clock.png" style="height:1.2rem;line-height:1.2rem;display: inline-block;vertical-align: middle;">
+                    <span style="vertical-align: middle;font-size:0.7rem;line-height:1.2rem;">{{taskdata.StartTime|dateformat}}-{{taskdata.EndTime|dateformat}}</span>
+                </div>
+            </div>
+            <div style="text-align:center;vertical-align: middle;margin-left:5%;" v-show="listitem&&listitem.length>0">
+                <div style="text-align:center;vertical-align:middle;display:inline-block;max-width:25%;">
+                    <img src="../image/staff.png">
+                </div>
+                <div style="margin-left:5%;text-align:left;vertical-align:middle;display:inline-block;max-width:65%;">
+                    <div class="font18" style="margin-top:10px;font-weight:bold;">您好，{{username}}！</div>
+                    <div class="font14" style="margin-top:10px;">本次巡检任务是</div>
+                    <div class="font18" style="margin-top:10px;">
+                        <span style="vertical-align: middle;color:rgb(15,180,225);font-weight:bold;">{{tasknameformat2(taskdata.TaskName,taskdata.ProjectName)}}</span>
+                    </div>
+                    <div class="font14" style="margin-top:10px;">本次巡检地点是</div>
+                    <div class="font18" style="margin-top:10px;height:1.6rem;">
+                        <img src="../image/map.png" style="width:15%;height:100%;display:inline-block;vertical-align: middle;">
+                        <span style="width:80%;vertical-align: middle;color:rgb(15,180,225);font-weight:bold;text-overflow:ellipsis;overflow:hidden;white-space: nowrap;">{{taskdata.ProjectName}}</span>
+                    </div>
+                    <div class="font14" style="margin-top:10px;">请按照系统提示，依次完成巡检!</div>
+                </div>
+            </div>
+            <div style="text-align:center;vertical-align: middle;" v-show="!listitem||listitem.length<1">
+                <div style="text-align:center;vertical-align:middle;display:inline-block;width: 20%;">
+                    <img src="../image/staff.png">
+                </div>
+                <div style="margin-left:20px;text-align:left;vertical-align:middle;display:inline-block;">
+                    <div class="font18" style="margin-top:10px;font-weight:bold;">您好，{{username}}！</div>
+                    <div class="font14" style="margin-top:10px;">您今天没有巡检任务。</div>
+                </div>
+            </div>
+            <div v-show="listitem&&listitem.length>0" v-on:click="startcheck" style="margin:10px;display:block;" class="savebtn aui-btn aui-btn-info aui-btn-sm">开始巡检（{{taskdata.TotalPollingItemNum-taskdata.WaitPollingItemNum}}/{{taskdata.TotalPollingItemNum}}）</div>
+            <div v-on:click="lookhischeck" style="margin:20px 0px;width:100%;text-align:center;color: rgb(109, 205, 94);">
+                <span style="line-height:1.2rem;vertical-align: middle;">查看历史巡检记录</span>
+                <img src="../image/rightarrow.png" style="vertical-align: middle;display: inline-block;height:1.2rem;line-height:1.2rem;">
+            </div>
+        </section>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/aui-toast.js"></script>
+<script type="text/javascript" src="../script/aui-pull-refresh.js"></script>
+<script type="text/javascript" src="../script/wj-framework.js"></script>
+<script type="text/javascript" src="../script/wj-ajax.js"></script>
+<script type="text/javascript">
+    function openwin_listcheckitem(data) {
+        api.openWin({
+            name: 'win_listcheckitem',
+            url: 'win_listcheckitem.html',
+            bounces: false,
+            slidBackEnabled: true,
+            vScrollBarEnabled: false,
+            pageParam: {
+                data: {
+                    ProjectName: data.ProjectName,
+                    TaskName: data.TaskName,
+                    LogId: data.Logid,
+                    StartTime: data.StartTime,
+                    EndTime: data.EndTime
+                }
+            }
+        });
+    };
+
+    function openwin_listhischeck(data) {
+        api.openWin({
+            name: 'win_listhischeck',
+            url: 'win_listhischeck.html',
+            bounces: false,
+            slidBackEnabled: true,
+            vScrollBarEnabled: false,
+            pageParam: {
+                data: {
+                    ProjectId: data.ProjectId
+                }
+            }
+        });
+    };
+
+    ////设置问题描述内容
+    function RefreshData() {
+        myvue.loaddata(true, '刷新中...', true);
+    }
+
+    var myvue;
+    apiready = function() {
+        // api.setStatusBarStyle({
+        //     style: 'light',
+        //     color: '#1875F0'
+        // });
+        
+        var toast = new auiToast();
+        var logininfo = $api.getStorage('logininfo');
+        var username = logininfo.UserName;
+        ////处理业务
+        myvue = new Vue({
+            el: '#content',
+            data: {
+                username: username,
+                taskdata: {},
+                activeindex: 0,
+                listitem: []
+            },
+            filters: {
+                dateformat: function(value) {
+                    return formatDateFormat(value, 'yyyy-MM-dd').replace(/-/g, '.');
+                },
+                tasknameformat: function(value) {
+                    var arrchnum = ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十', '十一', '十二'];
+                    if (arrchnum.length > value) {
+                        return "任务" + arrchnum[value];
+                    } else {
+                        return "任务" + value;
+                    }
+                }
+            },
+            methods: {
+                tasknameformat2: function(value, name) {
+                    if (!value) {
+                        return name + '巡检';
+                    }
+
+                    return value;
+                },
+                startcheck: function() {
+                    var that = this;
+                    openwin_listcheckitem(that.taskdata);
+                },
+                lookhischeck: function() {
+                    var that = this;
+                    openwin_listhischeck(that.taskdata);
+                },
+                choicetask: function(index) {
+                    var that = this;
+                    that.activeindex = index;
+                    that.taskdata = that.listitem[index];
+                },
+                loaddata: function(isrefresh, title, ishidetoast) {
+                    var that = this;
+                    if (!ishidetoast) {
+                        toast.loading({
+                            title: title || "加载中...",
+                            duration: 20000 //等待20秒
+                        });
+                    }
+                    wjget("AppPolling/GetListTaskArrange", function(ret, err) {
+                        toast.hide();
+                        if (ret) {
+                            if (ret.Code == 200 && ret.Data) {
+                                that.listitem = ret.Data;
+                                if (that.listitem.length > 0) {
+                                    if (that.listitem.length <= that.activeindex) {
+                                        that.activeindex = 0;
+                                    }
+
+                                    that.taskdata = that.listitem[that.activeindex];
+                                }
+                            } else {
+                                if (!ishidetoast) {
+                                    api.alert({
+                                        msg: '数据加载失败!'
+                                    });
+                                }
+                            }
+                        } else {
+                            if (!ishidetoast) {
+                                api.alert({
+                                    msg: '网络异常,请重新加载!'
+                                });
+                            }
+                        }
+                    });
+                }
+            },
+            created: function() {
+                this.loaddata(true);
+            },
+            mounted: function() {
+                var that = this;
+                ////实现下拉刷新
+                PullToRefresh(this);
+            }
+        });
+    };
+</script>
+
+</html>

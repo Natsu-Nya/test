@@ -1,0 +1,178 @@
+@import './common.scss';
+
+$imgName:icon;
+$gray:#DEDEE3;
+$bgColorList:(
+        1:(#F57A23,$imgName,-1.093333rem,-5.746667rem),//移动巡检
+        2:(#80B6F4,$imgName,-3.093333rem,-5.746667rem),//大坝安全
+        3:($gray/*#68C7FF*/,$imgName,-5.093333rem,-5.746667rem),//工程信息
+    ),
+    (
+        1:(#68C7FF,$imgName,-7.093333rem,-5.746667rem),//水库监测
+        2:(#57E0C2,$imgName,-9.093333rem,-5.76rem),//地下水监测
+        3:(#62D16F,$imgName,-13.093333rem,-5.733333rem),//扬水监测
+        4:($gray/*#80B6F4*/,$imgName,-11.093333rem,-5.746667rem),//供水管理
+    ),
+    (
+        1:(#55CE63,$imgName,-15.073333rem,-5.726667rem),//视频监控
+        2:(#68C7FF,$imgName,-17.063333rem,-3.086667rem),//待办事项
+        3:(#68C7FF,$imgName,-17.063333rem,-3.086667rem),//审批处理
+        4:($gray/*#24C174*/,$imgName,-17.093333rem,-1.066667rem),//通讯录
+    ),
+    (
+        1:(#FFBC34,$imgName,-11.093333rem,-3.08rem),//灌溉控制
+        2:(#24C174,$imgName,-19.146667rem,-1.04rem),//田间用水
+        3:(#FFBC34,$imgName,-11.093333rem,-3.08rem),//渠道流量
+        4:(#FFBC34,$imgName,-11.093333rem,-3.08rem),//管道流量
+        5:($gray/*#68C7FF*/,$imgName,-17.093333rem,-5.746667rem),//气象信息
+        6:($gray/*#55CE63*/,$imgName,-11.08rem,-1.066667rem),//田间墒情
+        7:($gray/*#57E0C2*/,$imgName,-19.093333rem,-3.08rem),//灌溉用水
+    ),
+    (
+        1:(#F57A23,$imgName,-13.08rem,-1.066667rem),//山洪预警
+        2:(#FFBC34,$imgName,-13.093333rem,-3.08rem),//预警信息
+        3:($gray/*#68C7FF*/,$imgName,-15.08rem,-1.066667rem),//防汛预案
+        4:($gray/*#62D16F*/,$imgName,-15.093333rem,-3.066667rem),//物资管理
+    );
+#main{
+    background: #fff;
+    #notice-menu{
+        padding:0.4rem 0;
+        .notice{
+            width:9.186667rem;
+            height:4.0rem;
+            margin:auto;
+            margin-bottom: 0.4rem;
+            background: #F8F8F8;
+            border-radius: 0.213333rem;
+            position:relative;
+            border-radius:3px;
+            overflow: hidden;
+            .notice-img{
+                width:100%;
+                height:4.0rem;
+                //@include background(icon,-0.826667rem,-0.8rem);
+                background:url(../../image/index/jmnbg.jpg) no-repeat center;
+                background-size:9.226667rem 4.053333rem;
+                img{
+
+                }
+            }
+            .notice-text{
+                position: absolute;
+                bottom:0;
+                left:0;
+                width:9.2rem;
+                height:0.8rem;
+                //padding-left:0.266667rem;
+                line-height: 0.8rem;
+                font-size: 0.346667rem;
+                color:#fff;
+                @extend %overflowelps;
+                background:rgba(34,35,40,.4);
+            }
+        }
+        #menu-list{
+
+            .menu-list-item{
+                padding-top:0.133333rem;
+                border-top: 1px solid #E4E7F0;
+                &:first-child{
+                    border-top:0;
+                }
+                .menu-name{
+                    font-size: 0.4rem;
+                    padding:0.133333rem 0.4rem;
+                    color:#222328;
+                    font-weight: bold;
+                }
+                .menu{
+                    padding:0 0.133333rem;
+                    // padding-top: 0.32rem;
+                    font-size: 0;
+                    .menu-item{
+                        width:25%;
+                        // height: 2.36rem;
+                        padding:0.2rem 0;
+                        display: inline-block;
+                        vertical-align: top;
+                        border-radius: 0.133333rem;
+                        @include active;
+                        .item-img{
+
+                            position: relative;
+                            margin:auto;
+                            margin-bottom: 0.133333rem;
+                            width:1.333333rem;
+                            height: 1.333333rem;
+                            border-radius: 0.24rem;
+                            padding-top:0.266667rem;
+                            .img{
+                                width:0.8rem;
+                                height: 0.8rem;
+                                margin:auto;
+
+                            }
+                            .msg{
+                                position: absolute;
+                                right: -6px;
+                                top: -6px;
+                            }
+                        }
+                        .item-label{
+                            height:0.493333rem;
+                            line-height: 0.493333rem;
+                            font-size: 0.346667rem;
+                            color:#64697B;
+                            text-align: center;
+                        }
+
+                    }
+                }
+            }
+
+
+            @for $i from 1 through length($bgColorList){
+                .menu-list-item:nth-child(#{$i}){
+                    @each $index,$value in nth($bgColorList,$i){
+                        .menu .menu-item:nth-child(#{$index}) .item-img{
+                            background-color:nth($value,1);
+                            .img{
+                                @include background(nth($value,2),nth($value,3),nth($value,4));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    #data-list{
+        padding-left:0.4rem;
+        margin-top:0.373333rem;
+        border-top: 1px solid #E4E7F0;
+        li{
+            padding:0.4rem 0;
+            padding-right:0.4rem;
+            border-bottom: 1px solid #E4E7F0;
+            display: flex;
+            flex-direction:column;
+            .top{
+                display: flex;
+                flex-direction:row;
+                .imgbox{
+                    width:1.2rem;
+                    .img{
+                        width:0.853333rem;
+                        height:0.853333rem;
+                        border-radius: 50%;
+                        background: url(../../image/img/zm.png) no-repeat center;
+                        background-size: 0.853333rem 0.853333rem;
+                    }
+
+                }
+            }
+        }
+    }
+}

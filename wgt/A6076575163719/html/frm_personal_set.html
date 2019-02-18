@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>个人设置</title>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/css/header.css" /> -->
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="../css/aui.css" /> -->
+    <script type="text/javascript" src="../script/lib/flexible.js"></script>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/aui-pull-refresh.css" /> -->
+    <link rel="stylesheet" type="text/css" href="../css/lib/mint-ui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/css/frm_personal_set.css" />
+</head>
+
+<body>
+    <div id="personalCenter" v-cloak>
+        <div class="header-box">
+            <div class="h-content-txt">
+                <span class="leftArrow" onclick="closeFrame()"></span>
+                个人设置
+                <span class="moreSelect">
+                    保存
+                </span>
+            </div>
+            <div class="head-portirait">
+                <div class="camera">
+                    <img src="../image/user-avatar.png" alt="" class="default-img">
+                    <img src="../image/camera-icon.png" alt="" class="camera-icon">
+                </div>
+            </div>
+        </div>
+        <div class="title">
+            基本资料
+        </div>
+        <div class="basic-wrap">
+            <div class="user">
+                <span class="num">{{userInfo.Name}}</span>
+                <span class="txt">用户名</span>
+            </div>
+            <div class="contact">
+                <span class="num">{{userInfo.Mobile}}</span>
+                <span class="txt">联系方式</span>
+            </div>
+        </div>
+        <div class="title">
+            修改密码
+        </div>
+        <div class="pwd-wrap">
+            <div class="pwd-input">
+                <mt-field label="" placeholder="请输入密码" type="password" v-model="inputPwd"></mt-field>
+            </div>
+            <div class="pwd-input">
+                <mt-field label="" placeholder="请设置新密码" type="password" v-model="inputPwd"></mt-field>
+            </div>
+            <div class="pwd-input">
+                <mt-field label="" placeholder="请再次输入新密码" type="password" v-model="inputPwd"></mt-field>
+            </div>
+        </div>
+        <div class="logout" @click="logOut">
+            <mt-button size="large" plain>退出登录</mt-button>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script src="https://unpkg.com/mint-ui/lib/index.js"></script>
+<!-- <script type="text/javascript" src="../script/aui-toast.js"></script>
+<script type="text/javascript" src="../script/aui-pull-refresh.js"></script> -->
+<script type="text/javascript" src="../script/wj-framework.js"></script>
+<script type="text/javascript" src="../script/wj-ajax.js"></script>
+<script type="text/javascript">
+    function closeFrame(){
+        api.closeFrame();
+    }
+    apiready = function() {
+        var contenttopheight = 0;
+        var header = $api.byId('personalCenter');
+        $api.fixStatusBar(header); //可以解决ios和一些安卓状态栏重贴问题
+
+        // var contenttopheight = $api.cssVal($api.dom('#addressView'), 'height').replace("px", "");
+        var pageParam=JSON.parse(api.pageParam.data);
+        api.setStatusBarStyle({
+            style: 'light',
+            color: '#1875F0'
+        });
+        var vm=new Vue({
+            el:'#personalCenter',
+            data:{
+                inputPwd:'',
+                userInfo:pageParam,
+            },
+            mounted:function(){
+
+            },
+            methods:{
+                goBack:function(){
+                    api.closeFrame();
+                },
+                logOut:function(){//跳转到登录
+                    api.sendEvent({
+                        name: 'viewappear',
+                        extra: {
+                            toview: 'login',
+                            fromview: 'home'
+                        }
+                    })
+                    // api.execScript({
+                    //    frameName:'frm_personalcenter',
+                    //    name:'win_home',
+                    // script:"closeCurrentWin()"
+                    // });
+                    api.closeWin();
+                }
+            }
+        })
+    };
+</script>
+
+</html>

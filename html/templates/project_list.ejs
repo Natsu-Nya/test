@@ -1,0 +1,29 @@
+<div class="list-block" tapmode="highlight" onclick="openGroupFrames('<%= ProjectId %>', '<%= Name %>');">
+    <div class="list-block-header clearfix">
+        <span class="title">
+            <img class="icon" src="../image/home/nav/shape_dixiashui.png" alt=""><%= Name %>
+        </span>
+    </div>
+    <div class="list-block-main">
+        <div class="row">
+            <div class="flex-1 text-left">始建时间:</div>
+            <div class="flex-1 text-right"><%= SetupDate %></div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">建设单位:</div>
+            <div class="flex-1 text-right"><%= WorkCompany %></div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">施工单位:</div>
+            <div class="flex-1 text-right"><%= WorkCompany %></div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">工程投资:</div>
+            <div class="flex-1 text-right"><%= Invest %>万</div>
+        </div>
+    </div>
+    <div class="line-dotted"></div>
+    <div class="list-block-footer clearfix">
+        <div class="btn pull-right">查看详情</div>
+    </div>
+</div>

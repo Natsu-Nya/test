@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>rsvrListFrame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/glyphicons.css" />
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+    }
+    </style>
+</head>
+
+<body class="flex-box-v">
+    <div id="search" tapmode onclick="openSearchWindow();">
+        <div class="search-warp">
+            <input type="text" placeholder="输入关键字名称查找" readonly="readonly">
+        </div>
+    </div>
+    <div id="filter">
+        <div class="filter-warp">
+            <div class="filter-item" tapmode onclick="fnOpenUnitActionSheet();">
+                <span id="unit">全部类型</span><span class="glyphicon glyphicon-triangle-bottom"></span>
+            </div>
+            <div class="filter-item">
+                <span id="unit">全部单位</span><span class="glyphicon glyphicon-triangle-bottom"></span>
+            </div>
+            <div class="filter-item">
+                <span id="unit">全部乡镇</span><span class="glyphicon glyphicon-triangle-bottom"></span>
+            </div>
+        </div>
+    </div>
+    <div id="main">
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/searchbar.js"></script>
+<script type="text/javascript">
+var searchBar = null;
+apiready = function() {
+    var UISearchBar = api.require('UISearchBar');
+    searchBar = new LDSearchBar(UISearchBar, '输入关键字名称查找', function(ret) {
+        alert(JSON.stringify(ret));
+    });
+
+    test();
+};
+
+function test() {
+    var $main = document.querySelector('#main');
+    var ret = $api.offset($main);
+
+    var UIListBadge = api.require('UIListBadge');
+    UIListBadge.open({
+        rect: {
+            x: ret.l,
+            y: ret.t,
+            w: api.winWidth,
+            h: api.frameHeight - ret.t
+        },
+        data: [{
+            uid: '1001',
+            imgPath: 'widget://image/home/nav/shape_daba.png',
+            title: '红旗水库',
+            subTitle: '水位 24.54m>20.00m',
+            time: '10:21:36',
+            badge: 3
+        }, {
+            uid: '1001',
+            imgPath: 'widget://image/home/nav/shape_fangxunyuan.png',
+            title: '阔克责克水位站',
+            subTitle: '水位 17.54m>10.00m',
+            time: '06.06',
+            badge: 1
+        }, {
+            uid: '1001',
+            imgPath: 'widget://image/home/nav/shape_gongcheng.png',
+            title: '库泽吾希水位雨量站',
+            subTitle: '水位 17.54m>10.00m',
+            time: '06.06',
+            badge: 1
+        }, {
+            uid: '1001',
+            imgPath: 'widget://image/home/nav/shape_daba.png',
+            title: '标题',
+            subTitle: '子标题，说明文字',
+            time: '今天   13:45',
+            badge: 1
+        }, {
+            uid: '1001',
+            imgPath: 'widget://image/home/nav/shape_daba.png',
+            title: '标题',
+            subTitle: '子标题，说明文字',
+            time: '今天   13:45',
+            badge: 1
+        }, {
+            uid: '1001',
+            imgPath: 'widget://image/home/nav/shape_daba.png',
+            title: '标题',
+            subTitle: '子标题，说明文字',
+            time: '今天   13:45',
+            badge: 1
+        }, {
+            uid: '1001',
+            imgPath: 'widget://image/home/nav/shape_daba.png',
+            title: '标题',
+            subTitle: '子标题，说明文字',
+            time: '今天   13:45',
+            badge: 1
+        }, {
+            uid: '1001',
+            imgPath: 'widget://image/home/nav/shape_daba.png',
+            title: '标题',
+            subTitle: '子标题，说明文字',
+            time: '今天   13:45',
+            badge: 1
+        }, {
+            uid: '1001',
+            imgPath: 'widget://image/home/nav/shape_daba.png',
+            title: '标题',
+            subTitle: '子标题，说明文字',
+            time: '今天   13:45',
+            badge: 1
+        }, {
+            uid: '1001',
+            imgPath: 'widget://image/home/nav/shape_daba.png',
+            title: '标题',
+            subTitle: '子标题，说明文字',
+            time: '今天   13:45',
+            badge: 1
+        }, {
+            imgPath: 'widget://image/home/nav/shape_daba.png',
+            title: '标题',
+            subTitle: '子标题，说明文字',
+            time: '今天   13:45',
+            badge: 1
+        }],
+        rightBtns: [{
+            bgColor: 'rgba(229,87,87,1)',
+            activeBgColor: '',
+            width: 105,
+            title: '消息免打扰',
+            titleSize: 15,
+            titleColor: '#fff',
+            time: '今天   13:45',
+            badge: '1'
+        }],
+        styles: {
+            header: {
+                bg: '#fff',
+                height: 0
+            },
+            footer: {
+                bg: '#fff',
+                height: 0
+            },
+            badge: {
+                color: '#f00',
+                size: 10,
+                titleSize: 12,
+                titleColor: '#fff'
+            },
+            borderColor: 'rgba(228,231,240,1)',
+            item: {
+                bgColor: '#FFF',
+                activeBgColor: '#F5F5F5',
+                height: 70,
+                imgMarginLeft: 10,
+                imgMarginRight: 10,
+                imgWidth: 50,
+                imgHeight: 50,
+                imgCorner: 4,
+                placeholderImg: '',
+                titleMarginTop: 16,
+                subTitleMarginBottom: 17,
+                titleSize: 15,
+                titleColor: '#FF222328',
+                subTitleSize: 13,
+                subTitleColor: 'rgba(100,105,123,1)',
+                subTitleWidth: api.frameWidth,
+                timeColor: 'rgba(161,166,187,1)',
+                timeSize: 13,
+                marginRight: 10
+            }
+        },
+        fixedOn: api.frameName,
+        showScrollBar: true
+    }, function(ret, err) {
+        if (ret) {
+            // alert(JSON.stringify(ret));
+
+            api.openWin({
+                name: 'warn_detail',
+                url: 'warn_detail.html',
+                pageParam: {
+                    name: 'value'
+                }
+            });
+
+        } else {
+            // alert(JSON.stringify(err));
+        }
+    });
+}
+
+function openSearchWindow() {
+    searchBar.open();
+}
+
+function fnOpenGroupFrames() {
+    api.openWin({
+        name: 'rsvr_group',
+        url: 'rsvr_group.html',
+        pageParam: {
+            name: 'value'
+        }
+    });
+}
+
+function fnOpenUnitActionSheet() {
+    api.actionSheet({
+        title: '切换管理单位',
+        cancelTitle: '取消',
+        destructiveTitle: app.units[0],
+        buttons: app.units.slice(1)
+    }, function(ret, err) {
+        var index = ret.buttonIndex,
+            value = app.units[index - 1];
+
+        if (value) {
+            var $unit = $api.byId('unit');
+            $api.html($unit, app.units[index - 1]);
+        }
+    });
+};
+
+function fnOpenPicker() {
+    api.openPicker({
+        type: 'date',
+        date: '2018-06-18',
+        title: '选择时间'
+    }, function(ret, err) {
+        if (ret) {
+            alert(JSON.stringify(ret));
+        } else {
+            alert(JSON.stringify(err));
+        }
+    });
+}
+</script>
+
+</html>

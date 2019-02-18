@@ -1,0 +1,138 @@
+<% if (Minimap) { %><% } %>
+<div class="list-block line">
+    <div class="list-block-main">
+        <div class="row">
+            <div class="text-left">工程名称：</div>
+            <div class="flex-1 text-right">
+                <%= Name %>
+            </div>
+        </div>
+        <div class="row">
+            <div class="text-left">建设地点：</div>
+            <div class="flex-1 text-right">
+                <%= Address %>
+            </div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">所在河流：</div>
+            <div class="flex-1 text-right">
+                <%= River %>
+            </div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">建设单位：</div>
+            <div class="flex-1 text-right">
+                <%= BuildCompany %>
+            </div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">设计单位:</div>
+            <div class="flex-1 text-right">
+                <%= DesignCompany %>
+            </div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">施工单位：</div>
+            <div class="flex-1 text-right">
+                <%= WorkCompany %>
+            </div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">始建时间：</div>
+            <div class="flex-1 text-right">
+                <%= SetupDate %>
+            </div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">建成时间：</div>
+            <div class="flex-1 text-right">
+                <%= FinishDate %>
+            </div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">改建时间：</div>
+            <div class="flex-1 text-right">
+                <%= AgainDate %>
+            </div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">工程投资：</div>
+            <div class="flex-1 text-right">
+                <%= Invest %> 万</div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">工程等级：</div>
+            <div class="flex-1 text-right">
+                <%= Level %>
+            </div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">主要功能：</div>
+            <div class="flex-1 text-right">
+                <%= MainFuncDescription %>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="panel">
+    <div class="panel-heading">
+        <h2>水库水位(m)</h2>
+    </div>
+    <div class="list-block line">
+        <div class="list-block-main">
+            <div class="row">
+                <div class="flex-1 text-left">校核洪水位 (P=0.2%)：</div>
+                <div class="flex-1 text-right"><%= WHReservoir.CheckWaterLevel %></div>
+            </div>
+            <div class="row">
+                <div class="flex-1 text-left">设计洪水位 (P=0.2%)：</div>
+                <div class="flex-1 text-right"><%= WHReservoir.DesignWaterLevel %></div>
+            </div>
+            <div class="row">
+                <div class="flex-1 text-left">正常蓄水位：</div>
+                <div class="flex-1 text-right"><%= WHReservoir.NormalWaterLevel %></div>
+            </div>
+            <div class="row">
+                <div class="flex-1 text-left">警戒水位：</div>
+                <div class="flex-1 text-right"><%= WHReservoir.WarningWaterLevel %></div>
+            </div>
+            <div class="row">
+                <div class="flex-1 text-left">死水位:</div>
+                <div class="flex-1 text-right"><%= WHReservoir.DeadWaterLevel %></div>
+            </div>
+            <div class="row">
+                <div class="flex-1 text-left">汛限水位：</div>
+                <div class="flex-1 text-right"><%= WHReservoir.XXWaterLevel %></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="panel">
+    <div class="panel-heading">
+        <h2>水库容积(亿m³)</h2>
+    </div>
+    <div class="list-block line">
+        <div class="list-block-main">
+            <div class="row">
+                <div class="flex-1 text-left">总库容：</div>
+                <div class="flex-1 text-right"><%= WHReservoir.DesignCapacity %></div>
+            </div>
+            <div class="row">
+                <div class="flex-1 text-left">兴利容积 (亿m³)：</div>
+                <div class="flex-1 text-right"><%= WHReservoir.XLCapacity %></div>
+            </div>
+            <div class="row">
+                <div class="flex-1 text-left">防洪库容：</div>
+                <div class="flex-1 text-right"><%= WHReservoir.FHCapacity %></div>
+            </div>
+            <div class="row">
+                <div class="flex-1 text-left">调洪库容：</div>
+                <div class="flex-1 text-right"><%= WHReservoir.DHCapacity %></div>
+            </div>
+            <div class="row">
+                <div class="flex-1 text-left">死库容：</div>
+                <div class="flex-1 text-right"><%= WHReservoir.DeadCapacity %></div>
+            </div>
+        </div>
+    </div>
+</div>

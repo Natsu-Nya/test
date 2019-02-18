@@ -1,0 +1,155 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>index</title>
+    <link rel="stylesheet" type="text/css" href="./css/api.css" />
+    <link rel="stylesheet" type="text/css" href="./css/style.css" />
+    <style>
+    header {
+        /*background-color: #f2f2f2;*/
+        line-height: 42px;
+        font-size: 18px;
+        text-align: center;
+    }
+
+    .flex-con {
+        overflow: auto
+    }
+    </style>
+</head>
+
+<body>
+    <div id="wrap" class="flex-wrap flex-vertical">
+        <!-- <header class="border-b" >APICloud</header> -->
+        <div id="main" class="flex-con">
+        </div>
+    </div>
+</body>
+
+</html>
+<script type="text/javascript" src="./script/api.js"></script>
+<script type="text/javascript" src="./script/wj-framework.js"></script>
+<script type="text/javascript">
+
+////打开登录界面
+function openloginpage(username, password, autologin) {
+    ////打开前先关闭历史窗口，避免窗口缓存
+    api.closeFrame({
+        name: 'win_login'
+    });
+    api.openFrame({
+        name: 'win_login',
+        url: './html/win_login.html',
+        rect: {
+            x: 0,
+            y: 0, //$api.dom('header').offsetHeight,
+            w: api.winWidth,
+            h: $api.dom('#main').offsetHeight
+        },
+        pageParam: {
+            data: {
+                username: username,
+                password: password,
+                autologin: autologin
+            }
+        }
+    });
+}
+//////打开主页界面
+function openhomepage() {
+    ////打开前先关闭历史窗口，避免窗口缓存
+    api.closeWin({
+        name: 'win_home'
+    });
+
+    api.openWin({
+        name: 'win_home',
+        url: './html/win_home.html',
+        pageParam: {
+            name: 'test'
+        }
+    });
+}
+
+function openMovepolling() {
+    api.closeWin({
+        name: 'win_movepolling'
+    });
+
+    api.openWin({
+        name: 'win_movepolling',
+        url: './html/win_movepolling.html',
+        pageParam: {
+            name: 'test'
+        }
+    });
+}
+
+apiready = function() {
+    //记录全局api服务地址
+    //192.168.0.77
+
+    $api.setStorage('apiserviceurl', 'http://182.150.28.58:8504/irrigation/api');
+    $api.setStorage('loginserviceurl', 'http://182.150.28.58:8504/framework/Account/LoginApp2');
+    $api.setStorage('rootserviceurl', 'http://182.150.28.58:8504/irrigation');
+    $api.setStorage('videoserviceurl', 'http://182.150.28.58:8001/api');
+    var lastmessagetime = $api.getStorage("lastmessagetime");
+    
+    if (!lastmessagetime) {
+        lastmessagetime = {
+            'lastwaitdealworktime': '2000-1-1',
+            'lastsystemmessagetime': '2000-1-1',
+            'lasterrorwarningtime': '2000-1-1'
+        };
+        $api.setStorage('lastmessagetime', lastmessagetime); //各个消息最后查看时间
+    }
+
+    var projectIdList = {
+        ysjc: '991941021447360512',
+        dbaq: '998907440466628608',
+        tjys: '986076075958341632'
+    };
+    $api.setStorage('projectIdList', projectIdList); //扬水监测,灌溉用水,田间用水
+
+    // alert(JSON.stringify(api.wgtParam.userInfo));
+
+    $api.setStorage("logininfo", api.wgtParam.userInfo);
+    openMovepolling();
+
+    /*
+    //  $api.fixStatusBar( $api.dom('header') );
+    api.addEventListener({
+        name: 'viewappear'
+    }, function(ret, err) {
+        if (ret && ret.value) {
+            if (ret.value.toview == "login") {
+                openloginpage('', '', false); //重新登录
+            } else if (ret.value.toview == "home") {
+                openhomepage();
+            }
+        }
+    });
+    // api.setStatusBarStyle({
+    //     style: 'light',
+    //     color: '#6ab494'
+    // });
+    var loginaccount = $api.getStorage("loginaccount");
+    var logininfo = $api.getStorage("logininfo");
+    //var roleinfo = $api.getStorage("roleinfo"); || StringNullOrEmpty(roleinfo)
+    ////判断用户是否登录
+    if (StringNullOrEmpty(logininfo)) {
+        openloginpage('', '', false); //重新登录
+    } else {
+        if (loginaccount && loginaccount.username && loginaccount.password) {
+            openloginpage(loginaccount.username, loginaccount.password, true); //注意每次都要重新登录，可能用户或密码已过期
+        } else {
+            openloginpage('', '', false); //重新登录
+        }
+    }
+    */
+};
+</script>

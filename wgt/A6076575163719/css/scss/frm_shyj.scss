@@ -1,0 +1,125 @@
+@import './common.scss';
+
+$ftRed:#E55757;
+$ftYellow:#F57A23;
+#main{
+    background: #fff;
+
+    .data-list{
+        padding-left:0.4rem;
+        border-top: 1px solid #E4E7F0;
+        border-bottom: 1px solid #E4E7F0;
+        &.normal{
+            margin-top:0.373333rem;
+        }
+        li{
+            padding:0.4rem 0;
+            padding-right:0.4rem;
+            border-bottom: 1px solid #E4E7F0;
+            &:last-child{
+                border-bottom: 0;
+            }
+            .top{
+                font-size:0;
+                .imgbox,.infobox{
+                    display: inline-block;
+                    vertical-align: top;
+                }
+                .imgbox{
+                    width:1.2rem;
+                    overflow: hidden;
+                    .img{
+                        width:0.853333rem;
+                        height:0.853333rem;
+                        border-radius: 50%;
+                        // background: url(../../image/img/zm.png) no-repeat center;
+                        // background-size: 0.853333rem 0.853333rem;
+                        @include background(icon,-20.96rem,-0.8rem);
+                    }
+
+                }
+                .infobox{
+                    width:calc(100% - 1.2rem);
+                    .name-model{
+                        // display: flex;
+                        // flex-direction:row;
+                        // justify-content: space-between;
+                        font-size: 0;
+                        .name,.model{
+                            display: inline-block;
+                            vertical-align: top;
+                        }
+                        .name{
+                            font-size: 0.4rem;
+                            font-weight: bold;
+                            color:#222328;
+                            min-width: 4.0rem;
+                            height: 0.586667rem;
+                            line-height: 0.586667rem;
+                        }
+                        .model{
+                            float:right;
+                            margin-top: 0.066667rem;
+                            padding:0 0.2rem;
+                            height:0.453333rem;
+                            line-height: 0.48rem;
+                            border-radius:0.066667rem;
+                            font-size: 0.266667rem;
+                            text-align: center;
+                            color:#fff;
+                            &.normal{
+                                background:#6FBB18;
+                            }
+                        }
+                    }
+                    .data{
+                        padding-top: 0.08rem;
+                        padding-bottom: 0.213333rem;
+                        display: flex;
+                        flex-direction: column;
+                        .item{
+                            // display: flex;
+                            // flex-direction:row;
+                            margin-top: 0.106667rem;
+                            font-size: 0;
+                            .text-value{
+                                display: inline-block;
+                                vertical-align: middle;
+                                width:50%;
+                                height:0.56rem;
+                                line-height: 0.56rem;
+                                color:#A1A6BB;
+                                font-size: 0.373333rem;
+                                &:nth-child(2){
+                                    text-align: right;
+                                }
+                                .value{
+                                    font-family:'Arial';
+                                    color:#64697B;
+                                    font-size: 0.453333rem;
+                                    font-style: italic;
+                                    &.warning{
+                                        color:$ftRed;
+                                    }
+                                }
+
+                                .warning{
+                                    color:$ftYellow;
+                                }
+                            }
+                        }
+
+                    }
+                }
+                &.normal{
+                    .imgbox{
+                        width:0;
+                    }
+                    .infobox{
+                        width:100%;
+                    }
+                }
+            }
+        }
+    }
+}

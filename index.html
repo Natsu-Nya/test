@@ -5,85 +5,122 @@
     <meta charset="utf-8">
     <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,initial-scale=1.0,width=device-width" />
     <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
-    <title>Hello APP</title>
+    <title>Root Window</title>
     <link rel="stylesheet" type="text/css" href="./css/api.css" />
-    <style type="text/css">
-        html,
-        body {
-            height: 100%;
-        }
-
-        .wrap {
-            display: -webkit-box;
-            -webkit-box-orient: vertical;
-            -webkit-flex-flow: column;
-        }
-
-        header {
-            height: 44px;
-            width: 100%;
-            text-align: center;
-            background-color: #81a9c3;
-            color: #fff;
-            line-height: 44px;
-            font-size: 20px;
-        }
-
-        .flex-1 {
-            -webkit-box-flex: 1;
-            -webkit-flex: 1;
-        }
-
-        footer {
-            height: 30px;
-            width: 100%;
-            background-color: #81a9c3;
-            color: white;
-            line-height: 30px;
-            text-align: center;
-        }
-    </style>
+    <style type="text/css"></style>
 </head>
 
-<body class="wrap">
-    <header>APICloud</header>
-    <section class="flex-1">
-
-    </section>
-    <footer>Copyright &copy;<span id="year"></span></footer>
+<body>
 </body>
 <script type="text/javascript" src="./script/api.js"></script>
 <script type="text/javascript">
-    apiready = function() {
-        //输出Log，Log将显示在APICloud Studio控制台
-        console.log("Hello World! Hello APICloud!");
+apiready = function() {
+    // api.removeLaunchView();
+    // tabBar selectedIndex与window的映射关系
+    var tabbarWindows = ['message', 'video', 'home', 'contacts', 'user'];
 
-        var header = $api.dom('header'); // 获取 header 标签元素
-        var footer = $api.dom('footer'); // 获取 footer 标签元素
+    api.addEventListener({
+        name: 'login_complete'
+    }, function(ret, err) {
+        // api.hideProgress();
 
-        // 1.修复开启沉浸式效果带来的顶部Header与手机状态栏重合的问题，最新api.js方法已支持适配iPhoneX；
-        // 2.默认已开启了沉浸式效果 config.xml中 <preference name="statusBarAppearance" value="true"/>
-        // 3.沉浸式效果适配支持iOS7+，Android4.4+以上版本
-        var headerH = $api.fixStatusBar(header);
-        // 最新api.js为了适配iPhoneX增加的方法，修复底部Footer部分与iPhoneX的底部虚拟横条键重叠的问题；
-        var footerH = $api.fixTabBar(footer);
+        // api.openWin({
+        //     name: 'home',
+        //     url: './html/home.html',
+        //     pageParam: {
+        //         name: 'value'
+        //     },
+        //     slidBackEnabled: false
+        // });
 
-        api.openFrame({
-            name: 'main',
-            url: 'html/main.html',
-            bounces: true,
-            rect: { // 推荐使用Margin布局，用于适配屏幕的动态变化
-                marginTop: headerH, // main页面距离win顶部的高度
-                marginBottom: footerH, // main页面距离win底部的高度
-                w: 'auto' // main页面的宽度 自适应屏幕宽度
+        app.ajax({
+            url: app.urls.getListOrganizationHasChild,
+            success: function(data) {
+                api.hideProgress();
+
+                $api.setStorage('getListOrganizationHasChild', data);
+                api.openWin({
+                    name: 'home',
+                    url: './html/home.html',
+                    pageParam: {
+                        name: 'value'
+                    },
+                    slidBackEnabled: false
+                });
             }
         });
+    });
 
-        // 获取当前年份时间，并加载显示到页面
-        var year = $api.byId('year');
-        year.innerHTML = new Date().getFullYear();
-    };
+    api.addEventListener({
+        name: 'tabbar_changed'
+    }, function(ret, err) {
+        var winName = tabbarWindows[ret.value.selectedIndex];
+        api.openWin({
+            name: winName,
+            url: './html/' + winName + '.html',
+            pageParam: {
+                name: 'value'
+            },
+            slidBackEnabled: false,
+            animation: {
+                type: "none"
+            }
+        });
+    });
 
+    api.addEventListener({
+        name: 'open_main'
+    }, function(ret, err) {
+        api.openWin({
+            name: 'main',
+            url: './html/main.html',
+            pageParam: {
+                name: 'value'
+            },
+            slidBackEnabled: false,
+            animation: {
+                type: "none"
+            }
+        });
+    });
+
+    api.addEventListener({
+        name: 'open_contacts'
+    }, function(ret, err) {
+        api.openWin({
+            name: 'main',
+            url: './html/contacts.html',
+            pageParam: {
+                name: 'value'
+            },
+            slidBackEnabled: false,
+            animation: {
+                type: "none"
+            }
+        });
+    });
+
+    api.addEventListener({
+        name: 'relogin'
+    }, function(ret, err) {
+        api.openWin({
+            name: 'login',
+            url: './html/login.html',
+            slidBackEnabled: false,
+            bgColor: 'image/login_bg.png'
+        });
+    });
+
+    var isLogin = false;
+    if (isLogin === false) {
+        api.openWin({
+            name: 'login',
+            url: './html/login.html',
+            slidBackEnabled: false,
+            bgColor: 'image/login_bg.png'
+        });
+    }
+};
 </script>
 
 </html>

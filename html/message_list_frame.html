@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>message list frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+    }
+    </style>
+</head>
+
+<body class="flex-box-v">
+    <div id="search" tapmode onclick="openSearchWindow();">
+        <div class="search-warp">
+            <input type="text" placeholder="输入关键字名称查询" readonly="readonly">
+        </div>
+    </div>
+    <div id="main" class="flex-1">
+        <div id="mediaList" class="media-warp">
+        </div>
+    </div>
+    <script id="template" type="text/template">
+        <div class="media" tapmode="active">
+            <div class="media-left">
+                <img src="../image/home/nav/shape_tongzhi.png" style="width: 16px; height: 16px;">
+            </div>
+            <div class="media-body">
+                <div class="media-heading"><%= Title %></div>
+                <div class="media-footing">
+                    发布单位: <span class="text-blue"><%= UserName %></span><span class="pull-right"><%= TimeName %></span>
+                </div>
+            </div>
+        </div>
+    </script>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/searchbar.js"></script>
+<script type="text/javascript" src="../script/listview.js"></script>
+<script type="text/javascript" src="../script/underscore-min.js"></script>
+<script type="text/javascript">
+var searchBar = null,
+    $container = document.querySelector('#mediaList'),
+    t = _.template(document.querySelector('#template').innerHTML);
+
+apiready = function() {
+    var UISearchBar = api.require('UISearchBar');
+    searchBar = new LDSearchBar(UISearchBar, '输入关键字名称查询', function(ret) {
+        loadData(ret.text);
+    });
+
+    app.setRefreshHeaderInfo(loadData);
+    loadData();
+};
+
+function loadData(kw) {
+    var userId = app.getUser().UserId;
+    app.ajax({
+        url: app.urls.getSystemMessageList,
+        data: {
+            userId: userId,
+            name: kw || ''
+        },
+        template: t,
+        success: function(data, html) {
+            api.hideProgress();
+            app.refreshHeaderLoadDone();
+
+            $container.innerHTML = html;
+            var lstMedia = LDListView('#mediaList', '.media', function(index) {
+                api.openWin({
+                    name: 'message_detail',
+                    url: 'message_detail.html',
+                    pageParam: {
+                        data: data[index]
+                    }
+                });
+            });
+        }
+    });
+}
+
+function openSearchWindow() {
+    searchBar.open();
+}
+</script>
+</html>

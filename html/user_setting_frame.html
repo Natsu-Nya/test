@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>user setting frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+    }
+
+    .btn {
+        height: 45px;
+        line-height: 45px;
+        text-align: center;
+        font-size: 16px;
+        color: rgba(254, 89, 75, 1);
+        background: rgba(255, 255, 255, 1);
+        border: 1px solid rgba(254, 89, 75, 1);
+        border-radius: 6px;
+    }
+
+    .input {
+        width: 100%;
+        height: 30px;
+        border: none;
+        outline: none;
+        font-size: 15px;
+        line-height: 30px;
+        border: none;
+        background-color: transparent;
+    }
+
+    #footer {
+        box-sizing: border-box;
+        padding: 15px 15px 30px 15px;
+    }
+    </style>
+</head>
+
+<body class="flex-box-v">
+    <div id="header">
+    </div>
+    <div id="main" class="flex-1">
+        <div class="panel">
+            <div class="panel-heading">
+                <h2>基本资料</h2>
+            </div>
+            <div class="list-block line">
+                <div class="list-block-main">
+                    <div class="row big">
+                        <div class="flex-1 text-left">用户名</div>
+                        <div class="flex-1 text-right"><strong id="name">--</strong></div>
+                    </div>
+                    <div class="row big">
+                        <div class="flex-1 text-left">联系方式</div>
+                        <div class="flex-1 text-right"><strong id="mobile">--</strong></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="panel-heading">
+                <h2>修改密码</h2>
+            </div>
+            <div class="list-block line">
+                <div class="list-block-main">
+                    <div class="row big">
+                        <input id="username" class="input" type="text" placeholder="请输入旧密码">
+                    </div>
+                    <div class="row big">
+                        <input id="password" class="input" type="password" placeholder="请设置新密码">
+                    </div>
+                    <div class="row big">
+                        <input id="password_confim" class="input" type="password" placeholder="请再次输入新密码">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer id="footer">
+        <div class="btn" tapmode="highlight" onclick="logout();">退出登录</div>
+    </footer>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+var $username = document.querySelector('#username'),
+    $password = document.querySelector('#password'),
+    $password_confim = document.querySelector('#password_confim'),
+    $name = document.querySelector('#name'),
+    $mobile = document.querySelector('#mobile');
+
+apiready = function() {
+    api.addEventListener({
+        name: 'saveUserSetting'
+    }, function(ret, err) {
+        save();
+    });
+
+    $name.innerHTML = api.pageParam.name;
+    $mobile.innerHTML = api.pageParam.mobile;
+};
+
+function save() {
+    var old_password = $username.value,
+        password = $password.value,
+        password_confim = $password_confim.value;
+
+    if (!old_password) {
+        api.toast({
+            msg: '旧密码不能为空，请重新输入。',
+            duration: 2000,
+            location: 'middle'
+        });
+        return;
+    }
+
+    if (!password) {
+        api.toast({
+            msg: '密码不能为空，请重新输入。',
+            duration: 2000,
+            location: 'middle'
+        });
+        return;
+    }
+
+    if (password != password_confim) {
+        api.toast({
+            msg: '两次密码输入不一致，请重新输入。',
+            duration: 2000,
+            location: 'middle'
+        });
+        return;
+    }
+}
+
+function logout() {
+    // 清楚用户本地存储
+    $api.rmStorage('userInfo');
+    $api.rmStorage('user_pwd');
+
+    // 直接重启应用
+    api.rebootApp();
+}
+</script>
+
+</html>

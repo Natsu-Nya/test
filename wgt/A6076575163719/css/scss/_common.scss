@@ -1,0 +1,119 @@
+@import './reset.scss';
+html{
+    font-family: 'PingFangSC Regular',"Microsoft YaHei";
+    font-weight: normal;
+    font-style: normal;
+    height: 100%;
+}
+body{
+    margin:0;
+    height: 100%;
+    background: #fff;
+}
+%clearfix:after{//清除浮动
+    content: ' ';
+    display: block;
+    clear: both;
+    visibility:hidden;
+    line-height: 0;
+    height:0;
+}
+%overflowelps{//超出省略号...
+    overflow: hidden;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+}
+
+*{
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    /* Firefox */
+    -webkit-box-sizing: border-box;
+    /* Safari */
+}
+[v-cloak]{
+    display:none;
+}
+@mixin fontStyle($value,$color) {
+    font-size: $value;
+    font-family: 'PingFangSC Regular',"Microsoft YaHei",'Avenir', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-style: normal;
+    color: $color;
+}
+@mixin active($bgColor:#F1F2F7){//点击元素反馈
+    &:active{
+        background:$bgColor;
+    }
+}
+@mixin allArrow($type:right,$color:#696969,$size:0.266667rem,$borderWidth:2px,$top:-0.013333rem,$right:0.133333rem){//箭头
+    &{
+        position: relative;
+        // height: 100%;
+        display: inline-block;
+        vertical-align: middle;
+    }
+    &:after{
+        border: $borderWidth solid $color;
+        border-bottom-width: 0;
+        border-left-width: 0;
+        content: "";
+        position: absolute;
+        top:calc(50% + #{$top});
+        right:calc(50% - #{$right});
+        width: $size;
+        height: $size;
+        @if $type == right {
+            transform: translateY(-50%) rotate(45deg);
+        }@else if $type == bottom {
+            transform: translateY(-50%) rotate(135deg);
+        }@else if $type == left {
+            transform: translateY(-50%) rotate(-135deg);
+        }@else if $type == top {
+            transform: translateY(-50%) rotate(-45deg);
+        }
+    }
+
+}
+@mixin tag($width:1.6rem,$height:0.64rem,$lineHeight:$height,$color:#24C174,$bdColor:$color,$bgColor:#fff,$ftSize:0.32rem,$bdRadius:0.066667rem){
+    display: inline-block;
+    vertical-align: middle;
+    width:$width;
+    height:$height;
+    background:$bgColor;
+    border:1px solid $bdColor;
+    text-align: center;
+    font-size:$ftSize;
+    color:$color;
+    line-height:$lineHeight;
+    border-radius:$bdRadius;
+}
+
+@mixin background($bgImg:icon,$bgPositionX:center,$bgPositionY:center,$bgSizeX:72.893333rem,$bgSizeY:8.893333rem,$bgColor:transparent){
+    background-color:$bgColor;
+    background-image:url(../../image/#{$bgImg}.png);
+    background-repeat: no-repeat;
+    background-position:$bgPositionX $bgPositionY;
+    background-size: $bgSizeX $bgSizeY;
+}
+
+#tips-panel{//暂无数据,网络异常提示
+    text-align:center;
+    font-size: 0.5rem;
+    color:#A1A6BB;
+    padding-top:50%;
+    .tips-panel-img{
+        width:0.666667rem;
+        height: 0.666667rem;
+        display: inline-block;
+        background: url(../../image/wifi.png) no-repeat center;
+        background-size: 0.666667rem 0.666667rem;
+    }
+}
+#more-tips-panel{
+    text-align:center;
+    font-size: 0.4rem;
+    color:#A1A6BB;
+    padding:10px 0;
+}

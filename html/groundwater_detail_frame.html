@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>groundwater detail frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/glyphicons.css" />
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="main">
+        <div id="filter">
+            <div class="filter-warp">
+                <div class="filter-item" tapmode onclick="openDateModeActionSheet();">
+                    <span id="dateMode"></span><span class="glyphicon glyphicon-triangle-bottom"></span>
+                </div>
+                <div id="intvWrap" class="filter-item" tapmode hidden="hidden">
+                    <span id="intv"></span><span class="glyphicon glyphicon-triangle-bottom"></span>
+                </div>
+                <div class="filter-item"></div>
+            </div>
+        </div>
+        <div class="chart-block">
+            <div class="chart-block-header">
+                <div class="title">地下水水位统计</div>
+            </div>
+            <div class="chart-block-main">
+                <div class="row">最高水位: <em id="maxWater">--</em> m</div>
+                <div id="chart_main" style="height: 280px;"></div>
+            </div>
+            <div class="line-dotted"></div>
+            <div class="chart-block-footer clearfix">
+                <div class="btn pull-right" tapmode="highlight" onclick="fullChart();">全屏查看</div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/underscore-min.js"></script>
+<script type="text/javascript" src="../script/moment.min.js"></script>
+<script type="text/javascript" src="../script/highcharts.js"></script>
+<script type="text/javascript" src="../script/charts.js"></script>
+<script type="text/javascript">
+var datePicker = null,
+    sheet = null,
+    chart = null,
+    beginDate = null,
+    endDate = null,
+    $dataMode = document.querySelector('#dataMode'),
+    $intvWrap = document.querySelector('#intvWrap'),
+    $intv = document.querySelector('#intv');
+
+var dateModeActionSheet = function(element, success) {
+    var $element = document.querySelector(element);
+    var sheet = new app.ActionSheet({
+        title: '切换显示方式',
+        cancelTitle: '取消',
+        dataSource: [
+            { name: '最近12个月', format: 'now' },
+            { name: '按月显示', format: 'yearAndMonth' },
+            { name: '按年显示', format: 'year' }
+        ],
+        fieldName: 'name',
+        success: function(selectedIndex, selectedValue, selectedItem) {
+            $element.innerHTML = selectedValue;
+            if (typeof success === 'function') {
+                success(selectedIndex, selectedValue, selectedItem);
+            }
+        }
+    });
+    $element.innerHTML = sheet.getSelectedValue();
+    return sheet;
+};
+
+sheet = dateModeActionSheet('#dateMode', function(selectedIndex, selectedValue, selectedItem) {
+    openDatePicker(selectedItem.format);
+    if (selectedIndex == 0) {
+        $intvWrap.hidden = true;
+        loadMonth12();
+    } else {
+        $intvWrap.onclick = function() {
+            openDatePicker(selectedItem.format);
+        };
+    }
+});
+
+apiready = function() {
+    var UIDatePicker = api.require('UIDatePicker');
+    datePicker = new app.DatePicker(UIDatePicker, {
+        success: function(value, text, format, ret) {
+            $intvWrap.hidden = false;
+            $intv.innerHTML = text;
+
+            var dateMode = sheet.getSelectedIndex();
+            if (dateMode == 1) {
+                loadMonth();
+            } else if (dateMode == 2) {
+                loadYear();
+            }
+        }
+    });
+    chart = new app.Charts.GroundWater('chart_main');
+
+    loadMonth12();
+};
+
+function loadMonth12 () {
+    var dt = datePicker.getSelectedValue();
+    chart.loadMonth12({
+        stcd: api.pageParam.id,
+        dateTime: dt,
+        compareLast: true,
+        success: function(data) {
+            app.innerHTML('#maxWater', data.maxWater);
+        }
+    });
+}
+
+function loadMonth() {
+    var dt = datePicker.getSelectedValue();
+    var start = moment(dt, 'YYYY-MM');
+    var end = moment(dt, 'YYYY-MM').add(1, 'months').add(-1, 'days');
+
+    chart.loadMonth({
+        stcd: api.pageParam.id,
+        start: start.format('YYYY-MM-DD'),
+        end: end.format('YYYY-MM-DD'),
+        compareLast: true,
+        success: function(data) {
+            app.innerHTML('#maxWater', data.maxWater);
+        }
+    });
+}
+
+function loadYear() {
+    var dt = datePicker.getSelectedValue();
+    var end = moment(dt, 'YYYY').add(1, 'years').add(-1, 'days');
+
+    chart.loadYear({
+        stcd: api.pageParam.id,
+        dateTime: end.format('YYYY-MM-DD'),
+        compareLast: true,
+        success: function(data) {
+            app.innerHTML('#maxWater', data.maxWater);
+        }
+    });
+}
+
+function fullChart() {
+    api.setScreenOrientation({
+        orientation: 'landscape_left'
+    });
+    api.openFrame({
+        name: 'groundwater_chart_frame',
+        url: 'groundwater_chart_frame.html',
+        rect: {
+            x: 0,
+            y: 0,
+            w: 'auto',
+            h: 'auto'
+        },
+        pageParam: {
+            dateMode: sheet.getSelectedIndex(),
+            data: chart.data
+        },
+        bounces: false
+    });
+}
+
+function openDateModeActionSheet() {
+    sheet.open();
+}
+
+function openDatePicker(type) {
+    datePicker.open(type);
+}
+</script>
+
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>policy list frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+    }
+    </style>
+</head>
+
+<body class="flex-box-v">
+    <div id="search" tapmode onclick="openSearchWindow();">
+        <div class="search-warp">
+            <input type="text" placeholder="输入关键字名称查询" readonly="readonly">
+        </div>
+    </div>
+    <div id="main" class="flex-1">
+        <div id="mediaList" class="media-warp">
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/searchbar.js"></script>
+<script type="text/javascript" src="../script/onlinefile.js"></script>
+<script type="text/javascript" src="../script/underscore-min.js"></script>
+<script type="text/javascript" src="../script/templates.js"></script>
+
+<script type="text/javascript">
+var searchBar = null,
+    onlineFile = null,
+    $container = document.querySelector('#mediaList');
+
+apiready = function() {
+    var UISearchBar = api.require('UISearchBar');
+    searchBar = new LDSearchBar(UISearchBar, '输入关键字名称查找', function(ret) {
+        loadData(ret.text);
+    });
+
+    onlineFile = new app.OnlineFile();
+
+    app.setRefreshHeaderInfo(loadData);
+    loadData();
+};
+
+
+function loadData(kw) {
+    app.ajax({
+        url: app.urls.getPolicyList,
+        data: {
+            name: kw || ''
+        },
+        template: JST.policy_list,
+        debug: false,
+        template_data: function(row, rows, index) {
+            row.FilePath = app.rootDomain + '/irrigation/policiesfiles/' + row.SavePath;
+            row.FileType = onlineFile.getFileType(row.SavePath);
+            return row;
+        },
+        sortBy: function (data) {
+            return _.sortBy(data, 'CreateDate').reverse();
+        },
+        success: function(data, html) {
+            api.hideProgress();
+            app.refreshHeaderLoadDone();
+            $container.innerHTML = html;
+        }
+    });
+}
+
+function openFile(url) {
+    onlineFile.open(url);
+}
+
+function openSearchWindow() {
+    searchBar.open();
+}
+</script>
+
+</html>

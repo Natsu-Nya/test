@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>视频监控</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="../css/aui.css" /> -->
+    <script type="text/javascript" src="../script/lib/flexible.js"></script>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/aui-pull-refresh.css" /> -->
+    <link rel="stylesheet" type="text/css" href="../css/lib/mint-ui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/css/frm_vedio.css" />
+</head>
+
+<body>
+    <div id="vedioPage">
+
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script src="../script/lib/mint-ui.js"></script>
+<!-- <script type="text/javascript" src="../script/aui-toast.js"></script>
+<script type="text/javascript" src="../script/aui-pull-refresh.js"></script> -->
+<script type="text/javascript" src="../script/wj-framework.js"></script>
+<script type="text/javascript" src="../script/wj-ajax.js"></script>
+
+<script type="text/javascript">
+    function closeVedioFrame(){
+        api.closeFrame();
+    }
+    apiready = function(){
+        var playModule = api.require('playModule');
+
+        var params=api.pageParam.data;
+        console.log(JSON.stringify(params));
+
+        var bigBoxPos=$api.offset($api.dom("body"));
+        // if(!params.VideoUrl){
+        //     this.curtvideodata=false;
+        //     return false;
+        // }
+        playModule.init({
+            ttf: "widget://res/UKIJTor.ttf",
+            logo:"widget://icon/icon150x150.png",
+        },function(ret,err){
+            console.log(JSON.stringify(ret));
+        });
+        playModule.play({
+            rect:{
+                x: 0,
+                y : 0,//headerHeight
+                w : bigBoxPos.w,//bigBoxPos.w
+                h: bigBoxPos.h//bigBoxPos.h
+            },
+            fixedOn: 'frm_vedio_content',
+            title: params.Name,
+            url: 'rtmp://live.hkstv.hk.lxdns.com/live/hks',//params.VideoUrl,//
+            defaultBtn: false,
+            enableFull : false,
+             isTopView : false
+        },function(ret, err){
+            console.log(JSON.stringify(ret));
+            console.log(JSON.stringify(err));
+        });
+    }
+</script>
+
+</html>

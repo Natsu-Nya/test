@@ -1,0 +1,44 @@
+<div class="list-block" tapmode="highlight" onclick="openDetailWindow('<%= DeviceID %>','<%= Name %>');">
+    <div class="list-block-header clearfix">
+        <span class="title">
+            <img class="icon" src="../image/home/nav/shape_qudao.png" alt=""><%= Name %>
+        </span>
+        <!--
+        <span class="label label-danger pull-right">预警状态</span>
+        -->
+    </div>
+    <div class="list-block-main">
+        <div class="row">
+            <div class="flex-1 text-left">当前水位：</div>
+            <div class="flex-1 text-right">
+                <% if (VarietyValue > 0) { %>
+                    <em class="text-red"><%= WaterValue %></em>m 
+                    <span class="text-red">↑</span>
+                <% } else if (VarietyValue < 0) { %>
+                    <em class="text-blue"><%= WaterValue %></em>m 
+                    <span class="text-blue">↓</span>
+                <% } else { %>
+                    <em><%= WaterValue %></em>m
+                <% } %>
+            </div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">当前流量：</div>
+            <div class="flex-1 text-right"> <em><%= Flow.toFixed(2) %></em>m³/s</div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">今日用水总量：</div>
+            <div class="flex-1 text-right"><em><%= DayWater.toFixed(2) %></em>万m³</div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">采集时间：</div>
+            <div class="flex-1 text-right datetime">
+                <%= Md %>
+            </div>
+        </div>
+    </div>
+    <div class="line-dotted"></div>
+    <div class="list-block-footer clearfix">
+        <div class="btn pull-right">查看详情</div>
+    </div>
+</div>

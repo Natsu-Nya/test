@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>个人中心</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="../css/aui.css" /> -->
+    <script type="text/javascript" src="../script/lib/flexible.js"></script>
+    <!-- <link rel="stylesheet" type="text/css" href="../css/aui-pull-refresh.css" /> -->
+    <link rel="stylesheet" type="text/css" href="../css/lib/mint-ui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/css/frm_personalcenter.css" />
+</head>
+
+<body>
+    <div id="personalCenter" v-cloak>
+        <div class="header-box" id="header">
+            <div class="h-content" >
+                <div class="h-content-txt">
+                    个人中心
+                    <span class="moreSelect">
+                        <img src="../image/personal-more.png" alt="">
+                    </span>
+                </div>
+            </div>
+            <div class="h-accountInfo">
+                <div class="h-nickname">
+                    <img src="../image/user-avatar.png" alt="用户头像" class="user-avatar">
+                    <span class="nickname-txt">
+                        {{userinfo.Name}}
+                        <!-- <mt-button type="primary" plain class="resetBtn">管理员</mt-button> -->
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="principal">
+            负责工程：大科尔其木输水渠
+        </div>
+        <div class="content">
+            <ul>
+                <li @click="openPersonalSetPage"><img src="../image/basic-msg.png" alt="" class="img-icon">基本资料<span class="rightArrow"></span></li>
+                <li @click="receiveMsg"><img src="../image/receive-msg.png" alt="" class="img-icon">消息接收设置<span class="rightArrow"></span></li>
+                <li @click="receiveMsg"><img src="../image/contact-us.png" alt="" class="img-icon">关于我们<span class="rightArrow"></span></li>
+            </ul>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/lib/api.js"></script>
+<script type="text/javascript" src="../script/lib/vue.min.js"></script>
+<script src="../script/lib/mint-ui.js"></script>
+<!-- <script type="text/javascript" src="../script/aui-toast.js"></script>
+<script type="text/javascript" src="../script/aui-pull-refresh.js"></script> -->
+<script type="text/javascript" src="../script/wj-framework.js"></script>
+<script type="text/javascript" src="../script/wj-ajax.js"></script>
+<script type="text/javascript">
+    ////更新dom属性
+    // var contenttopheight = 0;
+    //
+    // function upadtedocument() {
+    //     var searchheaderheight = $api.cssVal($api.dom('#topBox'), 'height').replace("px", "");
+    //     contenttopheight = parseInt(searchheaderheight) + 10; //注意留10个间距
+    //     var contentheight = $api.cssVal($api.dom('#content'), 'height').replace("px", "");
+    //     var pointheight = $api.cssVal($api.dom('#section'), 'height').replace("px", ""); //获取预置点高度
+    //     var videoheight = api.winHeight / 3;
+    //     var sectiontopheight = contenttopheight + videoheight;
+    //     if (myvue && myvue.videoData && myvue.videoData.length > 0) {
+    //         document.getElementById('section').style.top = sectiontopheight + 'px';
+    //     } else {
+    //         document.getElementById('section').style.top = parseInt(searchheaderheight) + 'px'; //没有数据时的高度
+    //     }
+    // }
+    //
+    // function RefreshData() {
+    //     myvue.loaddata(true, '刷新中...', true);
+    // }
+    //
+    // var myvue;
+    // {
+    //   divider: true,
+    //   content: '-',
+    //   className: 'slot2'
+    // },
+    // var vm=new Vue({
+    //     el:'#personalCenter',
+    //     data:{
+    //         isloaderror: false, //是否加载异常
+    //         loaderrortype: 0, //加载异常类型,1:工程加载异常,2.闸门加载异常
+    //         finishinitvideo: false,
+    //
+    //         projectData:[],
+    //         zmData:[],
+    //         listVideoStation:[],
+    //         userinfo: {
+    //             AccountName: '-',
+    //             Name: '-',
+    //             Mobile: '-',
+    //             Organization: '-',
+    //             PollingNum: '-',
+    //             ReportErrorNum: '-',
+    //             SolveErrorNum: '-',
+    //             UserRoles: ['-']
+    //         },
+    //         curtvideodata:true,//视频是否有值
+    //     },
+    //     methods:{
+    //         openPersonalSetPage :function(){}
+    //     }
+    // })
+    var vm;
+    apiready = function() {
+        var contenttopheight = 0;
+        // var contenttopheight = $api.cssVal($api.dom('#addressView'), 'height').replace("px", "");
+        // var pageParam=api.pageParam.name;
+        // console.log(JSON.stringify(pageParam));
+        api.setStatusBarStyle({
+            style: 'light',
+            color: '#1875F0'
+        });
+        var header = $api.byId('personalCenter');
+        $api.fixStatusBar(header);
+        vm=new Vue({
+            el:'#personalCenter',
+            data:{
+                isloaderror: false, //是否加载异常
+                loaderrortype: 0, //加载异常类型,1:工程加载异常,2.闸门加载异常
+
+                userinfo: {
+                    AccountName: '-',
+                    Name: '-',
+                    Mobile: '-',
+                    Organization: '-',
+                    PollingNum: '-',
+                    ReportErrorNum: '-',
+                    SolveErrorNum: '-',
+                    UserRoles: ['-']
+                },
+
+                curtvideodata:true,//视频是否有值
+            },
+            mounted:function(){
+                this.getAccountInfo();
+            },
+            methods:{
+                getAccountInfo: function() {//获取用户信息
+                    var that = this;
+                    that.$indicator.open('加载中...');
+                    wjget("AppAccount/GetAccountInfo", function(ret, err) {
+                        that.$indicator.close();
+                        if (ret) {
+                            if (ret.Code == 200 && ret.Data) {
+                                if (ret.Data) {
+                                    // that.listrole = ret.Data.UserRoles;
+                                    // that.userinfo.Name = ret.Data.Name;
+                                    // that.userinfo.AccountName = ret.Data.AccountName;
+                                    // that.userinfo.Mobile = ret.Data.Mobile;
+                                    // that.userinfo.Organization = ret.Data.Organization;
+                                    // that.userinfo.PollingNum = ret.Data.PollingNum;
+                                    // that.userinfo.ReportErrorNum = ret.Data.ReportErrorNum;
+                                    // that.userinfo.SolveErrorNum = ret.Data.SolveErrorNum;
+                                    that.userinfo=ret.Data;
+
+                                    // if (that.listrole && that.listrole.length > 0) {
+                                    //     that.userinfo.Role = that.listrole.join(",");
+                                    // }
+                                }
+                            } else {
+                                api.alert({
+                                    msg: '获取数据失败!'
+                                });
+                            }
+                        } else {
+                            api.alert({
+                                msg: '网络异常,请刷新!'
+                            });
+                        }
+                    });
+                },
+                openPersonalSetPage:function(){//个人设置页面
+                    var that=this;
+                    var dataStr=JSON.stringify(that.userinfo);
+                    api.openFrame({
+                        name: 'frm_personal_set',//'win_personal_set',
+                        url: 'frm_personal_set.html',//'win_personal_set.html',
+                        rect: {
+                            x: 0,
+                            y: 0,
+                            w: 'auto',
+                            h: 'auto'
+                        },
+                        bounces: false,
+                        slidBackEnabled: true,
+                        vScrollBarEnabled: false,
+                        pageParam: {
+                            data: dataStr
+                        }
+                    });
+                    api.execScript({
+                       name:'win_home',
+                       script:"pushframe('frm_personal_set')"
+                    });
+                },
+                getProjectData: function() { //获取工程列表
+                    var that = this;
+                    that.$indicator.open('加载中...');
+                    wjget("AppGate/GetListWH_ProjectByUser", function(ret, err) {
+                        that.$indicator.close();
+                        if (ret) {
+                            if (ret.Code == 200 && ret.Data) {
+                                that.isloaderror = false;
+                                // that.projectData = ret.Data;
+                                if (ret.Data.length) {
+                                    // that.ProjectId = that.projectData[0].ProjectId;
+                                    that.projectData = ret.Data;
+                                    that.loadData(ret.Data[0].ProjectId);
+                                    // var arrResult=[];
+                                    // that.projectData.forEach(function(item,index){
+                                    //     arrResult.push(item.Name)
+                                    // })
+                                    // console.log(arrResult);
+                                    // that.getInviterFirst(arrResult);
+                                }else{
+                                    that.projectData=[];
+                                }
+                            } else {
+                                that.isloaderror = true;
+                                that.loaderrortype = 1;
+                                api.alert({
+                                    msg: '工程列表加载失败!'
+                                });
+                            }
+                        } else {
+                            that.isloaderror = true;
+                            that.loaderrortype = 1;
+                            api.alert({
+                                msg: '网络异常,请重新加载!'
+                            });
+                        }
+                    });
+                },
+                loadData: function(paramsProjectId) { //获取闸门列表
+                    var that = this;
+                    if (!paramsProjectId) return;
+                    // that.finishinitvideo = false; //注意重置摄像头初始化标志，切换工程可能导致摄像头崩溃
+                    that.$indicator.open('加载中...');
+
+                    wjget("AppVideo/GetListVideoStationGroupByProjectId?ProjectId=" + paramsProjectId, function(ret, err) {
+                        that.$indicator.close();
+                        if (ret) {
+                            if (ret.Code == 200 && ret.Data) {
+                                that.isloaderror = false;
+                                // that.videoData = [];
+                                if (ret.Data&&ret.Data[0]) {
+                                    for(var i=0;i<ret.Data.length;i++){
+                                        that.zmData.push(ret.Data[i]);
+                                        // var result=ret.Data[i].listVideoStation;
+                                        // for(var j=0;j<result.length;j++){
+                                        //     that.zmData.push(result[j]);
+                                        // }
+                                    }
+                                    that.listVideoStation=ret.Data[0].listVideoStation;
+                                    // that.curzmDataindex = 0; //默认第一个
+                                    // that.tabSelect();
+                                } else {
+                                    that.listVideoStation=that.zmData = [];
+                                }
+
+                            } else {
+                                that.isloaderror = true;
+                                that.loaderrortype = 2;
+                                api.alert({
+                                    msg: '数据加载失败!'
+                                });
+                            }
+                        } else {
+                            that.isloaderror = true;
+                            that.loaderrortype = 2;
+                            api.alert({
+                                msg: '网络异常,请重新加载!'
+                            });
+                        }
+                    });
+                },
+                receiveMsg:function(){
+                    this.$toast({
+                        message: '功能暂未开放',
+                        iconClass:'mintui mintui-field-warning',
+                        duration: 2000
+                    });
+                }
+            }
+        })
+
+
+
+
+
+        // var toast = new auiToast();
+        // var logininfo = $api.getStorage('logininfo');
+        // var username = logininfo.UserName;
+        // var videoPlayer = api.require('videoPlayer');
+        // var videoPlayer2 = api.require('videoPlayer');
+        // ////处理业务
+        // myvue = new Vue({
+        //     el: '#content',
+        //     data: {
+        //         isloaderror: false, //是否加载异常
+        //         loaderrortype: 0, //加载异常类型,1:工程加载异常,2.闸门加载异常
+        //         finishinitvideo: false,
+        //         projectData: [],
+        //         ProjectId: '',
+        //         zmData: [], //闸门分组
+        //         curzmDataindex: 0, //当前选择的闸门组
+        //         videoGroupData: [], //视频分组
+        //         curtVideoGroupIndex: 0, //
+        //         videoData: [], //预置点
+        //         videoShowindex: 0,
+        //         curtPointData: [], //当前播放预置点
+        //         curtvideodata: {} //当前播放摄像头数据
+        //     },
+        //     filters: {
+        //         dateformat: function(value) {
+        //             return formatDateFormat(value, 'yyyy-MM-dd').replace(/-/g, '.');
+        //         }
+        //     },
+        //     methods: {
+        //         reloaddata: function() {
+        //             //重新加载数据
+        //             if (this.loaderrortype === 1) {
+        //                 this.getProjectData();
+        //             } else if (this.loaderrortype === 2) {
+        //                 this.loaddata(false);
+        //             }
+        //         },
+        //         getProjectData: function() { //获取工程列表
+        //             var that = this;
+        //             toast.loading({
+        //                 title: "加载中...",
+        //                 duration: 20000 //等待20秒
+        //             });
+        //             wjget("AppGate/GetListWH_ProjectByUser", function(ret, err) {
+        //                 toast.hide();
+        //                 if (ret) {
+        //                     //console.log(JSON.stringify(ret))
+        //                     if (ret.Code == 200 && ret.Data) {
+        //                         that.isloaderror = false;
+        //                         that.projectData = ret.Data;
+        //                         if (that.projectData.length) {
+        //                             that.ProjectId = that.projectData[0].ProjectId;
+        //                             that.loaddata(true);
+        //                         }
+        //                     } else {
+        //                         that.isloaderror = true;
+        //                         that.loaderrortype = 1;
+        //                         api.alert({
+        //                             msg: '工程列表加载失败!'
+        //                         });
+        //                     }
+        //                 } else {
+        //                     that.isloaderror = true;
+        //                     that.loaderrortype = 1;
+        //                     api.alert({
+        //                         msg: '网络异常,请重新加载!'
+        //                     });
+        //                 }
+        //             });
+        //         },
+        //         projectChange: function() {
+        //             this.curzmDataindex = 0; //默认第一个
+        //             this.loaddata(true);
+        //         },
+        //         fullScreenvideoPlay: function(data) {
+        //             var that = this;
+        //             videoPlayer2.play({
+        //                 rect: {
+        //                     x: 0,
+        //                     y: 0,
+        //                     w: api.winWidth,
+        //                     h: api.winHeight
+        //                 },
+        //                 //fixedOn: 'frame2', //必须设置，否则会默认贴在window上，导致全屏显示
+        //                 path: data.VideoUrl,
+        //                 //path: 'http://171.221.202.126:6709/ncg00/rtsp://192.168.0.169:557/pag://192.168.0.169:7302:001086:0:MAIN:TCP?cnid=1&pnid=0/live.m3u8?ncgMode=0&reqAuthIdentify=MagMedia', //（可选项）字符串类型；文档的路径，支持网络和本地（fs://）路径；默认：未传值时不播放
+        //                 //在 android 平台上不支持 widget://
+        //                 autoPlay: true, //（可选项）布尔类型；打开时是否自动播放；默认：true（自动播放）
+        //                 autorotation: false //是否自动旋转
+        //             }, function(ret, err) {
+        //                 if (ret) {
+        //                     //恢复原视频播放
+        //                     that.videoPlay(that.curtvideodata);
+        //                 } else {
+        //                     alert('视频加载失败！'); //JSON.stringify(err)
+        //                 }
+        //             });
+        //         },
+        //         videoPlay: function(data) {
+        //             var that = this;
+        //             this.curtvideodata = data;
+        //             videoPlayer.open({
+        //                 rect: {
+        //                     x: 0,
+        //                     y: contenttopheight,
+        //                     w: api.winWidth,
+        //                     h: api.winHeight / 3
+        //                 },
+        //                 bg: '#555',
+        //                 fixedOn: 'frame2', //必须设置，否则会默认贴在window上，导致全屏显示
+        //                 path: data.VideoUrl,
+        //                 // coverImg:'widget://image/loading_more.gif',
+        //                 //path: 'http://171.221.202.126:6709/ncg00/rtsp://192.168.0.169:557/pag://192.168.0.169:7302:001086:0:MAIN:TCP?cnid=1&pnid=0/live.m3u8?ncgMode=0&reqAuthIdentify=MagMedia', //（可选项）字符串类型；文档的路径，支持网络和本地（fs://）路径；默认：未传值时不播放
+        //                 //在 android 平台上不支持 widget://
+        //                 autoPlay: true //（可选项）布尔类型；打开时是否自动播放；默认：true（自动播放）
+        //             }, function(ret, err) {
+        //                 if (ret) {
+        //                     //console.log(JSON.stringify(ret));
+        //                     videoPlayer.removeEventListener({
+        //                         name: 'click'
+        //                     });
+        //
+        //                     videoPlayer.addEventListener({
+        //                         name: 'click'
+        //                     }, function(ret, err) {
+        //                         videoPlayer.close(); //注意此处要关闭，上面才能恢复播放
+        //                         that.fullScreenvideoPlay(data);
+        //                     });
+        //                 } else {
+        //                     alert('视频加载失败！'); //JSON.stringify(err)
+        //                 }
+        //             });
+        //
+        //         },
+        //         tabSelect: function() {
+        //             if (this.zmData && this.zmData.length > 0 && this.zmData.length > this.curzmDataindex) {
+        //                 var listVideoStation = this.zmData[this.curzmDataindex].listVideoStation;
+        //                 if (listVideoStation && listVideoStation.length > 0) {
+        //                     this.videoGroupData = listVideoStation;
+        //                     this.curtVideoGroupIndex = 0;
+        //                     this.selectChange();
+        //                 } else {
+        //                     this.videoGroupData = [];
+        //                     videoPlayer.close();
+        //                 }
+        //             } else {
+        //                 this.videoGroupData = [];
+        //                 videoPlayer.close();
+        //             }
+        //         },
+        //         selectChange: function() {
+        //             var that = this;
+        //             var data1 = this.videoGroupData[this.curtVideoGroupIndex];
+        //             videoPlayer.close();
+        //             this.videoShowindex = 0;
+        //             if (data1) {
+        //                 if (data1.listVideoPoint && data1.listVideoPoint.length > 0) {
+        //                     this.videoData = data1.listVideoPoint;
+        //                     if (data1.VideoUrl) {
+        //                         ////第一次要延迟1秒打开，否则会崩溃
+        //                         if (!that.finishinitvideo) {
+        //                             setTimeout(function() {
+        //                                 that.videoPlay(data1);
+        //                                 that.pointSelect(this.videoShowindex); //跳转到预置点
+        //                                 that.finishinitvideo = true;
+        //                             }, 1000);
+        //                         } else {
+        //                             that.videoPlay(data1);
+        //                             that.pointSelect(this.videoShowindex); //跳转到预置点
+        //                         }
+        //                     }
+        //                 } else {
+        //                     this.videoData = [];
+        //                     if (data1.VideoUrl) {
+        //                         ////第一次要延迟1秒打开，否则会崩溃
+        //                         if (!that.finishinitvideo) {
+        //                             setTimeout(function() {
+        //                                 that.videoPlay(data1);
+        //                                 that.finishinitvideo = true;
+        //                             }, 1000);
+        //                         } else {
+        //                             this.videoPlay(data1); //注意此处也要打开默认摄像头
+        //                         }
+        //                     }
+        //                 }
+        //             } else {
+        //                 this.videoData = [];
+        //                 videoPlayer.close();
+        //             }
+        //         },
+        //         pointSelect: function(index) {
+        //             if (this.videoData.length > index) {
+        //                 this.toPreset(this.videoData[index]);
+        //             }
+        //         },
+        //         toPreset: function(data) { //转到预置点
+        //             var that = this;
+        //             //console.log(JSON.stringify(data));
+        //             wjbaseget($api.getStorage('videoserviceurl'), "video/ToPreset?cameraCode=" + data.CamereID + "&presetcode=" + data.Code, function(ret, err) {
+        //                 if (ret && ret.data) {
+        //                     //console.log(JSON.stringify(ret));
+        //                 } else if (ret && ret.code == 500) {
+        //                     api.alert({
+        //                         msg: ret.message
+        //                     });
+        //                 }
+        //             })
+        //
+        //         },
+        //         loaddata: function(isrefresh, title, ishidetoast) { //获取闸门列表
+        //             var that = this;
+        //             if (!this.ProjectId) return;
+        //             that.finishinitvideo = false; //注意重置摄像头初始化标志，切换工程可能导致摄像头崩溃
+        //             if (!ishidetoast) {
+        //                 toast.loading({
+        //                     title: title || "加载中...",
+        //                     duration: 20000 //等待20秒
+        //                 });
+        //             }
+        //             wjget("AppVideo/GetListVideoStationGroupByProjectId?ProjectId=" + that.ProjectId, function(ret, err) {
+        //                 toast.hide();
+        //                 if (ret) {
+        //                     if (ret.Code == 200 && ret.Data) {
+        //                         that.isloaderror = false;
+        //                         that.videoData = [];
+        //                         if (ret.Data && ret.Data) {
+        //                             that.zmData = ret.Data;
+        //                             that.curzmDataindex = 0; //默认第一个
+        //                             that.tabSelect();
+        //                         } else {
+        //                             that.zmData = [];
+        //                         }
+        //                         if (!that.zmData.lenght) {
+        //                             videoPlayer.close();
+        //                         }
+        //
+        //                     } else {
+        //                         if (!ishidetoast) {
+        //                             that.isloaderror = true;
+        //                             that.loaderrortype = 2;
+        //                             api.alert({
+        //                                 msg: '数据加载失败!'
+        //                             });
+        //                         }
+        //                     }
+        //                 } else {
+        //                     if (!ishidetoast) {
+        //                         that.isloaderror = true;
+        //                         that.loaderrortype = 2;
+        //                         api.alert({
+        //                             msg: '网络异常,请重新加载!'
+        //                         });
+        //                     }
+        //                 }
+        //             });
+        //         },
+        //     },
+        //     created: function() {
+        //         this.getProjectData();
+        //     },
+        //     mounted: function() {
+        //         var that = this;
+        //         upadtedocument();
+        //         ////实现下拉刷新
+        //         //PullToRefresh(this);
+        //     },
+        //     updated: function() {
+        //         ////注意计算高度应该在数据绑定之后，因为没数据时dom高度是0
+        //         upadtedocument();
+        //     }
+        // });
+    };
+</script>
+
+</html>

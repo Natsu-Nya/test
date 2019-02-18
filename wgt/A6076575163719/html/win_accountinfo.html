@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>账号信息</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui-pull-refresh.css" />
+    <link rel="stylesheet" type="text/css" href="../css/wj-framework.css" />
+    <style>
+        #aui-header {
+            background-image: url('../image/accoutbg.png');
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+        }
+
+        .roletext {
+            border-radius: 4px;
+            padding: 4px 6px;
+            color: #fff;
+            background-color: rgb(85, 85, 85);
+            margin: 2px;
+        }
+
+        .left {
+            flex: none;
+            width: 120px;
+        }
+
+        .right {
+            margin-left: 10px;
+            flex: 1;
+        }
+
+        .dataform {
+            border-top: 1px solid rgb(191, 191, 191);
+            line-height: 2rem;
+            font-size: 0.8rem;
+            padding: 5px 0px;
+        }
+
+        .labtitle {
+            color: rgb(142, 142, 142);
+            margin-left: 30px;
+        }
+
+        .labcontent {
+            margin-left: 20px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="content" v-cloak>
+        <section class="aui-refresh-content" style="position: absolute;top: 0px;bottom: 0px;left: 0px;right: 0px;">
+            <header id="aui-header" class="aui-bar aui-bar-nav" style="min-height:200px;">
+                <a class="aui-pull-left aui-btn" tapmode onclick="closeWin()">
+                    <span class="aui-iconfont aui-icon-left">返回</span>
+                </a>
+                <div style="margin-top:3rem;text-align:left;display: flex;">
+                    <div class="left">
+                        <img style="width:80px;height:80px;margin-left:40px;" src="../image/account.png" />
+                    </div>
+                    <div class="right">
+                        <div style="font-size:1rem;line-height:50px;">工作人员</div>
+                        <div style="font-size:0.7rem;line-height:0.7rem;">
+                            <span class="roletext" v-for="item in listrole">{{item}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top:20px;text-align:left;display: flex;font-size:0.8rem;">
+                    <div style="flex: 1;text-align:center;">
+                        <span>巡检次数:{{userinfo.PollingNum}}</span>
+                    </div>
+                    <span style="border-right: 1px solid #fff;width:1px;margin-bottom: 10px;margin-top: 10px;"></span>
+                    <div style="flex: 1;text-align:center;">
+                        上报问题:{{userinfo.ReportErrorNum}}
+                    </div>
+                    <span style="border-right: 1px solid #fff;width:1px;margin-bottom: 10px;margin-top: 10px;"></span>
+                    <div style="flex: 1;text-align:center;">
+                        处理完成:{{userinfo.SolveErrorNum}}
+                    </div>
+                </div>
+            </header>
+            <div style="margin-top:10px;">
+                <div class="dataform">
+                    <span class="labtitle">帐号</span><span class="labcontent">{{userinfo.AccountName}}</span>
+                </div>
+                <div class="dataform">
+                    <span class="labtitle">姓名</span><span class="labcontent">{{userinfo.Name}}</span>
+                </div>
+                <div class="dataform">
+                    <span class="labtitle">电话</span><span class="labcontent">{{userinfo.Mobile}}</span>
+                </div>
+                <div class="dataform" style="display: flex;">
+                    <span class="labtitle" style="flex: none;">部门</span>
+                    <span class="labcontent" style="flex: 1;">{{userinfo.Organization}}</span>
+                </div>
+                <div class="dataform" style="display: flex;">
+                    <span class="labtitle" style="flex: none;">角色</span>
+                    <span class="labcontent" style="flex: 1;">{{userinfo.Role}}</span>
+                </div>
+            </div>
+            <div v-on:click="exit" style="font-size: 1rem;margin:20px;width:auto;background-color:rgb(222,29,20) !important;height: 2.5rem;line-height:2.5rem;" class="aui-btn aui-btn-info aui-btn-block aui-btn-sm">退出登录</div>
+        </section>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/aui-toast.js"></script>
+<script type="text/javascript" src="../script/aui-pull-refresh.js"></script>
+<script type="text/javascript" src="../script/aui-scroll.js"></script>
+<script type="text/javascript" src="../script/wj-framework.js"></script>
+<script type="text/javascript" src="../script/wj-ajax.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        $api.fixStatusBar($api.dom('header'));
+        api.setStatusBarStyle({
+            style: 'dark',
+            color: '#6ab494'
+        });
+        var toast = new auiToast();
+        ////处理业务
+        new Vue({
+            el: '#content',
+            data: {
+                userinfo: {
+                    AccountName: '-',
+                    Name: '-',
+                    Mobile: '-',
+                    Organization: '-',
+                    Role: '-',
+                    PollingNum: '-',
+                    ReportErrorNum: '-',
+                    SolveErrorNum: '-'
+                },
+                listrole: ['-']
+            },
+            methods: {
+                loaddata: function() {
+                    var that = this;
+                    //获取用户信息
+                    wjget("AppAccount/GetAccountInfo", function(ret, err) {
+                        toast.hide();
+                        if (ret) {
+                            if (ret.Code == 200 && ret.Data) {
+                                if (ret.Data) {
+                                    that.listrole = ret.Data.UserRoles;
+                                    that.userinfo.Name = ret.Data.Name;
+                                    that.userinfo.AccountName = ret.Data.AccountName;
+                                    that.userinfo.Mobile = ret.Data.Mobile;
+                                    that.userinfo.Organization = ret.Data.Organization;
+                                    that.userinfo.PollingNum = ret.Data.PollingNum;
+                                    that.userinfo.ReportErrorNum = ret.Data.ReportErrorNum;
+                                    that.userinfo.SolveErrorNum = ret.Data.SolveErrorNum;
+                                    if (that.listrole && that.listrole.length > 0) {
+                                        that.userinfo.Role = that.listrole.join(",");
+                                    }
+                                }
+                            } else {
+                                api.alert({
+                                    msg: '获取数据失败,请下拉重新获取!'
+                                });
+                            }
+                        } else {
+                            api.alert({
+                                msg: '网络异常,请下拉重新获取!'
+                            });
+                        }
+                    });
+                },
+                exit: function() {
+                    var that = this;
+                    //跳转到登录
+                    api.sendEvent({
+                        name: 'viewappear',
+                        extra: {
+                            toview: 'login',
+                            fromview: 'home'
+                        }
+                    });
+
+                    api.closeWin();
+                }
+            },
+            created: function() {
+                this.loaddata();
+            },
+            mounted: function() {
+                var that = this;
+                ////实现下拉刷新
+                PullToRefresh(this);
+            }
+        });
+    };
+
+
+    function closeWin() {
+        api.closeWin();
+    }
+    //apiready();
+</script>
+
+</html>

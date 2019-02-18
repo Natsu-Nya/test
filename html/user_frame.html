@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>user frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+        background-color: transparent;
+    }
+
+    .main {
+        background-color: #fff;
+    }
+
+    .avatar {
+        width: 100%;
+        height: 90px;
+        line-height: 90px;
+        padding: 0px 15px;
+        margin-bottom: 5px;
+        box-sizing: border-box;
+        padding-left: 120px;
+    }
+
+    .avatar .photo {
+        width: 90px;
+        height: 90px;
+        background-color: #FAF8F6;
+        text-align: center;
+        border-radius: 4px;
+        position: absolute;
+        left: 15px;
+        z-index: 9;
+    }
+
+    .avatar .user {
+        height: 90px;
+        padding-top: 20px;
+
+        box-sizing: border-box;
+        position: absolute;
+        left: 120px;
+    }
+
+    .avatar .photo img {
+        width: 60px;
+        height: 83px;
+        position: relative;
+        top: 7px;
+    }
+
+    .avatar .name {
+        color: #222328;
+        font-size: 19px;
+    }
+
+    .avatar .job {}
+
+    .split-line {
+        height: 10px;
+        background-color: #FCFCFD;
+    }
+
+    .list-block {
+        border-bottom: 1px solid #F5F3F1;
+        border-top: none;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="main">
+        <div class="avatar">
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/underscore-min.js"></script>
+<script type="text/javascript" src="../script/templates.js"></script>
+<script type="text/javascript">
+var $container = document.querySelector('#main');
+
+apiready = function() {
+    loadData();
+};
+
+function loadData() {
+    app.ajax({
+        url: app.urls.accountInfo,
+        data: {},
+        template: JST.accountInfo,
+        debug: false,
+        template_data: function (item, data, index) {
+            var orgArr = item.Organization.split(',');
+            if (orgArr && orgArr.length > 0) {
+                item.MainOrganization = orgArr[0];
+            }
+            return item;
+        },
+        success: function(data, html) {
+            api.hideProgress();
+            app.refreshHeaderLoadDone();
+            $container.innerHTML = html;
+        }
+    });
+}
+
+function toggleAllOrganization() {
+    var $organization = document.querySelector('#organization');
+    $organization.classList.toggle("hide");
+}
+
+function openSettingWindow(name, mobile) {
+    api.openWin({
+        name: 'user_setting',
+        url: 'user_setting.html',
+        pageParam: {
+            name: name,
+            mobile: mobile
+        }
+    });
+}
+</script>
+
+</html>

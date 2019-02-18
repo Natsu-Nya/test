@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>gate list frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/glyphicons.css" />
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+    }
+
+    .list-block .photo img {
+        width: 119px;
+        height: 119px;
+
+        border: 1px solid rgba(228, 231, 240, 1);
+        border-radius: 1px;
+        box-sizing: border-box;
+    }
+
+    .list-block .photo1 {
+        height: 24px;
+        line-height: 24px;
+    }
+
+    .split-line {
+        height: 11px;
+        background-color: #FCFCFD;
+    }
+
+    .list-block .media {
+        padding: 0px;
+        margin: 0px;
+        border: none;
+    }
+
+    .list-block .media .row {
+        height: 24px;
+        line-height: 24px;
+    }
+
+    .list-block-header {
+        position: relative;
+    }
+
+    .agc {
+        position: absolute;
+        right: 0px;
+        top: 0px;
+
+        height: 22px;
+        line-height: 22px;
+
+        vertical-align: top;
+    }
+
+    #debug-console {
+        border: 1px solid red;
+        box-sizing: border-box;
+        width: 100%;
+    }
+    </style>
+</head>
+
+<body class="flex-box-v">
+    <div id="search" tapmode onclick="openSearchWindow();">
+        <div class="search-warp">
+            <input type="text" placeholder="输入关键字名称查找" readonly="readonly">
+        </div>
+    </div>
+    <div id="main">
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/searchbar.js"></script>
+<script type="text/javascript" src="../script/underscore-min.js"></script>
+<script type="text/javascript" src="../script/templates.js"></script>
+<script type="text/javascript">
+var searchBar = null,
+    gateData = null,
+    $container = document.querySelector('#main');
+
+apiready = function() {
+    var UISearchBar = api.require('UISearchBar');
+    searchBar = new LDSearchBar(UISearchBar, '输入关键字名称查找', function(ret) {
+        loadData(ret.text);
+    });
+
+    app.setRefreshHeaderInfo(loadData);
+    loadData();
+};
+
+function loadData(name) {
+    app.ajax({
+        url: app.urls.gate_list,
+        data: {
+            name: name || ''
+        },
+        template: JST.gate_list,
+        debug: false,
+        template_data: function(row) {
+            return row;
+        },
+        success: function(data, html) {
+            api.hideProgress();
+            app.refreshHeaderLoadDone();
+            $container.innerHTML = html;
+            gateData = data;
+        }
+    });
+}
+
+function openUnitActionSheet() {
+    sheet.open();
+}
+
+function openSearchWindow() {
+    searchBar.open();
+}
+
+function openGroupFrames(gate_sn, name) {
+    var gateInfo = _.filter(gateData, function(item) { return item.gate_sn == gate_sn; });
+    api.openWin({
+        name: 'gate_detail',
+        url: 'gate_detail.html',
+        pageParam: {
+            id: gate_sn,
+            name: name,
+            gateInfo: gateInfo[0]
+        }
+    });
+}
+</script>
+
+</html>

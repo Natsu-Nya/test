@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>问题处理</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui-pull-refresh.css" />
+    <link rel="stylesheet" type="text/css" href="../css/wj-framework.css" />
+    <style>
+        * {
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            /* Firefox */
+            -webkit-box-sizing: border-box;
+            /* Safari */
+        }
+
+        .btnchoice {
+            border-radius: 4px;
+            padding: 4px 6px;
+            color: #fff;
+            background-color: rgb(12, 171, 221);
+        }
+
+        body {
+            background-color: #fff;
+            font-size: 0.8rem;
+        }
+
+        .aui-list .aui-list-item:active {
+            background-color: #fff;
+        }
+
+        .aui-list {
+            background-size: 0px !important;
+            background-image: none !important;
+        }
+
+        .aui-list .aui-list-item {
+            padding-left: 0px !important;
+        }
+
+        .aui-list .aui-list-item-inner {
+            padding-right: 0px !important;
+        }
+        /*.aui-list-item-input {
+            border: 1px solid #dddddd;
+            background: none;
+            border-radius: 4px;
+        }*/
+
+        .imgitempanel {
+            background-color: rgba(0, 0, 0, 0);
+            margin: 0px;
+            text-align: center;
+            position: relative;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .imgitempanel .imgitempanel2 {
+            /*padding: 10%;*/
+            position: relative;
+            color: #fff;
+        }
+
+        .imgitempanel2 {
+            height: 100%;
+        }
+
+        .imgitemremovepanel {
+            text-align: center;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 25%;
+            height: 25%;
+        }
+
+        .imgitempanel2 img {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .savebtn {
+            height: 2.5rem !important;
+            line-height: 2.5rem !important;
+            font-size: 0.8rem !important;
+            border-radius: 6px;
+        }
+        /*.aui-timeline-item-inner{
+          margin-left: 2.75rem !important;
+        }*/
+    </style>
+</head>
+
+<body>
+    <div id="content" v-cloak>
+        <section class="aui-refresh-content" style="position: absolute;top:0px;bottom: 0px;left: 0px;right: 0px;">
+            <div style="margin:0.75rem;margin-bottom:2.5rem;">
+                <div>
+                    <div style="overflow:hidden;">
+                        <span class="labletitleline" style="float:left;vertical-align: middle;display: inline-block;padding: 4px 0px;">问题描述</span>
+                    </div>
+                    <div style="margin-top:0.75rem;">
+                        <div class="aui-list-item-input" style="white-space:pre-line;">{{errorinfo.ContentRemark}}</div>
+                    </div>
+                    <div class="aui-content aui-margin-b-15 aui-margin-t-15">
+                        <ul class="aui-list aui-media-list">
+                            <li class="aui-list-item">
+                                <div class="aui-list-item-inner">
+                                    <div class="aui-row aui-row-padded">
+                                        <div class="aui-col-xs-3" v-for="(item,index) in listimage">
+                                            <div class="imgitempanel">
+                                                <div class="imgitempanel2">
+                                                    <img v-bind:src="getimage(item)" v-on:click="imgpreview(index)" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div v-if="errorinfo.AuditContent">
+                        <div style="overflow:hidden;">
+                            <span class="labletitleline" style="float:left;vertical-align: middle;display: inline-block;padding: 4px 0px;">审批描述</span>
+                        </div>
+                        <div style="margin-top:0.75rem;">
+                            <div class="aui-list-item-input" style="white-space:pre-line;">{{errorinfo.AuditContent}}</div>
+                        </div>
+                    </div>
+                </div>
+                <section class="aui-content" v-show="listsolve&&listsolve.length>0">
+                    <div style="overflow:hidden;">
+                        <span class="labletitleline" style="float:left;vertical-align: middle;display: inline-block;padding: 4px 0px;">问题处理</span>
+                    </div>
+                    <div class="aui-timeline" style="margin-top:10px;">
+                        <div class="aui-timeline-item-header" style="background-color:rgba(0,0,0,0);"></div>
+                        <div class="aui-timeline-item" v-for="(item,index) in listsolve">
+                            <div class="aui-timeline-item-label-icon" style="background-color:#03a9f4;">
+                                <i class="aui-iconfont aui-icon-correct text-light"></i>
+                            </div>
+                            <div class="aui-timeline-item-inner">
+                                <!-- rgb(70,190,227) style="color:#fff;" -->
+                                <div class="aui-card-list" style="background: rgb(253,253,253);border-radius: 4px;border:1px solid rgb(70, 190, 227);">
+                                    <div class="aui-card-list-header aui-border-b">
+                                        <div>{{item.DealingTime}}</div>
+                                    </div>
+                                    <div class="aui-card-list-content-padded" style="white-space:pre-line;">{{item.DealingRemark}}</div>
+                                    <div class="aui-card-list-content-padded">
+                                        <div class="aui-row aui-row-padded">
+                                            <div class="aui-col-xs-4" v-for="(imgitem,imgindex) in item.listDealingImage">
+                                                <div class="imgitempanel">
+                                                    <div class="imgitempanel2">
+                                                        <img v-bind:src="getimage(imgitem)" v-on:click="dealingimgpreview(item.listDealingImage,imgindex)" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </section>
+        <footer class="aui-bar aui-bar-tab aui-margin-t-15" v-if="1"><!-- errorinfo.ProcessStatus==0 -->
+            <div v-on:click="solveerror" class="aui-bar-tab-item  aui-text-white" tapmode style="width:auto;background-color:#e51c23">处理问题</div>
+            <div v-on:click="solvefinish" class="aui-bar-tab-item  aui-text-white" tapmode style="width:auto;background-color:#03a9f4">处理完成</div>
+        </footer>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/aui-toast.js"></script>
+<script type="text/javascript" src="../script/aui-pull-refresh.js"></script>
+<script type="text/javascript" src="../script/wj-framework.js"></script>
+<script type="text/javascript" src="../script/wj-ajax.js"></script>
+<script type="text/javascript">
+    var imageBrowser = null;
+
+    function openwin_adderrorsolve(data) {
+        api.openWin({
+            name: 'win_adderrorsolve',
+            url: 'win_adderrorsolve.html',
+            bounces: false,
+            slidBackEnabled: true,
+            vScrollBarEnabled: false,
+            pageParam: {
+                data: {
+                    LogItemId: data.LogItemId,
+                    ContentName: data.ContentName
+                }
+            }
+        });
+    };
+
+    ////更新dom属性
+    function upadtedocument() {
+        //注意在渲染后获取高度
+        var listimgitemplane = $api.domAll('.imgitempanel');
+        for (var i = 0; i < listimgitemplane.length; i++) {
+            var el = listimgitemplane[i];
+            var imgpanelheight = $api.cssVal(el, 'width');
+            $api.css(el, "height:" + imgpanelheight);
+        }
+    }
+
+    ////设置问题描述内容
+    function RefreshData() {
+        myvue.loaddata(true, '刷新中...', true);
+    }
+    var myvue;
+
+    apiready = function() {
+        var pageParamdata = api.pageParam.data; //接收传递的参数
+        var rootserviceurl = $api.getStorage('rootserviceurl');
+        imageBrowser = api.require('imageBrowser');
+        var toast = new auiToast();
+        ////处理业务
+        myvue = new Vue({
+            el: '#content',
+            data: {
+                listsolve: [],
+                errorinfo: {
+                    ContentRemark: ''
+                },
+                listimage: []
+            },
+            methods: {
+                getimage: function(item) {
+                    if (!item) {
+                        return "../image/noneimg.png";
+                    } else {
+                        return rootserviceurl + item; //+"?v="+new Date().getTime();
+                    }
+                },
+                dealingimgpreview: function(listimage, index) {
+                    var that = this;
+                    var activeIndex = index;
+                    var imageUrls = new Array();
+                    for (var i = 0; i < listimage.length; i++) {
+                        imageUrls.push(that.getimage(listimage[i]));
+                    }
+
+                    imageBrowser.openImages({
+                        showList: false,
+                        activeIndex: activeIndex,
+                        imageUrls: imageUrls
+                    });
+                },
+                imgpreview: function(index) {
+                    var that = this;
+                    var activeIndex = index;
+                    var imageUrls = new Array();
+                    for (var i = 0; i < that.listimage.length; i++) {
+                        imageUrls.push(that.getimage(that.listimage[i]));
+                    }
+
+                    imageBrowser.openImages({
+                        showList: false,
+                        activeIndex: activeIndex,
+                        imageUrls: imageUrls
+                    });
+                },
+                solveerror: function() {
+                    var that = this;
+                    openwin_adderrorsolve(pageParamdata);
+                },
+                solvefinish: function() {
+                    var that = this;
+                    toast.loading({
+                        title: "保存中...",
+                        duration: 20000 //等待20秒
+                    });
+                    wjget("AppPolling/FinishErrorDealing?LogItemId=" + pageParamdata.LogItemId, function(ret, err) {
+                        toast.hide();
+                        if (ret) {
+                            if (ret.Code == 200 && ret.Data) {
+                                api.alert({
+                                    msg: '保存成功!'
+                                }, function() {
+                                    that.loaddata(true);
+                                    var jsfun = "RefreshData();";
+                                    api.execScript({
+                                        name: 'win_spsolve',
+                                        frameName: 'frm_spsolve',
+                                        script: jsfun
+                                    });
+                                });
+                            } else {
+                                api.alert({
+                                    msg: '保存失败!'
+                                });
+                            }
+                        } else {
+                            api.alert({
+                                msg: '网络异常,请重新操作!'
+                            });
+                        }
+                    });
+
+                },
+                loaddata: function(isrefresh, title, ishidetoast) {
+                    var that = this;
+                    if (!ishidetoast) {
+                        toast.loading({
+                            title: title || "加载中...",
+                            duration: 20000 //等待20秒
+                        });
+                    }
+                    wjget("AppPolling/GetLogItemDetail?LogItemId=" + pageParamdata.LogItemId, function(ret, err) {
+                        toast.hide();
+                        console.log(JSON.stringify(ret))
+                        if (ret) {
+                            if (ret.Code == 200 && ret.Data) {
+                                that.errorinfo = ret.Data;
+                                if (ret.Data.listContentImage) {
+                                    that.listimage = ret.Data.listContentImage;
+                                }
+                                if (ret.Data.listErrorDealing) {
+                                    that.listsolve = ret.Data.listErrorDealing;
+                                }
+                            } else {
+                                if (!ishidetoast) {
+                                    api.alert({
+                                        msg: '数据加载失败!'
+                                    });
+                                }
+                            }
+                        } else {
+                            if (!ishidetoast) {
+                                api.alert({
+                                    msg: '网络异常,请重新加载!'
+                                });
+                            }
+                        }
+                    });
+                }
+            },
+            created: function() {
+                this.loaddata(true);
+            },
+            mounted: function() {
+                var that = this;
+                ////实现下拉刷新
+                PullToRefresh(this);
+                upadtedocument();
+            },
+            updated: function() {
+                upadtedocument();
+            }
+        });
+    };
+
+    //  apiready();
+</script>
+
+</html>

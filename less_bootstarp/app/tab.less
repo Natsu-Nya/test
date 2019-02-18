@@ -1,0 +1,41 @@
+.tab-warp {
+    width: 100%;
+    box-shadow: 0px 1px 0px 0px rgba(0, 0, 0, 0.1), 0px -1px 0px 0px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    padding: 10px 15px;
+
+    .tabs {
+        .flex-block(horizontal);
+
+        .list-unstyled();
+
+        margin-bottom: 0px;
+        height: 34px;
+        line-height: 34px;
+        background: rgba(255, 255, 255, 1);
+        border-radius: 3px;
+        border: 1px solid rgba(24, 117, 240, 1);
+
+        .tab-item {
+            .flex(1);
+            font-size: 14px;
+            text-align: center;
+            color: #1875F0;
+
+            &.active {
+                background: rgba(24, 117, 240, 1);
+                color: #FFFFFF;
+            }
+        }
+    }
+}
+
+.tab-content {
+    .tab-pane {
+        display: none;
+
+        &.active {
+            display: block;
+        }
+    }
+}

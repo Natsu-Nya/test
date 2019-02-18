@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>故障预警详情</title>
+    <link rel="stylesheet" type="text/css" href="../css/lib/mint-ui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/css/frm_earlywarndetail.css" />
+    <script type="text/javascript" src="../script/lib/flexible.js"></script>
+</head>
+<body>
+    <div id="earlywarndetail">
+        <!-- <header class="type1" id="header">
+            <ul>
+                <li class="type2">
+                    <div class="item-left" @click="goBack"></div>
+                    <div class="item-center">
+                        <div class="title">故障预警</div>
+                    </div>
+                    <div class="item-right" @click="backIndexPage">返回首页</div>
+                </li>
+            </ul>
+        </header> -->
+        <div class="warn-title">
+            <span class="warn-time">一周前</span>
+            <span class="warn-name">雨情预警</span>
+        </div>
+        <div class="warn-main">
+            <div class="warn-img">
+
+            </div>
+            <div class="warn-content">
+                <h3>托普铁热克雨量水位站</h3>
+                <div class="warn-msg">
+                    <span>水位：<i class="num">12</i>m</span>
+                    <span>水位预警：<i>警戒</i></span>
+                </div>
+                <div class="warn-msg">
+                    <div class="item-msg">
+                        <span>雨量：</span>
+                        <div class="water-wrap">
+                            <p><i class="num">15</i>mm(1H)</p>
+                            <p><i class="num">15</i>mm(1H)</p>
+                        </div>
+                    </div>
+                    <div class="msg-right">雨量预警：<i>警戒</i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/lib/api.js"></script>
+<script type="text/javascript" src="../script/lib/vue.min.js"></script>
+<script type="text/javascript" src="../script/lib/mint-ui.js"></script>
+<script type="text/javascript" src="../script/wj-ajax.js"></script>
+<script type="text/javascript" src="../script/wj-framework.js"></script>
+<script type="text/javascript">
+    function closeWin() {
+      api.closeWin();
+    }
+    apiready = function() {//处理业务
+        // var header = $api.byId('header');
+        // $api.fixStatusBar(header); //可以解决ios和一些安卓状态栏重贴问题
+        // var headerPos = $api.offset(header);
+        var vm=new Vue({
+            el:'#earlywarndetail',
+            data:{
+
+            },
+            methods:{
+                goBack:function(){
+                    api.closeFrame();
+                },
+                backIndexPage:function(){
+                    api.closeWin({
+                        name: 'win_earlywarn'
+                    });
+                }
+            }
+        })
+        api.setStatusBarStyle({
+            style: 'light',
+            color: '#1875F0'
+        });
+    };
+</script>
+
+</html>

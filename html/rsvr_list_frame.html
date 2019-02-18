@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>rsvr list frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/glyphicons.css" />
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+    }
+    </style>
+</head>
+
+<body class="flex-box-v">
+    <div id="search" tapmode onclick="openSearchWindow();">
+        <div class="search-warp">
+            <input id="inputSearch" type="text" placeholder="输入关键字名称查找" readonly="readonly">
+        </div>
+    </div>
+    <div id="filter">
+        <div class="filter-warp">
+            <div class="filter-item" tapmode onclick="openUnitActionSheet();">
+                <span id="unit"></span><span class="glyphicon glyphicon-triangle-bottom"></span>
+            </div>
+            <div class="filter-item"></div>
+            <div class="filter-item"></div>
+        </div>
+    </div>
+    <div id="main">
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/searchbar.js"></script>
+<script type="text/javascript" src="../script/underscore-min.js"></script>
+<script type="text/javascript" src="../script/templates.js"></script>
+<script type="text/javascript">
+var searchBar = null,
+    $container = document.querySelector('#main'),
+    sheet = app.unitActionSheet('#unit', function(selectedIndex, selectedValue, selectedItem) {
+        loadData();
+    });
+
+apiready = function() {
+    var UISearchBar = api.require('UISearchBar');
+    searchBar = new LDSearchBar(UISearchBar, '输入关键字名称查找', function(ret) {
+        loadData(ret.text);
+    });
+
+    app.setRefreshHeaderInfo(loadData);
+    loadData();
+};
+
+function loadData(name) {
+    var now = new Date();
+    now.setMinutes(now.getMinutes() - 20);
+
+    app.ajax({
+        url: app.urls.getListWH_Reservoir_RealByParam,
+        data: {
+            organizationId: sheet.getSelectedItem().Id,
+            name: name || ''
+        },
+        template: JST.rsvr_list,
+        debug: false,
+        template_data: function(row) {
+            if (row.ReportDate == '0001-01-01 00:00:00') {
+                row.devFaultState = true;
+            } else {
+                row.devFaultState = false;
+            }
+            return row;
+        },
+        sortBy: function (data) {
+            return _.sortBy(data, 'ReportDate').reverse();
+        },
+        success: function(data, html) {
+            api.hideProgress();
+            app.refreshHeaderLoadDone();
+            $container.innerHTML = html;
+        }
+    });
+}
+
+function openUnitActionSheet() {
+    sheet.open();
+}
+
+function openSearchWindow() {
+    searchBar.open();
+}
+
+function openGroupFrames(id, name, reportDate, deviceId, projectId) {
+    api.openWin({
+        name: 'rsvr_group',
+        url: 'rsvr_group.html',
+        pageParam: {
+            id: id,
+            name: name,
+            reportDate: reportDate,
+            deviceId: deviceId,
+            projectId: projectId
+        }
+    });
+}
+</script>
+
+</html>

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>rsvr detail frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/glyphicons.css" />
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+    }    
+    </style>
+</head>
+
+<body class="flex-box-v">
+    <div id="tab">
+        <div class="tab-warp">
+            <ul class="tabs list-unstyled">
+                <li class="tab-item active" tapmode data-toggle="rtdata">实时数据</li>
+                <li class="tab-item" tapmode data-toggle="rtchart">统计查询</li>
+            </ul>
+        </div>
+    </div>
+    <div class="tab-content">
+        <div class="tab-pane active" id="rtdata">
+            <div class="list-block">
+                <div class="list-block-main">
+                    <div class="row">
+                        <div class="flex-1 text-left">当前库水位：</div>
+                        <div class="flex-1 text-right"><span class="text-red">↑</span><em>239.23</em>m</div>
+                    </div>
+                    <div class="row">
+                        <div class="flex-1 text-left">当前库容：</div>
+                        <div class="flex-1 text-right"><em>2.13</em>万m³</div>
+                    </div>
+                    <div class="row">
+                        <div class="flex-1 text-left">出库流量：</div>
+                        <div class="flex-1 text-right"><em>0.23</em>m³/s</div>
+                    </div>
+                    <div class="row">
+                        <div class="flex-1 text-left">出库水量：</div>
+                        <div class="flex-1 text-right"><em>4.33</em>m³</div>
+                    </div>
+                    <div class="row">
+                        <div class="flex-1 text-left">采集时间:</div>
+                        <div class="flex-1 text-right datetime">2018.06.11 11:13:59</div>
+                    </div>
+                    <div class="line-dotted"></div>
+                    <div class="row">
+                        <div class="flex-1 text-left">日入库水量：</div>
+                        <div class="flex-1 text-right"><em>239.23</em>m³</div>
+                    </div>
+                    <div class="row">
+                        <div class="flex-1 text-left">月入库水量：</div>
+                        <div class="flex-1 text-right"><em>2.13</em>m³</div>
+                    </div>
+                    <div class="row">
+                        <div class="flex-1 text-left">日出库水量：</div>
+                        <div class="flex-1 text-right"><em>0.23</em>m³</div>
+                    </div>
+                    <div class="row">
+                        <div class="flex-1 text-left">月出库水量：</div>
+                        <div class="flex-1 text-right"><em>0.23</em>m³</div>
+                    </div>
+                    <div class="line-dotted"></div>
+                    <div class="row">
+                        <div class="flex-1 text-left">总库容：</div>
+                        <div class="flex-1 text-right"><em>239.23</em>m³</div>
+                    </div>
+                    <div class="row">
+                        <div class="flex-1 text-left">死库容：</div>
+                        <div class="flex-1 text-right"><em>2.13</em>m³</div>
+                    </div>
+                    <div class="row">
+                        <div class="flex-1 text-left">调洪库容：</div>
+                        <div class="flex-1 text-right"><em>0.23</em>m³</div>
+                    </div>
+                    <div class="row">
+                        <div class="flex-1 text-left">防洪库容：</div>
+                        <div class="flex-1 text-right"><em>0.23</em>m³</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane" id="rtchart">
+            <div id="filter">
+                <div class="filter-warp">
+                    <div class="filter-item" tapmode onclick="fnOpenUnitActionSheet();">
+                        <span id="unit">按月显示</span><span class="glyphicon glyphicon-triangle-bottom"></span>
+                    </div>
+                    <div class="filter-item" tapmode onclick="fnOpenPicker();">
+                        <span id="unit1">2018年05月</span><span class="glyphicon glyphicon-triangle-bottom"></span>
+                    </div>
+                    <div class="filter-item"></div>
+                </div>
+            </div>
+            <div class="chart-block">
+                <div class="chart-block-header">
+                    <div class="title">水库库容统计</div>
+                </div>
+                <div class="chart-block-main">
+                    <div class="row">当月最高水位: <em>5.83</em>m</div>
+                    <div class="row">当月最高库容: <em>11.56</em>m</div>
+                    <div id="main" style="width: 290px; height: 280px;"></div>
+                </div>
+                <div class="line-dotted"></div>
+                <div class="chart-block-footer clearfix">
+                    <div class="btn pull-right" tapmode="highlight" onclick="fnSetScreenOrientation();">全屏查看</div>
+                </div>
+            </div>
+            <div class="chart-block">
+                <div class="chart-block-header">
+                    <div class="title">水量统计</div>
+                </div>
+                <div class="chart-block-main">
+                    <div class="row">当月水量总计: <em>16.67</em> m³</div>
+                    <div id="main1" style="width: 290px; height: 280px;"></div>
+                </div>
+                <div class="line-dotted"></div>
+                <div class="chart-block-footer clearfix">
+                    <div class="btn pull-right" tapmode="highlight" onclick="fnSetScreenOrientation1();">全屏查看</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/tab.js"></script>
+<script type="text/javascript" src="../script/highcharts.js"></script>
+<script type="text/javascript">
+var tab = new LDTab();
+
+function fnSetScreenOrientation() {
+    api.setScreenOrientation({
+        orientation: 'landscape_left'
+    });
+    api.openFrame({
+        name: 'rsvrBarChartFrame',
+        url: 'rsvr_bar_chart_frame.html',
+        rect: {
+            x: 0,
+            y: 0,
+            w: 'auto',
+            h: 'auto'
+        },
+        pageParam: {
+            name: 'value'
+        },
+        bounces: false
+    });
+}
+
+function fnSetScreenOrientation1() {
+    api.setScreenOrientation({
+        orientation: 'portrait_up'
+    });
+}
+
+apiready = function() {
+    var chart = Highcharts.chart('main', {
+        title: {
+            text: null
+        },
+        yAxis: {
+            title: {
+                text: '就业人数'
+            }
+        },
+        legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle'
+        },
+        plotOptions: {
+            series: {
+                label: {
+                    connectorAllowed: false
+                },
+                pointStart: 2010
+            }
+        },
+        series: [{
+            name: '安装，实施人员',
+            data: [43934, 52503, 57177, 69658, 97031, 119931, 137133, 154175]
+        }, {
+            name: '工人',
+            data: [24916, 24064, 29742, 29851, 32490, 30282, 38121, 40434]
+        }, {
+            name: '销售',
+            data: [11744, 17722, 16005, 19771, 20185, 24377, 32147, 39387]
+        }, {
+            name: '项目开发',
+            data: [null, null, 7988, 12169, 15112, 22452, 34400, 34227]
+        }, {
+            name: '其他',
+            data: [12908, 5948, 8105, 11248, 8989, 11816, 18274, 18111]
+        }],
+        responsive: {
+            rules: [{
+                condition: {
+                    maxWidth: 500
+                },
+                chartOptions: {
+                    legend: {
+                        layout: 'horizontal',
+                        align: 'center',
+                        verticalAlign: 'bottom'
+                    }
+                }
+            }]
+        }
+    });
+
+    var chart1 = Highcharts.chart('main1', {
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: null
+        },
+        xAxis: {
+            categories: [
+                '一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'
+            ],
+            crosshair: true
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: '降雨量 (mm)'
+            }
+        },
+        tooltip: {
+            // head + 每个 point + footer 拼接成完整的 table
+            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+            footerFormat: '</table>',
+            shared: true,
+            useHTML: true
+        },
+        plotOptions: {
+            column: {
+                borderWidth: 0
+            }
+        },
+        series: [{
+            name: '东京',
+            data: [49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4]
+        }, {
+            name: '纽约',
+            data: [83.6, 78.8, 98.5, 93.4, 106.0, 84.5, 105.0, 104.3, 91.2, 83.5, 106.6, 92.3]
+        }, {
+            name: '伦敦',
+            data: [48.9, 38.8, 39.3, 41.4, 47.0, 48.3, 59.0, 59.6, 52.4, 65.2, 59.3, 51.2]
+        }, {
+            name: '柏林',
+            data: [42.4, 33.2, 34.5, 39.7, 52.6, 75.5, 57.4, 60.4, 47.6, 39.1, 46.8, 51.1]
+        }]
+    });
+};
+
+function fnOpenUnitActionSheet() {
+    api.actionSheet({
+        title: '切换管理单位',
+        cancelTitle: '取消',
+        destructiveTitle: app.units[0],
+        buttons: app.units.slice(1)
+    }, function(ret, err) {
+        var index = ret.buttonIndex,
+            value = app.units[index - 1];
+
+        if (value) {
+            var $unit = $api.byId('unit');
+            $api.html($unit, app.units[index - 1]);
+        }
+    });
+};
+
+function fnOpenPicker() {
+    api.openPicker({
+        type: 'date',
+        date: '2018-06',
+        title: '选择时间'
+    }, function(ret, err) {
+        if (ret) {
+            alert(JSON.stringify(ret));
+        } else {
+            alert(JSON.stringify(err));
+        }
+    });
+}
+</script>
+
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>groundwater detail window 地下水监测</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style>
+    html,
+    body {
+        height: 100%;
+    }
+    </style>
+</head>
+
+<body class="flex-box-v">
+    <header id="header">   
+        <div class="back" tapmode onclick="api.closeWin();">
+            <img src="../image/back.png">
+        </div> 
+        <div id="title" class="title"></div>
+    </header>
+    <div id="main" class="flex-1">
+    </div>
+    <footer id="footer">
+    </footer>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+apiready = function() {
+    var param = api.pageParam;
+    document.querySelector('#title').innerHTML = param.name;
+
+    var header = $api.dom('header');
+    var footer = $api.dom('footer');
+
+    var headerH = $api.fixStatusBar(header);
+    var footerH = $api.fixTabBar(footer);
+
+    api.openFrame({
+        name: 'groundwater_detail_frame',
+        url: 'groundwater_detail_frame.html',
+        rect: {
+            marginTop: headerH,
+            marginBottom: footerH,
+            w: 'auto',
+            h: 'auto'
+        },
+        pageParam: { 
+            id: param.id, 
+            name: param.name,
+            stationId: param.stationId
+        },
+        bounces: false
+    });
+};
+</script>
+</html>

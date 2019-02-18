@@ -1,0 +1,40 @@
+<table class="grid">
+    <theader>
+        <tr>
+            <th>时间</th>
+            <th>水位(m)</th>
+            <th>涨跌情况</th>
+            <th>预警情况</th>
+        </tr>
+    </theader>
+    <tbody>
+        <% if (rows && rows.length > 0) { %>
+        <% _.each(rows, function(item) { %>
+            <tr>
+                <td>
+                    <%= moment(item.TM).format('MM-DD HH') %>
+                </td>
+                <td>
+                    <%= item.RZ %>
+                </td>
+                <td>
+                    <% if (item.STATE == 3) { %>
+                        落
+                    <% } else if (item.STATE == 1) { %>
+                        涨
+                    <% } else if (item.STATE == 2) { %>
+                        平
+                    <% } else { %>
+                        未知
+                    <% } %>
+                </td>
+                <td>--</td>
+            </tr>
+        <% });%>
+        <% } else { %>
+            <tr>
+                <td colspan="4">暂无数据。</td>
+            </tr>
+        <% } %>
+    </tbody>
+</table>

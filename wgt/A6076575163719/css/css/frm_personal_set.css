@@ -1,0 +1,299 @@
+html, body, header, section, footer, div, ul, ol, li, img, a, span, em, del, legend, center, strong, var, fieldset, form, label, dl, dt, dd, cite, input, hr, time, mark, code, figcaption, figure, textarea, h1, h2, h3, h4, h5, h6, p {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  font-style: normal;
+}
+
+html, body {
+  -webkit-touch-callout: none;
+  -webkit-text-size-adjust: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-user-select: none;
+  background-color: #fff;
+}
+
+nav, article, aside, details, main, header, footer, section, fieldset, figcaption, figure {
+  display: block;
+}
+
+img, a, button, em, del, strong, var, label, cite, small, time, mark, code, textarea {
+  display: inline-block;
+}
+
+header, section, footer {
+  position: relative;
+}
+
+ol, ul {
+  list-style: none;
+}
+
+input, button, textarea {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  /*-webkit-appearance:none;*/
+  background-color: rgba(0, 0, 0, 0);
+}
+
+span {
+  display: inline-block;
+}
+
+a:active, a:hover {
+  outline: 0;
+}
+
+a, a:visited {
+  text-decoration: none;
+}
+
+label {
+  word-wrap: break-word;
+  word-break: break-all;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+td, th {
+  padding: 0;
+}
+
+html {
+  font-family: 'PingFangSC Regular',"Microsoft YaHei";
+  font-weight: normal;
+  font-style: normal;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  height: 100%;
+  background: #fff;
+}
+
+* {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  /* Firefox */
+  -webkit-box-sizing: border-box;
+  /* Safari */
+}
+
+[v-cloak] {
+  display: none;
+}
+
+#tips-panel {
+  text-align: center;
+  font-size: 0.5rem;
+  color: #A1A6BB;
+  padding-top: 50%;
+}
+
+#tips-panel .tips-panel-img {
+  width: 0.666667rem;
+  height: 0.666667rem;
+  display: inline-block;
+  background: url(../../image/wifi.png) no-repeat center;
+  background-size: 0.666667rem 0.666667rem;
+}
+
+#more-tips-panel {
+  text-align: center;
+  font-size: 0.4rem;
+  color: #A1A6BB;
+  padding: 10px 0;
+}
+
+.header-box {
+  position: relative;
+  height: 4.32rem;
+}
+
+.header-box .h-content-txt {
+  font-size: 0.48rem;
+  font-family: 'PingFangSC Regular',"Microsoft YaHei",'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-style: normal;
+  color: #fff;
+  height: 1rem;
+  line-height: 1rem;
+  text-align: center;
+  padding: 0 0.6rem;
+  background-color: #1875F0;
+}
+
+.header-box .leftArrow {
+  height: 100%;
+  float: left;
+}
+
+.header-box .leftArrow {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.header-box .leftArrow:after {
+  border: 2px solid #fff;
+  border-bottom-width: 0;
+  border-left-width: 0;
+  content: "";
+  position: absolute;
+  top: calc(50% + -0.01333rem);
+  right: calc(50% - 0.13333rem);
+  width: 0.26667rem;
+  height: 0.26667rem;
+  -webkit-transform: translateY(-50%) rotate(-135deg);
+  transform: translateY(-50%) rotate(-135deg);
+}
+
+.header-box .moreSelect {
+  display: inline-block;
+  text-align: right;
+  font-size: 0.45333rem;
+  font-family: 'PingFangSC Regular',"Microsoft YaHei",'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-style: normal;
+  color: #FFFFFF;
+  position: absolute;
+  right: 0.6rem;
+}
+
+.header-box .head-portirait {
+  height: 3.32rem;
+  background-color: #fff;
+  width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+}
+
+.header-box .head-portirait .camera {
+  width: 2.133333rem;
+  height: 2.133333rem;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  position: relative;
+}
+
+.header-box .head-portirait .camera:after {
+  content: '';
+  display: block;
+  width: 2.133333rem;
+  height: 2.133333rem;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background-color: #000;
+  border-radius: 50%;
+  opacity: 0.5;
+}
+
+.header-box .head-portirait .default-img {
+  border-radius: 50%;
+  width: 100%;
+  height: auto;
+}
+
+.header-box .head-portirait .camera-icon {
+  width: 0.706667rem;
+  height: 0.586667rem;
+  position: absolute;
+  z-index: 1111;
+}
+
+.title {
+  padding-left: 0.4rem;
+  height: 0.88rem;
+  line-height: 0.88rem;
+  background-color: #F1F2F7;
+  font-size: 0.32rem;
+  font-family: 'PingFangSC Regular',"Microsoft YaHei",'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-style: normal;
+  color: #222328;
+}
+
+.basic-wrap div {
+  height: 1.333333rem;
+  line-height: 1.333333rem;
+  border-bottom: 2px solid #E4E7F0;
+  padding: 0 0.4rem;
+}
+
+.basic-wrap div span {
+  font-size: 0.4rem;
+  font-family: 'PingFangSC Regular',"Microsoft YaHei",'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-style: normal;
+  color: #A1A6BB;
+}
+
+.basic-wrap div .num {
+  color: #222328;
+  float: right;
+}
+
+.basic-wrap div .txt {
+  float: left;
+}
+
+.pwd-wrap .pwd-input {
+  height: 1.333333rem;
+  line-height: 1.333333rem;
+  border-bottom: 2px solid #E4E7F0;
+  padding: 0 0.4rem;
+}
+
+.pwd-wrap .mint-cell-wrapper {
+  padding: 0;
+  background-image: none;
+}
+
+.pwd-wrap .mint-cell {
+  background-image: none;
+  background-color: transparent;
+}
+
+.logout {
+  margin-top: 0.8rem;
+  padding: 0 0.4rem;
+}
+
+.logout .mint-button {
+  border-color: #FE594B;
+  height: 1.2rem;
+  line-height: 1.2rem;
+}
+
+.logout .mint-button .mint-button-text {
+  font-size: 0.42667rem;
+  font-family: 'PingFangSC Regular',"Microsoft YaHei",'Avenir', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-style: normal;
+  color: #FE594B;
+}

@@ -1,0 +1,41 @@
+<div class="list-block">
+    <div class="list-block-main">
+        <div class="row">
+            <div class="flex-1 text-left">当前库水位：</div>
+            <div class="flex-1 text-right"><em><%= WaterLevel %></em>m</div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">当前库容：</div>
+            <div class="flex-1 text-right"><em><%= Capacity %></em>万m³</div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">入库流量：</div>
+            <div class="flex-1 text-right"><em><%= InputFlow %></em>m³/s</div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">出库流量：</div>
+            <div class="flex-1 text-right"><em><%= OutputFlow %></em>m³/s</div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">采集时间:</div>
+            <div class="flex-1 text-right datetime"><%= ReportDate %></div>
+        </div>
+        <div class="line-dotted"></div>
+        <div class="row">
+            <div class="flex-1 text-left">日入库水量：</div>
+            <div class="flex-1 text-right"><em><%= DayINQ %></em>m³</div>
+        </div>
+         <div class="row">
+            <div class="flex-1 text-left">日出库水量：</div>
+            <div class="flex-1 text-right"><em><%= DayOTQ %></em>m³</div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">月入库水量：</div>
+            <div class="flex-1 text-right"><em><%= MonthINQ %></em>m³</div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">月出库水量：</div>
+            <div class="flex-1 text-right"><em><%= MonthOTQ %></em>m³</div>
+        </div>
+    </div>
+</div>

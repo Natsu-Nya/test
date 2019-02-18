@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>待办事项</title>
+    <link rel="stylesheet" type="text/css" href="../css/lib/mint-ui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/css/frm_waitdealwork.css" />
+    <script type="text/javascript" src="../script/lib/flexible.js"></script>
+    <style type="text/css">
+
+    </style>
+</head>
+<body>
+    <div id="waitDealWork" v-cloak>
+        <mt-loadmore :top-method="loadTop" @top-status-change="handleTopChange" :autoFill="autoFill" @bottom-status-change="handleBottomChange" ref="loadmore" :bottom-method="loadBottom" :bottom-all-loaded="isloadalldata">
+            <section id="section">
+                <ul v-show="hasData">
+                    <li v-for="(item,index) in waitDealWorkList">
+                        <div class="top">
+                            <div class="imgbox">
+                                <div class="img"></div>
+                            </div>
+                            <div class="infobox">
+                                <div class="name-model">
+                                    <div class="name">
+                                        {{item.Title}}
+                                    </div>
+                                </div>
+                                <div class="data">
+                                    <div class="item">
+                                        <div class="text-value">
+                                            <img class="icon" src="../image/time-icon.png" alt="">
+                                            <span class="time">{{item.Time|dateformat}}</span>
+                                        </div>
+                                    </div>
+                                    <div class="item">
+                                        <div class="content">
+                                            {{item.Content}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <div class="bottom">
+                            <div class="btn">查看详情</div>
+                        </div> -->
+                    </li>
+                </ul>
+                <!-- 暂无数据,网络异常提示 -->
+                <div id="tips-panel" v-show="!hasData||!loadNormal" style="">
+                    <div v-show="!hasData&&loadNormal">
+                        <div>暂无数据</div>
+                    </div>
+                    <div v-show="!loadNormal">
+                        <div class="tips-panel-img"></div>
+                        <div style="margin:10px 0;">网络或服务异常</div>
+                        <div>下拉重新加载</div>
+                    </div>
+                </div>
+            </section>
+            <div slot="top" class="mint-loadmore-top" style="font-size:0.4rem;text-align:center;color:#A1A6BB;">
+                <div v-show="topStatus == 'pull'" class="rotate">↓ 下拉刷新</div>
+                <div v-show="topStatus == 'drop'" :class="{ 'rotate': topStatus === 'drop' }">↑ 释放更新</div>
+                <div v-show="topStatus === 'loading'">
+                    <mt-spinner size="20" style="display: inline-block;vertical-align: middle;" type="fading-circle"></mt-spinner>
+                    <span>加载中...</span>
+                </div>
+            </div>
+            <div slot="bottom" class="mint-loadmore-bottom" style="font-size:0.5rem;text-align:center;color:#A1A6BB;">
+                <div v-show="bottomStatus !== 'loading' && !isloadalldata" :class="{ 'rotate': bottomStatus === 'drop' }">加载更多</div>
+                <div v-show="bottomStatus === 'loading'">
+                    <mt-spinner size="20" style="display: inline-block;vertical-align: middle;" type="fading-circle"></mt-spinner>
+                    <span>加载中...</span>
+                </div>
+            </div>
+            <!-- <div slot="bottom" class="mint-loadmore-bottom" style="font-size:0.4rem;text-align:center;color:#A1A6BB;">
+                <div v-show="bottomStatus == 'pull'" :class="{ 'rotate': bottomStatus === 'pull' }">↑ 加载更多</div>
+                <div v-show="bottomStatus == 'drop'" class="rotate">↓ 释放加载</div>
+                <div v-show="bottomStatus === 'loading'">
+                    <mt-spinner size="20" style="display: inline-block;vertical-align: middle;" type="fading-circle"></mt-spinner>
+                    <span>加载中...</span>
+                </div>
+            </div> -->
+        </mt-loadmore>
+    </div>
+</body>
+<script type="text/javascript" src="../script/lib/api.js"></script>
+<script type="text/javascript" src="../script/lib/vue.min.js"></script>
+<script type="text/javascript" src="../script/lib/mint-ui.js"></script>
+<script type="text/javascript" src="../script/wj-ajax.js"></script>
+<!-- <script type="text/javascript" src="../script/wj-framework.js"></script> -->
+<script type="text/javascript">
+    //设置dom高度
+    function setDomHeight(){
+        var bodyHeight = $api.cssVal($api.dom('body'),'height');
+        $api.css($api.dom('#section'),'min-height:'+bodyHeight);
+    }
+    var myVue;
+    apiready = function() {//处理业务
+        myVue = new Vue({
+            el: '#waitDealWork',
+            data: {
+                topStatus: '',//下拉状态
+                bottomStatus:'',//上拉状态
+                loadNormal:true, //是否加载正常
+                hasData: true, //是否有数据
+                waitDealWorkList: [],//待处理事项
+                autoFill:false,//组件撑满其容器
+                requestPage:{
+                    PageIndex: 1,
+                    PageSize: 5,
+                },
+                loadfinished:false,
+                isloadalldata: false, //是否已经加载了所有数据
+                isrefresh:true,
+            },
+            filters: {
+                // dateformat: function(value) {
+                //     return formatDateFormat(value, 'yyyy-MM-dd').replace(/-/g, '.');
+                // },
+            },
+            created: function() {
+
+            },
+            mounted: function() {
+                this.loadData(true);
+                setDomHeight();
+            },
+            methods: {
+                loadTop:function(){//下拉刷新数据
+                    var that=this;
+                    this.isrefresh=true;
+                    this.loadData();
+                    setTimeout(function(){
+                        that.$refs.loadmore.onTopLoaded();
+                    },1000)
+                },
+                loadBottom:function(){//上拉加载数据
+                    if(this.isloadalldata){
+                        return false;
+                    }
+                    this.isrefresh=false;
+                    this.loadData();
+                    this.$refs.loadmore.onBottomLoaded();
+                },
+
+                handleTopChange:function(status) {
+                    this.topStatus = status;
+                },
+                handleBottomChange:function(status){
+                    this.bottomStatus = status;
+                },
+                setLoadState:function(loadNormal,hasData){
+                    this.loadNormal=loadNormal;
+                    this.hasData=hasData;
+                },
+                loadData: function(showLoading) { //获取代办事项数据
+                    var that = this;
+                    showLoading&&that.$indicator.open('加载中...');
+                    // if(!that.loadfinished)return;
+                    if (that.isrefresh) {//刷新数据,注意恢复默认值
+                        that.requestPage.PageIndex=1;
+                        this.isloadalldata = false;
+                    }
+                    if(this.isloadalldata)return; //没有数据了，不要加载
+                    wjpost("AppHome/GetListWaitDealWork", that.requestPage, function(ret, err) {
+                        showLoading&&that.$indicator.close();
+                        console.log(JSON.stringify(ret))
+                        console.log(JSON.stringify(err))
+                        if (ret) {
+                            if (ret.Code == 200 && ret.Data) {
+                                var data=ret.Data.Rows;
+                                ////将至页数大于当前总页数,不用加载了
+                                if (that.isrefresh){
+                                    that.waitDealWorkList = data;//注意刷新操作需要清空数据
+                                    if(!data.length){
+                                        that.setLoadState(true,false);
+                                    }
+                                }else{
+                                    for(var i=0;i<data.length;i++){
+                                        that.waitDealWorkList.push(data[i]);
+                                    }
+                                }
+                                // if (ret.Data.Rows.length > 0) {
+                                //     var Maxmessagetime = ret.Data.Rows[0].Time;
+                                //     var ret = daysCompare(Maxmessagetime, lastmessagetime.lastwaitdealworktime);
+                                //     if (ret > 0) {
+                                //         lastmessagetime.lastwaitdealworktime = Maxmessagetime;
+                                //         $api.setStorage('lastmessagetime', lastmessagetime); //更新最后查看时间
+                                //     }
+                                // }
+                                console.log(JSON.stringify(that.waitDealWorkList));
+                                ////将至页数大于当前总页数,不用加载了
+                                var totalpage = Math.ceil(ret.Data.Total / that.requestPage.PageSize); //向上取整获取页总数
+                                that.requestPage.PageIndex = that.requestPage.PageIndex + 1; //预备下一页
+                                if (that.requestPage.PageIndex > totalpage) {
+                                    that.isloadalldata = true; //标识已经加载了所有数据
+                                }
+                            } else {
+                                that.setLoadState(false,false);
+                                api.alert({
+                                    msg: '数据加载失败!'
+                                });
+                            }
+                        } else {
+                            that.setLoadState(false,false);
+                            api.alert({
+                                msg: '网络异常,请重新加载!'
+                            });
+                        }
+                    });
+                }
+            }
+        })
+    }
+</script>
+
+</html>

@@ -1,0 +1,92 @@
+header {
+    box-sizing: content-box;
+    position: relative;
+    width: 100%;
+    height: @header-height;
+    background-color: @header-bg;
+
+    .back {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 80px;
+        height: @header-height;
+        z-index: 2;
+
+        img {
+            margin-top: 11px;
+            margin-left: 15px;
+            width: 12px;
+            height: 22px;
+        }
+    }
+
+    .title {
+        position: relative;
+        width: 100%;
+        height: @header-height;
+        text-align: center;
+        color: @header-title-color;
+        font-size: @header-title-font;
+        line-height: @header-height;
+    }
+
+    .left {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 180px;
+        height: @header-height;
+
+        .arrow {
+            position: absolute;
+            bottom: ceil((@header-height - 8) / 2);
+            left: 11px;
+            width: 13px;
+            height: 8px;
+            background: url(../image/home/arrow_down.png);
+            background-size: 13px 8px;
+            background-position: center center;
+            background-repeat: no-repeat;
+            -webkit-transition: 200ms;
+            transition: 200ms;
+
+            .arrow.active {
+                -webkit-transform: rotate(180deg);
+                transform: rotate(180deg);
+            }
+        }
+
+        .unit {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: @header-height;
+            line-height: @header-height;
+            padding-left: 27px;
+            box-sizing: border-box;
+            font-size: 14px;
+            color: #fff;
+            text-align: left;
+        }
+    }
+
+    .right {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 150px;
+        height: @header-height;
+
+        .save {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: @header-height;
+            line-height: @header-height;
+            font-size: 17px;
+            color: #fff;
+            text-align: right;
+        }
+    }
+}

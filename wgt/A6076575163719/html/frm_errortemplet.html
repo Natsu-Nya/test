@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>选择问题描述模板</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui-pull-refresh.css" />
+    <link rel="stylesheet" type="text/css" href="../css/wj-framework.css" />
+    <style>
+
+    </style>
+</head>
+
+<body>
+    <div id="content" v-cloak>
+        <section class="aui-refresh-content" style="position: absolute;top:0px;bottom: 0px;left: 0px;right: 0px;">
+            <div class="aui-content aui-margin-b-15">
+                <ul class="aui-list aui-select-list">
+                    <li class="aui-list-item" v-for="(item,index) in listitem">
+                        <div class="aui-list-item-label">
+                            <input class="aui-radio" type="radio" name="radio" v-on:change="choicedata(item)">
+                        </div>
+                        <div class="aui-list-item-inner">
+                            <div class="aui-list-item-text" style="white-space:pre-line;">{{item.Content}}</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </section>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/aui-toast.js"></script>
+<script type="text/javascript" src="../script/aui-pull-refresh.js"></script>
+<script type="text/javascript" src="../script/wj-framework.js"></script>
+<script type="text/javascript" src="../script/wj-ajax.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        var pageParamdata = api.pageParam.data; //接收传递的参数
+        var toast = new auiToast();
+        ////处理业务
+        new Vue({
+            el: '#content',
+            data: {
+                listitem: []
+            },
+            methods: {
+                choicedata: function(item) {
+                    api.sendEvent({
+                        name: 'SetContentRemark',
+                        extra: {
+                            ContentRemark: item.Content,
+                        }
+                    });
+
+                    //execScript方法参数中带换行符有问题
+                    api.closeWin();
+                },
+                loaddata: function(isrefresh, title) {
+                    var that = this;
+                    toast.loading({
+                        title: title || "加载中...",
+                        duration: 20000 //等待20秒
+                    });
+                    wjget("AppPolling/GetListErrorTemplate?ContentId=" + pageParamdata.ContentId, function(ret, err) {
+                        toast.hide();
+                        if (ret) {
+                            if (ret.Code == 200 && ret.Data) {
+                                if (!ret.Data || ret.Data.length < 1) {
+                                    api.alert({
+                                        msg: '当前检测项还没有问题描述模板!'
+                                    }, function() {
+                                        api.closeWin();
+                                    });
+                                } else {
+                                    that.listitem = ret.Data;
+                                }
+                            } else {
+                                api.alert({
+                                    msg: '数据加载失败!'
+                                });
+                            }
+                        } else {
+                            api.alert({
+                                msg: '网络异常,请重新加载!'
+                            });
+                        }
+                    });
+                }
+            },
+            created: function() {
+                this.loaddata(true);
+            },
+            mounted: function() {
+                var that = this;
+                ////实现下拉刷新
+                PullToRefresh(this);
+            }
+        });
+    };
+</script>
+
+</html>

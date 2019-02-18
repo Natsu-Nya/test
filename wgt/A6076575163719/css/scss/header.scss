@@ -1,0 +1,66 @@
+@import './common.scss';
+
+header {
+    position: relative;
+    padding:0 0.4rem 0 0.133333rem;
+    &.type1{
+        background-color:#1875F0;
+        color:#fff;
+    }
+    &.type2{
+        background-color:#fff;
+        color:#222328;
+        .item-left:after{
+            border-color:#222328 !important;
+        }
+    }
+    ul{
+        li{
+            height:1.2rem;
+            line-height:1.2rem;
+            font-size: 0;
+            &>div{
+                display: inline-block;
+                vertical-align: middle;
+            }
+            &.type1{
+                &>div{
+                    font-size:0.4rem;
+                    &.item-left{
+                        width:4.933333rem;
+                        padding-left:0.266667rem;
+                        font-size:0.48rem;
+                    }
+                    &.item-right{
+                        width:4.533333rem;
+                        font-size:0.32rem;
+                        text-align: right;
+                    }
+                }
+            }
+            &.type2{
+                &>div{
+                    font-size:0.4rem;
+                    &.item-left{
+                        width:0.933333rem;
+                        @include allArrow(left,$color:#fff,$size:0.32rem,$right:0.4rem);
+                    }
+                    &.item-center{
+                        width:6.933333rem;
+                        font-size: 0.48rem;
+                        text-align: center;
+                        padding-left:0.933333rem;
+                        font-weight: bold;
+                    }
+                    &.item-right{
+                        width:1.6rem;
+                        font-size:0.4rem;
+                        text-align: right;
+                    }
+                }
+            }
+
+
+        }
+    }
+}

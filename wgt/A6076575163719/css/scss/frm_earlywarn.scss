@@ -1,0 +1,187 @@
+@import "common.scss";
+#dropdown-select{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height: 1.12rem;
+    z-index:99;
+    font-size: 0.4rem;
+    color:#7E87AD;
+    background: rgba(0,0,0,.5);
+    transition:all .3s;
+    overflow:hidden;
+    &.show{
+        height:0.906667rem;
+        height: 100%;
+        position: fixed;
+        top:0;
+        left:0;
+    }
+    #curt-value{
+        padding-left: 0.4rem;
+        height: 1.12rem;
+        line-height: 1.12rem;
+        background: #fff;
+        border-bottom:1px solid #E4E7F0;
+        span{
+            display: inline-block;
+            vertical-align: top;
+            &.arrow{
+                position: relative;
+                width:0.4rem;
+                height: 100%;
+                display: inline-block;
+                vertical-align: top;
+                transition:all .3s;
+                &:after{
+                    border: 0.133333rem solid #5E7785;
+                    border-left-color:transparent;
+                    border-right-color:transparent;
+                    content: "";
+                    position: absolute;
+                    top:42%;
+                    right:calc(50% - 0.066667rem);
+                    width: 0;
+                    height: 0;
+                }
+                &.bottom:after{
+                    border-bottom-color:transparent;
+                }
+                &.top:after{
+                    border-top-color:transparent;
+                    top:30%;
+                }
+            }
+        }
+    }
+    #dropdown-list{
+        background: #fff;
+        .item{
+            padding-left: 0.4rem;
+            height: 1.12rem;
+            line-height: 1.12rem;
+            border-bottom:1px solid #E4E7F0;
+            &.active{
+                color:#1875F0;
+            }
+            @include active;
+            .label,.arrow{
+                display: inline-block;
+                vertical-align: top;
+            }
+            .arrow{
+                height: 100%;
+                float:right;
+                margin-right: 0.533333rem;
+                @include allArrow(bottom,$color:#1875F0);
+                &:after{
+                    height:0.133333rem;
+                }
+            }
+        }
+    }
+}
+.main{
+    // overflow: scroll;
+    margin-top: 1.12rem;
+    #section{
+        height:100%;
+    }
+    background: #fff;
+    ul{
+        padding-left:0.4rem;
+        margin-bottom:0.4rem;
+        border-top: 1px solid #E4E7F0;
+        border-bottom: 1px solid #E4E7F0;
+        li{
+            padding-top:0.4rem;
+            border-bottom: 1px solid #E4E7F0;
+            display: flex;
+            flex-direction:column;
+            &:last-child{
+                border-bottom: 0;
+            }
+            .top{
+                display: flex;
+                flex-direction:row;
+                .imgbox{
+                    margin-top:0.053333rem;
+                    width:0.826667rem;
+                    .img{
+                        width:0.426667rem;
+                        height:0.426667rem;
+                        background: url('../../image/earlywarn.png') no-repeat center;
+                        background-size: 0.426667rem 0.426667rem;
+                    }
+                }
+                .infobox{
+                    border-bottom: 1px dashed #E4E7F0;
+                    width:calc(100% - 0.826667rem);
+                    .name-model{
+                        line-height: 0.533333rem;
+                        height: 0.533333rem;
+                        .name{
+                            font-size: 0.373333rem;
+                            font-weight: bold;
+                            color:#64697B;
+                            min-width: 4.0rem;
+                        }
+                    }
+                    .data{
+                        padding-right:0.4rem;
+                        padding-bottom: 0.213333rem;
+
+                        .item{
+                            display: flex;
+                            flex-direction:row;
+                            margin-top: 0.106667rem;
+                            .text-value{
+                                width:50%;
+                                height:0.56rem;
+                                line-height: 0.56rem;
+                                color:#A1A6BB;
+                                font-size: 0.373333rem;
+                                .icon{
+                                    width: 0.373333rem;
+                                    height: 0.373333rem;
+                                    vertical-align: middle;
+                                }
+                                .time{
+                                    font-size: 0.32rem;
+                                }
+                                .value{
+                                    font-family:'Arial';
+                                    color:#64697B;
+                                    font-size: 0.453333rem;
+                                    font-style: italic;
+                                }
+                            }
+                            .content{
+                                line-height:0.533333rem;
+                                height: 1.066667rem;
+                                color:#7E87AD;
+                                font-size: 0.346667rem;
+                                display: -webkit-box;
+                                -webkit-box-orient: vertical;
+                                -webkit-line-clamp:2;
+                                overflow: hidden;
+                                text-overflow:ellipsis;
+                            }
+                        }
+
+                    }
+                }
+            }
+            .bottom{
+                text-align: right;
+                .btn{
+                    margin:0.266667rem 0.4rem 0.266667rem 0;
+                    @include tag($lineHeight:0.586667rem);
+                    @include active;
+                }
+            }
+        }
+
+    }
+}

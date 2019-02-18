@@ -1,0 +1,35 @@
+@import "common.scss";
+.header{
+    height: auto;
+}
+.select-group-wrap{
+    padding: 0.4rem;
+    .name{
+        @include fontStyle(16px,#A1A6BB);
+    }
+    .resetBtn{
+        background-color: #F5F7FA;
+        border: none;
+        margin-right: 0.4rem;
+        margin-top: 0.4rem;
+        height: 0.96rem;
+    }
+    .mint-cell-text{
+        @include fontStyle(0.373333rem,#64697B);
+    }
+    .mint-button-text{
+        @include fontStyle(0.4rem,#64697B);
+    }
+}
+.btn-wrap{
+    .content{
+        margin-top: 0.4rem;
+        @include fontStyle(0.4rem,#64697B);
+    }
+}
+
+.rightArrow{
+    @include allArrow($color: #979797);
+    float: right;
+    margin-top: 0.3rem;
+}

@@ -1,0 +1,41 @@
+<div class="list-block" tapmode="highlight" onclick="openGroupFrames('<%= DeviceID %>', '<%= Name %>');">
+    <div class="list-block-header clearfix">
+        <span class="title">
+            <img class="icon" src="../image/home/nav/shape_hedao.png" alt=""><%= Name %>
+        </span>
+        <!--
+        <span class="label label-danger pull-right">预警状态</span>
+        -->
+    </div>
+    <div class="list-block-main">
+        <div class="row">
+            <div class="flex-1 text-left">当前水位：</div>
+            <div class="flex-1 text-right">
+                <% if (VarietyValue > 0) { %>
+                    <em class="text-red"><%= WaterValue %></em>m
+                <% } else { %>
+                    <em><%= WaterValue %></em>m
+                <% } %>
+            </div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">涨跌情况：</div>
+<!--             <div class="flex-1 text-right"><em><%= VarietyValue %></em>m</div> -->
+            <% if (VarietyValue > 0) { %>
+                <span class="text-red">涨</span>
+            <% } else if (VarietyValue < 0){ %>
+                <span class="text-blue">落</span>
+            <% } else { %>
+                <span>平</span>
+            <% } %>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">采集时间：</div>
+            <div class="flex-1 text-right datetime"><%= Md %></div>
+        </div>
+    </div>
+    <div class="line-dotted"></div>
+    <div class="list-block-footer clearfix">
+        <div class="btn pull-right">查看详情</div>
+    </div>
+</div>

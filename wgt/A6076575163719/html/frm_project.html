@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+        <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+        <script type="text/javascript" src="../script/lib/flexible.js"></script>
+        <link rel="stylesheet" type="text/css" href="../css/api.css" />
+        <link rel="stylesheet" type="text/css" href="../css/lib/mint-ui.css" />
+
+        <link rel="stylesheet" type="text/css" href="../css/css/frm_project.css" />
+        <title></title>
+        <style>
+            .mint-searchbar-core{
+                text-align: center;
+            }
+            .mint-search{
+                height: auto;
+            }
+            .mint-search-list{
+                padding-top: 0px;
+                top: 66px;
+                background-color: #fff;
+                z-index: 11111;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="projectPage" v-cloak>
+            <div class="header">
+                <mt-search v-model="inputVal" placeholder="关键词搜索" :result.sync="pojectResult" style="font-size:14px;">
+                    <!-- <mt-cell v-for="item in result" :title="item.title" :value="item.value"></mt-cell> -->
+                </mt-search>
+            </div>
+            <div class="select-group-wrap">
+                <div class="name">
+                    最近选择：
+                </div>
+                <div class="btn-wrap" v-if="historyCatch[0]">
+                    <mt-button type="default" class="resetBtn" v-for="(item,index) in historyCatch" @click.native="openFrmGate(item)">{{item}}</mt-button>
+                </div>
+                <div class="btn-wrap" v-else>
+                    <span class="content">暂无选择</span>
+                </div>
+            </div>
+            <div class="projectList">
+                <mt-index-list>
+                  <mt-index-section :index="key" v-for="(value,key) in sortInviter">
+                    <mt-cell :title="item" v-for="(item,index) in sortInviter[key]" @click.native="openFrmGate(item)"></mt-cell>
+                  </mt-index-section>
+                </mt-index-list>
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript" src="../script/api.js"></script>
+    <script type="text/javascript" src="../script/vue.min.js"></script>
+    <script type="text/javascript" src="../script/aui-toast.js"></script>
+    <script src="https://unpkg.com/mint-ui/lib/index.js"></script>
+    <script type="text/javascript" src="../script/wj-framework.js"></script>
+    <script type="text/javascript" src="../script/wj-ajax.js"></script>
+    <script type="text/javascript" src="../script/unicode.js"></script>
+    <script type="text/javascript">
+    // var vm=new Vue({
+    //     el:'#projectPage',
+    //     data:{
+    //         inputVal:'',
+    //         pojectResult:[1,2,3.4,4],
+    //         projectData: [],
+    //
+    //         isloaderror: false, //是否加载异常
+    //         loaderrortype: 0, //加载异常类型,1:工程加载异常,2.闸门加载异常
+    //         finishinitvideo: false,
+    //
+    //         ProjectId: '',
+    //
+    //         sortInviter:{},
+    //         historyCatch:[],
+    //     }
+    // })
+        apiready = function() {
+            $api.fixStatusBar($api.dom('.header'));
+            api.setStatusBarStyle({
+                style: 'light',
+                color: '#fff'
+            });
+            var toast = new auiToast();
+            var vm=new Vue({
+                el:'#projectPage',
+                data:{
+                    inputVal:'',
+                    pojectResult:[1,2,3.4,4],
+                    projectData: [],
+
+                    isloaderror: false, //是否加载异常
+                    loaderrortype: 0, //加载异常类型,1:工程加载异常,2.闸门加载异常
+                    finishinitvideo: false,
+
+                    ProjectId: '',
+
+                    sortInviter:{},
+                    historyCatch:[],
+                },
+                mounted:function(){
+
+                    this.getCatch();
+                    this.getProjectData();
+                },
+                watch:{
+                    inputVal:function(val,oldVal){
+                        this.searchVal(val);
+                    }
+                },
+                methods:{
+                    getCatch:function(){
+                        var that=this;
+                        api.getPrefs({
+                            key: 'project'
+                        }, function(ret, err) {
+                            if(ret.value){
+                                that.historyCatch=JSON.parse(ret.value);
+                            }else{
+                                that.historyCatch=[];
+                            }
+                        });
+                    },
+                    getProjectData: function() { //获取工程列表
+                        var that = this;
+                        that.$indicator.open('加载中...');
+                        wjget("VideoStationSet/GetListWH_ProjectByVideo", function(ret, err) {
+                            that.$indicator.close();
+                            if (ret) {
+                                console.log(JSON.stringify(ret.Data))
+                                if (ret.Code == 200 && ret.Data) {
+                                    that.isloaderror = false;
+                                    that.projectData = ret.Data;
+                                    if (that.projectData.length) {
+                                        that.ProjectId = that.projectData[0].ProjectId;
+                                        // that.loaddata(true);
+                                        var arrResult=[];
+                                        that.projectData.forEach(function(item,index){
+                                            arrResult.push(item.Name)
+                                        })
+                                        that.getInviterFirst(arrResult);
+                                    }
+                                } else {
+                                    that.isloaderror = true;
+                                    that.loaderrortype = 1;
+                                    api.alert({
+                                        msg: '工程列表加载失败!'
+                                    });
+                                }
+                            } else {
+                                that.isloaderror = true;
+                                that.loaderrortype = 1;
+                                api.alert({
+                                    msg: '网络异常,请重新加载!'
+                                });
+                            }
+                        });
+                    },
+                    searchVal: function(params) { //搜索工程列表
+                        var that = this;
+                        wjget("VideoStationSet/GetListWH_ProjectByVideo?pname="+params, function(ret, err) {
+                            if (ret) {
+                                if (ret.Code == 200 && ret.Data) {
+                                    if (that.projectData.length) {
+                                        var arrResult=[];
+                                        that.projectData.forEach(function(item,index){
+                                            arrResult.push(item.Name)
+                                        })
+                                        that.pojectResult = arrResult;
+                                    }
+                                } else {
+                                    that.isloaderror = true;
+                                    that.loaderrortype = 1;
+                                    api.alert({
+                                        msg: '工程列表加载失败!'
+                                    });
+                                }
+                            } else {
+                                that.isloaderror = true;
+                                that.loaderrortype = 1;
+                                api.alert({
+                                    msg: '网络异常,请重新加载!'
+                                });
+                            }
+                        });
+                    },
+                    getInviterFirst:function(arr){
+                        var objObj = {};
+                        var array = [];
+                        var objArr = [];
+                        for (var i = 0 ; i < arr.length ; i ++){
+                            array.push(this.query(arr[i]));
+                            if (!objObj.hasOwnProperty(this.query(arr[i]))){
+                                objArr = [];
+                                objArr.push(arr[i]);
+                                objObj[this.query(arr[i])] = objArr;
+
+                            }else{
+                                objArr.push(arr[i]);
+                            }
+                        }
+
+                        // return obj = {
+                        //     sortInviter:objObj,
+                        //     inviterFirst:(Array.from(new Set(array))).sort(mySorter)
+                        // };
+                        this.sortInviter=objObj;
+                    },
+
+                    query:function(str){
+                        if(str == "") return;
+                        var arrRslt = this.makePy(str);
+                        return arrRslt[0].toLowerCase().substr(0,1);
+                    },
+                    makePy:function(str){
+                        if(typeof(str) != "string")
+                            throw new Error(-1,"函数makePy需要字符串类型参数!");
+                        var arrResult = new Array(); //保存中间结果的数组
+                        for(var i=0,len=str.length;i<len;i++){
+                            //获得unicode码
+                            var ch = str.charAt(i);
+                            //检查该unicode码是否在处理范围之内,在则返回该码对映汉字的拼音首字母,不在则调用其它函数处理
+                            arrResult.push(this.checkCh(ch));
+                        }//处理arrResult,返回所有可能的拼音首字母串数组
+                        return this.mkRslt(arrResult);
+                    },
+                    checkCh:function(ch){
+                        var uni = ch.charCodeAt(0);
+                    //如果不在汉字处理范围之内,返回原字符,也可以调用自己的处理函数
+                        if(uni > 40869 || uni < 19968)
+                            return ch; //dealWithOthers(ch);
+                    //检查是否是多音字,是按多音字处理,不是就直接在strChineseFirstPY字符串中找对应的首字母
+                        return (oMultiDiff[uni]?oMultiDiff[uni]:(strChineseFirstPY.charAt(uni-19968)));
+                    },
+                    mkRslt:function(arr){
+                        var arrRslt = [""];
+                        for(var i=0,len=arr.length;i<len;i++){
+                            var str = arr[i];
+                            var strlen = str.length;
+                            if(strlen == 1){
+                                for(var k=0;k<arrRslt.length;k++){
+                                    arrRslt[k] += str;
+                                }
+                            }else{
+                                var tmpArr = arrRslt.slice(0);
+                                arrRslt = [];
+                                for(k=0;k<strlen;k++){
+                                    //复制一个相同的arrRslt
+                                    var tmp = tmpArr.slice(0);
+                                    //把当前字符str[k]添加到每个元素末尾
+                                    for(var j=0;j<tmp.length;j++){
+                                        tmp[j] += str.charAt(k);
+                                    }
+                                    //把复制并修改后的数组连接到arrRslt上
+                                    arrRslt = arrRslt.concat(tmp);
+                                }
+                            }
+                        }
+                        return arrRslt;
+                    },
+                    openFrmGate:function(params){
+                        var result={},arr=[],mark=true;
+                        api.getPrefs({
+                            key: 'project'
+                        }, function(ret, err) {
+                            if(ret.value){
+                                arr=JSON.parse(ret.value);
+                            }
+                            for(var i=0;i<arr.length;i++){
+                                if(params===arr[i]){
+                                    var j=arr[0];
+                                    arr[0]=arr[i];
+                                    arr[i]=j;
+                                    mark=false;
+                                    break;
+                                }
+                            }
+                            if(mark){
+                                if(arr.length>=4){
+                                    arr.splice(3,arr.length);
+                                    arr.unshift(params);
+                                }else{
+                                    arr.unshift(params);
+                                }
+                            }
+                            api.setPrefs({
+                                key: 'project',
+                                value: arr
+                            });
+                        });
+
+                        for(var i=0;i<this.projectData.length;i++){
+                            if(params===this.projectData[i].Name){
+                                result=this.projectData[i];
+                                break;
+                            }
+                        }
+                        this.openZmFrm(result);
+                    },
+                    openZmFrm:function(params){
+                        // var searchHeight = $api.cssVal($api.dom('.header'), 'height').replace("px", "");
+                        // var selectHeight = $api.cssVal($api.dom('.select-group-wrap'), 'height').replace("px", "");
+                        // var totalh=Number(searchHeight)+Number(selectHeight);
+                        api.openFrame({
+                            name: 'frm_project_gate',
+                            url: './frm_project_gate.html',
+                            rect: {
+                                x: 0,
+                                y: 0,
+                                w: 'auto',
+                                h: 'auto'
+                            },
+                            pageParam: {
+                                name: params
+                            },
+                            bounces: false,
+                            bgColor: 'rgba(0,0,0,0)',
+                            vScrollBarEnabled: true,
+                            hScrollBarEnabled: false
+                        });
+                        api.execScript({
+                            name:'win_home',//window的名字
+                            script:'pushframe("'+'frm_project_gate'+'")'
+                        })
+                        // setTimeout(function(){
+                        //     api.closeFrame();
+                        // },2000)
+                    }
+                }
+            })
+        }
+    </script>
+</html>

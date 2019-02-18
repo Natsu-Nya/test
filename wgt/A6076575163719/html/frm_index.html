@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>移动办公</title>
+    <link rel="stylesheet" type="text/css" href="../css/lib/mint-ui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/css/frm_index.css" />
+    <script type="text/javascript" src="../script/lib/api.js"></script>
+    <script type="text/javascript" src="../script/lib/vue.min.js"></script>
+    <script type="text/javascript" src="../script/lib/mint-ui.js"></script>
+    <script type="text/javascript" src="../script/lib/flexible.js"></script>
+    <script type="text/javascript" src="../script/wj-ajax.js"></script>
+    <style type="text/css">
+
+    </style>
+</head>
+<body>
+    <div id="main" v-cloak>
+        <mt-loadmore :top-method="loadTop" @top-status-change="handleTopChange" ref="loadmore">
+            <section id="section">
+                <div id="notice-menu">
+                    <div class="notice" @click="openWinPage('message')">
+                        <div class="notice-img">
+                            <!-- <img src="../image/logo.png" /> -->
+                        </div>
+                        <div class="notice-text">
+                            <marquee id="slider" behavior="scroll" scrollamount="3" height='100%' width='100%' style="color:#fff">
+                                <span v-html="newMsg.str"></span>
+                            </marquee>
+                        </div>
+                    </div>
+                    <div id="menu-list">
+                        <div v-for="item in menuList" class="menu-list-item">
+                            <div class="menu-name" v-text="item.title"></div>
+                            <ul class="menu">
+                                <li @click="openWinPage(subItem.page)" class="menu-item" v-for="subItem in item.menu">
+                                    <div class="item-img">
+                                        <div class="img"></div>
+                                        <span v-show="subItem.num" class="msg">
+                                            <mt-badge size="small" type="error">{{subItem.num | badgeFormat}}</mt-badge>
+                                        </span>
+                                    </div>
+                                    <div class="item-label">{{subItem.name}}</div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- 暂无数据,网络异常提示 -->
+                <!-- <div id="tips-panel" v-show="!hasData||!loadNormal" style="padding-top:10px;">
+                    <div v-show="!hasData&&loadNormal">
+                        <div>暂无数据</div>
+                    </div>
+                    <div v-show="!loadNormal">
+                        <div class="tips-panel-img"></div>
+                        <div style="margin:10px 0;">网络或服务异常</div>
+                        <div>下拉重新加载</div>
+                    </div>
+                </div> -->
+            </section>
+            <div slot="top" class="mint-loadmore-top" style="font-size:0.4rem;text-align:center;color:#A1A6BB;">
+                <div v-show="topStatus == 'pull'" class="rotate">↓ 下拉刷新</div>
+                <div v-show="topStatus == 'drop'" :class="{ 'rotate': topStatus === 'drop' }">↑ 释放更新</div>
+                <div v-show="topStatus === 'loading'">
+                    <mt-spinner size="20" style="display: inline-block;vertical-align: middle;" type="fading-circle"></mt-spinner>
+                    <span>加载中...</span>
+                </div>
+            </div>
+        </mt-loadmore>
+    </div>
+</body>
+<script type="text/javascript">
+    //设置dom高度
+    function setDomHeight(){
+        var bodyHeight = $api.cssVal($api.dom('body'),'height');
+        $api.css($api.dom('#section'),'min-height:'+bodyHeight);
+    }
+
+
+    function opendialog_gatecontrol(data) {
+        api.openFrame({
+            name: 'dialog_gatecontrol',
+            url: '../html/dialog_gatecontrol.html',
+            rect: {
+                x: 0,
+                y: 0,
+                w: api.winWidth,
+                h: api.winHeight
+            },
+            bgColor: 'rgba(0,0,0,0.6)',
+            bounces: false,
+            pageParam: {
+                data: data
+            }
+        });
+    };
+
+
+    var myVue;
+    apiready = function() {
+        api.setStatusBarStyle({
+            style: 'light',
+            color: '#1875F0'
+        });
+        var loginInfo=$api.getStorage("logininfo");
+        //处理业务
+        myVue = new Vue({
+            el: '#main',
+            data: {
+                topStatus: '',//下拉状态
+                loadNormal:true, //是否加载正常
+                hasData: true, //是否有数据
+                menuList: [//菜单列表
+                    {
+                        title:'工程管理',
+                        menu:[
+                            {name:'移动巡检',num:0,page:'movepolling'},
+                            {name:'大坝安全',num:0,page:'dbaq'},
+                            {name:'工程信息',num:0,page:''},
+                        ]
+                    },
+                    {
+                        title:'水资源管理',
+                        menu:[
+                            {name:'水库监测',num:0,page:'skjc'},
+                            {name:'地下水监测',num:0,page:'dxwater'},
+                            {name:'扬水监测',num:0,page:'ysjc'},
+                            {name:'供水管理',num:0,page:''},
+                        ]
+                    },
+                    {
+                        title:'通用板块',
+                        menu:[
+                            {name:'视频监控',num:0,page:'vedio'},
+                            {name:'待办事项',num:0,page:'waitdealwork'},
+                            {name:'审批处理',num:0,page:'spsolve'},
+                            {name:'通讯录',num:0,page:''},
+                        ]
+                    },
+                    {
+                        title:'灌溉管理',
+                        menu:[
+                            {name:'灌溉控制',num:0,page:'zmstate'},
+                            {name:'田间用水',num:0,page:'tjys'},
+                            {name:'渠道流量',num:0,page:'qdflow'},
+                            {name:'管道流量',num:0,page:'gdflow'},
+                            {name:'气象信息',num:0,page:''},
+                            {name:'田间墒情',num:0,page:''},
+                            {name:'灌溉用水',num:0,page:''},
+                        ]
+                    },
+                    {
+                        title:'防汛抗旱',
+                        menu:[
+                            {name:'山洪预警',num:0,page:'shyj'},
+                            {name:'预警信息',num:0,page:'earlywarn'},
+                            {name:'防汛预案',num:0,page:''},
+                            {name:'物资管理',num:0,page:''},
+                        ]
+                    }
+                ],
+                userInfo:{},//用户信息
+                listRole:[],//角色列表
+                newMsg:{str:''},//通知
+            },
+            filters: {
+                badgeFormat:function(num){
+                    return num>99?'99+':num;
+                }
+            },
+            methods: {
+                loadTop:function(){//下拉加载数据
+                    this.loadData();
+                    this.getInformation();
+                    this.getUserInfo();
+                },
+                //设置加载后状态
+                setLoadState:function(loadNormal,hasData,data){
+                    this.loadNormal=loadNormal;
+                    this.hasData=hasData;
+                    this.zmList=data;
+                },
+                handleTopChange:function(status) {
+                    this.topStatus = status;
+                },
+                openWinPage:function(page,data) {
+                    if(!page){
+                        this.$toast({
+                            message: '功能暂未开放',
+                            iconClass:'mintui mintui-field-warning',
+                             duration: 2000
+                        });
+                        return;
+                    };
+                    if(page==='vedio'){
+                        api.openFrame({
+                            name: 'frm_vedio',
+                            url: 'frm_vedio.html',
+                            rect: {
+                                x: 0,
+                                y: 0,
+                                w: 'auto',
+                                h: 'auto'
+                            },
+                            pageParam: {
+                                data: 'fromIndex'
+                            },
+                            bounces: false,
+                            bgColor: 'rgba(0,0,0,0)',
+                            vScrollBarEnabled: true,
+                            hScrollBarEnabled: false
+                        });
+                        api.execScript({
+                            name:'win_home',//window的名字
+                            script:'pushframe("'+'frm_project'+'")'
+                        })
+                    }else{
+                        api.openWin({
+                            name: 'win_'+page,
+                            url: 'win_'+page+'.html',
+                            bounces: false,
+                            slidBackEnabled: true,
+                            vScrollBarEnabled: false,
+                            pageParam: {
+                                data: data
+                            }
+                        });
+                    }
+
+                },
+                setBadgeNum:function(name,num){
+                    flag:for (var i = 0; i < this.menuList.length; i++) {
+                        for (var k = 0; k < this.menuList[i].menu.length; k++) {
+                            var aim=this.menuList[i].menu[k];
+                            if(aim.name==name){
+                                aim.num=num;
+                                break flag;
+                            }
+                        }
+                    }
+                },
+                getPollingNum: function() {//获取巡检数量
+                    var that = this;
+                    wjget("AppHome/GetPollingtNum", function(ret, err) {
+                        if (ret) {
+                            if (ret.Code == 200 && ret.Data) {
+                                //that.pollingNum = ret.Data;
+                                that.setBadgeNum('移动巡检',ret.Data);
+                            }
+                        }
+                        ////延迟10秒再次执行
+                        setTimeout(function() {
+                            that.getPollingNum();
+                        }, 10000);
+                    });
+                },
+                autoGetZmList: function() { //定时获取闸门数据
+                    var that = this;
+                    wjget("YiTiGate/GetList", function(ret, err) {
+                        if (ret) {
+                            if (ret.Code == 200) {
+                                if (ret.Data.length) {
+                                    that.setLoadState(true,true,ret.Data);
+                                }else{
+                                    that.setLoadState(true,false,[]);
+                                }
+                            } else {
+                                that.setLoadState(false,false,[]);
+                            }
+                        } else {
+                            that.setLoadState(false,false,[]);
+                        }
+                        //延迟5秒再次执行
+                        setTimeout(function() {
+                            that.autoGetZmList();
+                        }, 5000);
+                    });
+                },
+                getInformation:function(){//获取通知
+                    var that=this;
+                    wjget("Home/GetFirst",function(ret, err) {
+                        console.log(JSON.stringify(ret))
+                        if(ret.Code==200&&ret.Data){
+                            that.newMsg=ret.Data;
+                            that.newMsg.Content=that.newMsg.Content||'';
+                            that.newMsg.CreateTime=that.newMsg.CreateTime?'发布时间: '+that.newMsg.CreateTime:'';
+                            that.newMsg.str='最新消息: '+that.newMsg.Content+' &emsp;'+ that.newMsg.CreateTime+' &emsp;';
+                        }else{
+                            that.$toast({
+                                message: '消息通知获取失败!',
+                                iconClass:'mintui mintui-field-error',
+                                 duration: 2000
+                            });
+                        }
+                    })
+                },
+                getUserInfo:function(showLoading) {//获取用户信息
+                    var that = this;
+                    showLoading&&that.$indicator.open('加载中...');
+                    wjget("AppAccount/GetAccountInfo", function(ret, err) {
+                        showLoading&&that.$indicator.close();
+
+                        if (ret) {
+                            if (ret.Code == 200 && ret.Data) {
+                                if (ret.Data) {
+                                    that.listRole = ret.Data.UserRoles;
+                                    that.userInfo=ret.Data;
+                                    // that.userInfo.Name = ret.Data.Name;
+                                    // that.userInfo.AccountName = ret.Data.AccountName;
+                                    // that.userInfo.Mobile = ret.Data.Mobile;
+                                    // that.userInfo.Organization = ret.Data.Organization;
+                                    // that.userInfo.PollingNum = ret.Data.PollingNum;
+                                    // that.userInfo.ReportErrorNum = ret.Data.ReportErrorNum;
+                                    // that.userInfo.SolveErrorNum = ret.Data.SolveErrorNum;
+                                    if (that.listRole && that.listRole.length > 0) {
+                                        that.userInfo.Role = that.listRole.join(",");
+                                    }
+                                }
+                            } else {
+                                api.alert({
+                                    msg: '获取用户信息失败,请下拉重新获取!'
+                                });
+                            }
+                        } else {
+                            api.alert({
+                                msg: '网络异常,请下拉重新获取!'
+                            });
+                        }
+                    });
+                },
+                loadData: function(showLoading) { //获取闸孔列表
+                    var that = this;
+                    showLoading&&that.$indicator.open('加载中...');
+                    wjget("YiTiGate/GetList",function(ret, err) {
+                        showLoading&&that.$indicator.close();
+                        that.$refs.loadmore.onTopLoaded();
+                        //console.log(JSON.stringify(ret))
+                        // console.log(JSON.stringify(err))
+                        if (ret) {
+                            if (ret.Code == 200) {
+                                if (ret.Data.length) {
+                                    that.setLoadState(true,true,ret.Data);
+                                }else{
+                                    that.setLoadState(true,false,[]);
+                                }
+                            } else {
+                                that.setLoadState(false,false,[]);
+                            }
+                        } else {
+                            that.setLoadState(false,false,[]);
+                        }
+                        console.log(JSON.stringify(that.userInfo))
+                    });
+                }
+            },
+            created: function() {
+                //this.loadData();
+                //this.autoGetZmList(); //定时获取闸门数据
+                //this.getUserInfo(true);
+                this.getInformation();
+                this.getPollingNum();
+            },
+            mounted: function() {
+                setDomHeight();
+            }
+        });
+    };
+</script>
+
+</html>

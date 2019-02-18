@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>个人设置</title>
+    <link rel="stylesheet" type="text/css" href="../css/css/header.css" />
+    <script type="text/javascript" src="../script/lib/api.js"></script>
+    <script type="text/javascript" src="../script/lib/vue.min.js"></script>
+    <script type="text/javascript" src="../script/lib/flexible.js"></script>
+    <script type="text/javascript" src="../script/wj-ajax.js"></script>
+    <style type="text/css">
+        header .save{
+            font-size:0.453333rem;
+            text-align: right;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="type1" id="header"><!-- type1 蓝色系,type2 白色系 -->
+        <ul>
+            <!-- type1 左右结构,type2 左中右结构 -->
+            <!-- <li class="type1">
+                <div class="item-left">通讯录</div>
+                <div class="item-right">晚间大雨</div>
+            </li> -->
+            <li class="type2">
+                <div class="item-left" onclick="closeWin()"></div>
+                <div class="item-center">
+                    <div class="title">个人设置</div>
+                </div>
+                <div class="item-right"><span class="save">保存</span></div>
+            </li>
+        </ul>
+    </header>
+</body>
+
+<script type="text/javascript">
+    apiready = function() {
+        //api.parseTapmode();
+        var pageParamdata = api.pageParam.data; //接收传递的参数
+        var header = $api.byId('header');
+        $api.fixStatusBar(header); //可以解决ios和一些安卓状态栏重贴问题
+        var headerPos = $api.offset(header);
+        var body_h = $api.offset($api.dom('body')).h;
+        api.openFrame({
+            name: 'frm_personal_set',
+            url: 'frm_personal_set.html',//注意此处用相对路径，否则下拉无效
+            bounces: false,
+            rect: {
+                x: 0,
+                y: headerPos.h,
+                w: 'auto',
+                h: 'auto'
+            },
+            pageParam: {
+                data: pageParamdata
+            }
+        });
+        ////处理返回键事件
+        api.addEventListener({
+            name: 'keyback'
+        }, function(ret, err) {
+            //关闭当前window
+            closeWin();
+        });
+    };
+
+    function closeWin() {
+      api.closeWin();
+    }
+</script>
+
+</html>

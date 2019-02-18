@@ -1,0 +1,310 @@
+html, body, header, section, footer, div, ul, ol, li, img, a, span, em, del, legend, center, strong, var, fieldset, form, label, dl, dt, dd, cite, input, hr, time, mark, code, figcaption, figure, textarea, h1, h2, h3, h4, h5, h6, p {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  font-style: normal;
+}
+
+html, body {
+  -webkit-touch-callout: none;
+  -webkit-text-size-adjust: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-user-select: none;
+  background-color: #fff;
+}
+
+nav, article, aside, details, main, header, footer, section, fieldset, figcaption, figure {
+  display: block;
+}
+
+img, a, button, em, del, strong, var, label, cite, small, time, mark, code, textarea {
+  display: inline-block;
+}
+
+header, section, footer {
+  position: relative;
+}
+
+ol, ul {
+  list-style: none;
+}
+
+input, button, textarea {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  /*-webkit-appearance:none;*/
+  background-color: rgba(0, 0, 0, 0);
+}
+
+span {
+  display: inline-block;
+}
+
+a:active, a:hover {
+  outline: 0;
+}
+
+a, a:visited {
+  text-decoration: none;
+}
+
+label {
+  word-wrap: break-word;
+  word-break: break-all;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+td, th {
+  padding: 0;
+}
+
+html {
+  font-family: 'PingFangSC Regular',"Microsoft YaHei";
+  font-weight: normal;
+  font-style: normal;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  height: 100%;
+  background: #fff;
+}
+
+* {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  /* Firefox */
+  -webkit-box-sizing: border-box;
+  /* Safari */
+}
+
+[v-cloak] {
+  display: none;
+}
+
+#tips-panel {
+  text-align: center;
+  font-size: 0.5rem;
+  color: #A1A6BB;
+  padding-top: 50%;
+}
+
+#tips-panel .tips-panel-img {
+  width: 0.666667rem;
+  height: 0.666667rem;
+  display: inline-block;
+  background: url(../../image/wifi.png) no-repeat center;
+  background-size: 0.666667rem 0.666667rem;
+}
+
+#more-tips-panel {
+  text-align: center;
+  font-size: 0.4rem;
+  color: #A1A6BB;
+  padding: 10px 0;
+}
+
+html, body, header, section, footer, div, ul, ol, li, img, a, span, em, del, legend, center, strong, var, fieldset, form, label, dl, dt, dd, cite, input, hr, time, mark, code, figcaption, figure, textarea, h1, h2, h3, h4, h5, h6, p {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  font-style: normal;
+}
+
+html, body {
+  -webkit-touch-callout: none;
+  -webkit-text-size-adjust: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-user-select: none;
+  background-color: #fff;
+}
+
+nav, article, aside, details, main, header, footer, section, fieldset, figcaption, figure {
+  display: block;
+}
+
+img, a, button, em, del, strong, var, label, cite, small, time, mark, code, textarea {
+  display: inline-block;
+}
+
+header, section, footer {
+  position: relative;
+}
+
+ol, ul {
+  list-style: none;
+}
+
+input, button, textarea {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  /*-webkit-appearance:none;*/
+  background-color: rgba(0, 0, 0, 0);
+}
+
+span {
+  display: inline-block;
+}
+
+a:active, a:hover {
+  outline: 0;
+}
+
+a, a:visited {
+  text-decoration: none;
+}
+
+label {
+  word-wrap: break-word;
+  word-break: break-all;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+td, th {
+  padding: 0;
+}
+
+html {
+  font-family: 'PingFangSC Regular',"Microsoft YaHei";
+  font-weight: normal;
+  font-style: normal;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  height: 100%;
+  background: #fff;
+}
+
+* {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  /* Firefox */
+  -webkit-box-sizing: border-box;
+  /* Safari */
+}
+
+[v-cloak] {
+  display: none;
+}
+
+#tips-panel {
+  text-align: center;
+  font-size: 0.5rem;
+  color: #A1A6BB;
+  padding-top: 50%;
+}
+
+#tips-panel .tips-panel-img {
+  width: 0.666667rem;
+  height: 0.666667rem;
+  display: inline-block;
+  background: url(../../image/wifi.png) no-repeat center;
+  background-size: 0.666667rem 0.666667rem;
+}
+
+#more-tips-panel {
+  text-align: center;
+  font-size: 0.4rem;
+  color: #A1A6BB;
+  padding: 10px 0;
+}
+
+header {
+  position: relative;
+  padding: 0 0.4rem 0 0.133333rem;
+}
+
+header.type1 {
+  background-color: #1875F0;
+  color: #fff;
+}
+
+header.type2 {
+  background-color: #fff;
+  color: #222328;
+}
+
+header.type2 .item-left:after {
+  border-color: #222328 !important;
+}
+
+header ul li {
+  height: 1.2rem;
+  line-height: 1.2rem;
+  font-size: 0;
+}
+
+header ul li > div {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+header ul li.type1 > div {
+  font-size: 0.4rem;
+}
+
+header ul li.type1 > div.item-left {
+  width: 4.933333rem;
+  padding-left: 0.266667rem;
+  font-size: 0.48rem;
+}
+
+header ul li.type1 > div.item-right {
+  width: 4.533333rem;
+  font-size: 0.32rem;
+  text-align: right;
+}
+
+header ul li.type2 > div {
+  font-size: 0.4rem;
+}
+
+header ul li.type2 > div.item-left {
+  width: 0.933333rem;
+}
+
+header ul li.type2 > div.item-left {
+  position: relative;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+header ul li.type2 > div.item-left:after {
+  border: 2px solid #fff;
+  border-bottom-width: 0;
+  border-left-width: 0;
+  content: "";
+  position: absolute;
+  top: calc(50% + -0.01333rem);
+  right: calc(50% - 0.4rem);
+  width: 0.32rem;
+  height: 0.32rem;
+  -webkit-transform: translateY(-50%) rotate(-135deg);
+  transform: translateY(-50%) rotate(-135deg);
+}
+
+header ul li.type2 > div.item-center {
+  width: 6.933333rem;
+  font-size: 0.48rem;
+  text-align: center;
+  padding-left: 0.933333rem;
+  font-weight: bold;
+}
+
+header ul li.type2 > div.item-right {
+  width: 1.6rem;
+  font-size: 0.4rem;
+}

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+        <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+        <script type="text/javascript" src="../script/lib/flexible.js"></script>
+        <link rel="stylesheet" type="text/css" href="../css/api.css" />
+        <link rel="stylesheet" type="text/css" href="../css/lib/mint-ui.css" />
+        <link rel="stylesheet" type="text/css" href="../css/css/frm_project_gate.css" />
+        <title>视频监控-闸孔列表</title>
+        <style>
+            #gatePage{
+                height: 100%;
+
+            }
+            .mint-searchbar-core{
+                text-align: center;
+            }
+            .mint-search{
+                height: auto;
+            }
+            .mint-search-list{
+                padding-top: 0px;
+                top: 66px;
+                background-color: #fff;
+                z-index: 11111;
+            }
+            #gatePage ul li{
+                 font-size: 0.373333rem;
+                 color: #64697B;
+                 border-top:1px solid #E4E7F0;
+                 padding: 0.4rem;
+            }
+            #gatePage ul li:last-child{
+                border-bottom:1px solid #E4E7F0;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="gatePage" v-cloak>
+            <div class="header">
+                <mt-search v-model="inputVal" placeholder="关键词搜索" :result.sync="pojectResult" style="font-size:14px;">
+                    <!-- <mt-cell v-for="item in result" :title="item.title" :value="item.value"></mt-cell> -->
+                </mt-search>
+            </div>
+            <div class="select-group-wrap">
+                <div class="name">
+                    最近选择：
+                </div>
+                <div class="btn-wrap" v-if="historyCatch[0]">
+                    <mt-button type="default" class="resetBtn" v-for="(item,index) in historyCatch" @click="openVedioPage(item)">{{item.Name}}</mt-button>
+                </div>
+                <div class="btn-wrap" v-else>
+                    <span class="content">暂无选择</span>
+                </div>
+            </div>
+            <ul v-infinite-scroll="loadData" infinite-scroll-disabled="loading" infinite-scroll-distance="20">
+              <li v-for="(item,index) in zmData" @click="openVedioPage(item)">
+                  {{ item.Name }}
+                  <span class="rightArrow"></span>
+              </li>
+            </ul>
+        </div>
+    </body>
+    <script type="text/javascript" src="../script/api.js"></script>
+    <script type="text/javascript" src="../script/vue.min.js"></script>
+    <script src="https://unpkg.com/mint-ui/lib/index.js"></script>
+    <script type="text/javascript" src="../script/wj-framework.js"></script>
+    <script type="text/javascript" src="../script/wj-ajax.js"></script>
+    <script type="text/javascript">
+    // var vm=new Vue({
+    //     el:'#gatePage',
+    //     data:{
+    //         // projectId:projectObj.ProjectId,
+    //         isloaderror: false, //是否加载异常
+    //         loaderrortype: 0, //加载异常类型,1:工程加载异常,2.闸门加载异常
+    //         finishinitvideo: false,
+    //
+    //         loading:true,
+    //
+    //         zmData:[1,23,45,6,78,9,78,6],
+    //
+    //             historyCatch:[],
+    //             pojectResult:[],
+    //             inputVal:'',
+    //     },})
+        apiready=function(){
+            $api.fixStatusBar($api.dom('.header'));
+            api.setStatusBarStyle({
+                style: 'light',
+                color: '#fff'
+            });
+
+            var projectObj=api.pageParam.name;
+            console.log(JSON.stringify(projectObj));
+            var vm=new Vue({
+                el:'#gatePage',
+                data:{
+                    projectId:projectObj?projectObj.ProjectId:0,
+                    isloaderror: false, //是否加载异常
+                    loaderrortype: 0, //加载异常类型,1:工程加载异常,2.闸门加载异常
+                    finishinitvideo: false,
+
+                    loading:true,
+
+                    zmData:[],
+                    historyCatch:[],
+                    pojectResult:[],
+                    inputVal:'',
+                },
+                mounted:function(){
+                    console.log(this.projectId);
+                    this.getCatch();
+                    if(this.projectId){
+                        this.loadData(this.projectId);
+                    }
+
+                },
+                methods:{
+                    getCatch:function(){
+                        var that=this;
+                        api.getPrefs({
+                            key: 'gate'
+                        }, function(ret, err) {
+                            if(ret.value){
+                                that.historyCatch=JSON.parse(ret.value);
+                            }else{
+                                that.historyCatch=[];
+                            }
+                        });
+                    },
+                    loadData: function(paramsProjectId) { //获取闸门列表
+                        var that = this;
+                        if (!paramsProjectId) return;
+                        // that.finishinitvideo = false; //注意重置摄像头初始化标志，切换工程可能导致摄像头崩溃
+                        that.$indicator.open('加载中...');
+
+                        wjget("VideoStationSet/GetVideoStationGroupListByProjectId?ProjectId=" + paramsProjectId, function(ret, err) {
+                            that.$indicator.close();
+                            if (ret) {
+                                // console.log(JSON.stringify(ret.Data));
+                                if (ret.Code == 200 && ret.Data) {
+                                    that.isloaderror = false;
+                                    // that.videoData = [];
+                                    if (ret.Data&&ret.Data[0]) {
+                                        console.log(JSON.stringify(ret.Data));
+                                        for(var i=0;i<ret.Data.length;i++){
+                                            that.zmData.push(ret.Data[i]);
+                                            // var result=ret.Data[i].listVideoStation;
+                                            // for(var j=0;j<result.length;j++){
+                                            //     that.zmData.push(result[j]);
+                                            // }
+                                        }
+                                        // that.listVideoStation=ret.Data[0].listVideoStation;
+                                        // that.videoPlay(that.listVideoStation[0]);
+
+                                        // that.curzmDataindex = 0; //默认第一个
+                                        // that.tabSelect();
+                                    } else {
+                                        that.zmData = [];
+                                    }
+
+                                } else {
+                                    that.isloaderror = true;
+                                    that.loaderrortype = 2;
+                                    api.alert({
+                                        msg: '数据加载失败!'
+                                    });
+                                }
+                            } else {
+                                that.isloaderror = true;
+                                that.loaderrortype = 2;
+                                api.alert({
+                                    msg: '网络异常,请重新加载!'
+                                });
+                            }
+                        });
+                    },
+
+                    openVedioPage:function(params){
+                        var pName=params;
+                        // if(Object.prototype.toString.call(params) === "[object String]"){
+                        //     pName=params;
+                        // }else{
+                        //     pName=params.Name;
+                        // }
+                        var result={},arr=[],mark=true;
+                        api.getPrefs({
+                            key: 'gate'
+                        }, function(ret, err) {
+                            if(ret.value){
+                                arr=JSON.parse(ret.value);
+                            }
+                            for(var i=0;i<arr.length;i++){
+                                if(pName.GroupId===arr[i].GroupId){
+                                    var j=arr[0];
+                                    arr[0]=arr[i];
+                                    arr[i]=j;
+                                    mark=false;
+                                    break;
+                                }
+                            }
+                            if(mark){
+                                if(arr.length>=4){
+                                    arr.splice(3,arr.length);
+                                    arr.unshift(pName);
+                                }else{
+                                    arr.unshift(pName);
+                                }
+                            }
+                            api.setPrefs({
+                                key: 'gate',
+                                value: arr
+                            });
+                        });
+                        this.openZmFrm(params);
+                    },
+                    openZmFrm:function(params){
+                        api.openFrame({
+                            name: 'frm_project_vedio',
+                            url: './frm_project_vedio.html',
+                            rect: {
+                                x: 0,
+                                y: 0,
+                                w: 'auto',
+                                h: 'auto'
+                            },
+                            pageParam: {
+                                name: params
+                            },
+                            bounces: false,
+                            bgColor: 'rgba(0,0,0,0)',
+                            vScrollBarEnabled: true,
+                            hScrollBarEnabled: false
+                        });
+                        api.execScript({
+                            name:'win_home',//window的名字
+                            script:'pushframe("'+'frm_project_vedio'+'")'
+                        })
+                    }
+                }
+            })
+        }
+    </script>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>gate control frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+        background-color: transparent;
+    }
+
+    .popo {
+        width: 300px;
+    }
+
+    .popo-header {
+        position: relative;
+        width: 100%;
+        height: 44px;
+        line-height: 44px;
+        background-color: #EFEFEE;
+        border-bottom: 1px solid #DCDCDC;
+        border-radius: 3px 3px 0 0;
+    }
+
+    .popo-header .title {
+        font-size: 13px;
+        color: #64697B;
+        text-indent: 15px;
+    }
+
+    .popo-header .close {
+        width: 80px;
+        height: 44px;
+        position: absolute;
+        bottom: 0px;
+        right: 0px;
+        z-index: 2;
+
+        background: url(../image/close.png);
+        background-size: 13px 13px;
+        background-position: right 15px center;
+        background-repeat: no-repeat;
+    }
+
+    .popo-footer {
+        height: 44px;
+        line-height: 44px;
+        background-color: #F5F5F5;
+        border-top: 1px solid #DCDCDC;
+        border-radius: 0 0 3px 3px;
+    }
+
+    .popo-footer .cancel,
+    .confirm {
+        height: 44px;
+        font-size: 17px;
+        color: #4A90E2;
+        line-height: 44px;
+        text-align: center;
+    }
+
+    .popo-footer .confirm {
+        border-left: 1px solid rgba(220, 220, 220, 1);
+        font-weight: bold;
+    }
+
+    .popo-main {
+        background-color: #F5F5F5;
+        font-size: 13px;
+        color: #7E87AD;
+        padding: 10px 15px;
+    }
+
+    .popo-main .tab-warp {
+        box-shadow: none;
+        padding: 0px 0px;
+    }
+
+    .popo-main .row {
+        line-height: 28px;
+        padding-left: 15px;
+        padding-right: 15px;
+        display: -webkit-box;
+        -webkit-box-orient: horizontal;
+        -webkit-flex-flow: row;
+    }
+
+    .popo-main .row.value,
+    .row.password {
+        padding: 10px 15px;
+        border-bottom: 1px solid #E4E7F0;
+    }
+
+    .popo-main .row.password {
+        margin-bottom: 30px;
+    }
+
+    .popo-main input {
+        text-align: right;
+        width: 100%;
+        border: none;
+        outline: none;
+        background-color: transparent;
+    }
+
+    .popo-main .max {
+        color: #64697B;
+    }
+    </style>
+</head>
+
+<body class="flex-box-v">
+    <div class="header flex-1"></div>
+    <div class="popo center-block ">
+        <div class="popo-header clearfix">
+            <div class="title">闸门控制</div>
+            <div class="close" tapmode onclick="api.closeFrame();"></div>
+        </div>
+        <div class="popo-main">
+            <div class="row">控制模式</div>
+            <div class="tab-warp">
+                <ul class="tabs list-unstyled">
+                    <li class="tab-item active" tapmode data-toggle="1">恒定开度</li>
+                    <li class="tab-item" tapmode data-toggle="2">恒定流量</li>
+                    <li class="tab-item" tapmode data-toggle="0">现地控制</li>
+                </ul>
+            </div>
+            <div id="planvalueRow" class="row value">
+                <div><span id="planname">开度数值：</span><span class="max" style="display: none;">(最大开度:10m)</span></div>
+                <div class="flex-1 text-right">
+                    <input id="planvalue" type="number" placeholder="请输入闸门开度">
+                </div>
+            </div>
+            <div class="row password">
+                <div>请输入闸控密码：</div>
+                <div class="flex-1 text-right">
+                    <input id="pwd" type="password" placeholder="请输入闸控密码">
+                </div>
+            </div>
+        </div>
+        <div class="popo-footer flex-box-h">
+            <div class="cancel flex-1" tapmode onclick="api.closeFrame();">取消</div>
+            <div class="confirm flex-1" tapmode onclick="enter();">确认</div>
+        </div>
+    </div>
+    <footer class="flex-1"></footer>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/tab.js"></script>
+<script type="text/javascript" src="../script/underscore-min.js"></script>
+<script type="text/javascript">
+var tab = new LDTab({ success: tabChanged }),
+    gateInfo = null,
+    planmodel = 1,
+    $planvalueRow = document.querySelector('#planvalueRow'),
+    $planvalue = document.querySelector('#planvalue'),
+    $planname = document.querySelector('#planname'),
+    $pwd = document.querySelector('#pwd');
+
+apiready = function() {
+    gateInfo = api.pageParam.gateInfo;
+};
+
+function tabChanged(ret) {
+    planmodel = ret.tabPaneId;
+
+    if (ret.tabPaneId === '0') {
+        $planvalueRow.classList.add('hide');
+    } else {
+        $planvalueRow.classList.remove('hide');
+    }
+
+    if (ret.tabPaneId === '2') {
+        $planname.innerHTML = '流量数值：';
+        $planvalue.setAttribute('placeholder', '请输入开度流量');
+    } else if (ret.tabPaneId === '1') {
+        $planname.innerHTML = '开度数值：';
+        $planvalue.setAttribute('placeholder', '请输入闸门开度');
+    }
+}
+
+function enter() {
+    var planvalue = $planvalue.value,
+        pwd = $pwd.value;
+
+    if (planvalue == '') {
+        api.toast({
+            msg: '闸门开度值不能为空且必须是数字，请输入。',
+            duration: 2000,
+            location: 'middle'
+        });
+
+        $planvalue.focus();
+        return;
+    }
+
+    if (pwd == '') {
+        api.toast({
+            msg: '闸控密码不能为空，请输入。',
+            duration: 2000,
+            location: 'middle'
+        });
+        $planvalue.focus();
+        return;
+    }
+    
+    /*
+        请求参数：
+        gatesn站点编号
+        planmodel 控制模式 0 手动模式,1 恒定开度,2 恒定流量,3 恒定闸前水位,4 恒定堰槽水位
+        planstart执行时间,时间为空立即执行
+        planvalue 数值
+        pwd密码
+        响应结果 :
+        { header: {code: 200, message:}}
+    */
+    gateControl(gateInfo.gate_sn, planmodel, planvalue, pwd);
+}
+
+function gateControl(gate_sn, planmodel, planvalue, pwd) {
+    app.ajax({
+        url: app.urls.gate_control,
+        data: {
+            gatesn: gate_sn,
+            planmodel: planmodel,
+            planstart: '',
+            planvalue: planvalue,
+            pwd: pwd
+        },
+        progress: {
+            title: '闸控命令发送中...',
+            text: '请稍后...',
+            modal: true
+        },
+        debug: false,
+        success: function(data, html) {
+            api.hideProgress();
+
+            api.alert({
+                title: '闸控',
+                msg: data.message
+            }, function(ret, err) {
+                if (data.code == 200) {
+                    api.closeFrame();
+                }
+            });
+        }
+    });
+}
+</script>
+
+</html>

@@ -1,0 +1,267 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>title</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <style>
+        * {
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            /* Firefox */
+            -webkit-box-sizing: border-box;
+            /* Safari */
+        }
+
+        body {
+            background-color: #fff;
+            font-size: 0.8rem;
+        }
+
+        #header {
+            width: 100%;
+            height: 0px;
+            /*background-image: url(../image/logo.png);
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+            -moz-background-size: 100% 100%;*/
+        }
+
+        #content {
+            margin-top: 10px;
+        }
+
+        .loginform li {
+            border: none;
+        }
+
+        .loginform .aui-list-item-label {
+            font-family: PingFangSC-Regular, "PingFang SC";
+            font-style: normal;
+            color: rgb(153, 153, 153);
+            border-width: 0px;
+            width: 80px;
+        }
+
+        .loginform .aui-list-item-input input {
+            padding-left: 5px;
+            font-family: ArialMT, Arial;
+            font-style: normal;
+            text-align: left;
+            outline-style: none;
+            text-decoration: none;
+            border-color: transparent;
+        }
+
+        .loginform .aui-list-item {
+            border: 1px solid #dddddd;
+            margin: 10px;
+            background: none;
+        }
+
+        .loginform .btnlogin {
+            height: 50px;
+            line-height: 50px;
+            font-size: 0.8rem;
+            box-shadow: none;
+            font-family: PingFangSC-Regular, "PingFang SC";
+            font-style: normal;
+            border-width: initial;
+            border-style: none;
+            border-color: initial;
+            border-image: initial;
+            border-radius: 46px;
+        }
+
+        #footer {
+            text-align: center;
+        }
+
+        #footer .left {
+            display: inline-block;
+            vertical-align: middle;
+            /*height: 40px;
+          vertical-align: middle;
+          display: inline-block;
+          line-height: 40px;*/
+            font-size: 0.6rem;
+        }
+
+        #footer .right {
+            display: inline-block;
+            vertical-align: middle;
+            /*height: 40px;
+          vertical-align: middle;
+          display: inline-block;
+          line-height: 40px;*/
+        }
+
+        .center {
+            width: 100%;
+            margin: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            -webkit-transform: translate(-50%, -50%);
+            -ms-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header" style="position:relative;">
+        <img src="../image/logo.png" width="100%" height="100%">
+        <div class="center" style="text-align:center;vertical-align:middle;">
+            <div style="text-align:center;width:100%;"><img style="display:inline-block;" src="../image/water.png" width="100" height="100"></div>
+            <div style="font-size:1.5rem;color:#fff;font-weight:bold;">
+              吉木乃县</br>
+              智慧水利
+            </div>
+            <div style="font-size:1.5rem;color:#fff;">综合管理平台</div>
+        </div>
+    </div>
+    <div id="contentbody">
+        <div id="content" class="aui-content aui-margin-b-15">
+            <div class="loginform">
+                <ul class="aui-list aui-form-list" style="border:none;background:none;">
+                    <li class="aui-list-item">
+                        <div class="aui-list-item-inner">
+                            <div class="aui-list-item-label">
+                                用户名
+                            </div>
+                            <div class="aui-list-item-input">
+                                <input v-model="username" id="username" type="text" placeholder="请输入用户名">
+                            </div>
+                        </div>
+                    </li>
+                    <li class="aui-list-item">
+                        <div class="aui-list-item-inner">
+                            <div class="aui-list-item-label">
+                                密码
+                            </div>
+                            <div class="aui-list-item-input">
+                                <input v-model="password" id="password" type="password" placeholder="请输入密码">
+                            </div>
+                        </div>
+                    </li>
+                    <li class="aui-list-item" style="border:none;padding:0px">
+                        <p>
+                            <div v-on:click="login" class="btnlogin aui-btn aui-btn-info aui-btn-block aui-btn-sm">登录</div>
+                        </p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div id="footer" style="margin-top:20px;">
+            <div class="left">
+                <span>阿勒泰地区吉木乃县管理处</span>
+                <br/>
+                <span>成都万江港利科技股份有限公司</span>
+            </div>
+            <span style="vertical-align:middle;width:2px;height:30px;background-color:#dddddd;"></span>
+            <div class="right">编制</div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/aui-toast.js"></script>
+<script type="text/javascript" src="../script/wj-framework.js"></script>
+<script type="text/javascript" src="../script/wj-ajax.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        var headermaxheight = 400; //header最大高度
+        var contentbodyheight = $api.cssVal($api.dom('#contentbody'), 'height').replace("px", "");
+        var headerallowmaxheight = api.winHeight - contentbodyheight - 50; //header实际允许高度,预留50高度
+        if (headerallowmaxheight > headermaxheight) {
+            //如此设计可以避免滚动条
+            headerallowmaxheight = headermaxheight;
+        }
+
+        $api.css($api.dom('#header'), 'height:' + headerallowmaxheight + 'px;'); //
+        var pageParamdata = api.pageParam.data; //接收传递的参数
+        var deflogininfo = {
+            username: '',
+            password: '',
+            autologin: false //是否自动登录
+        };
+        if (pageParamdata) {
+            deflogininfo = {
+                username: pageParamdata.username,
+                password: pageParamdata.password,
+                autologin: pageParamdata.autologin //是否自动登录
+            }
+        }
+        var toast = new auiToast();
+        ////处理业务
+        new Vue({
+            el: '#content',
+            data: deflogininfo,
+            methods: {
+                login: function() {
+                    if (StringNullOrEmpty(this.username)) {
+                        api.toast({
+                            msg: '请输入用户名'
+                        });
+                        return;
+                    }
+                    if (StringNullOrEmpty(this.password)) {
+                        api.toast({
+                            msg: '请输入密码'
+                        });
+                        return;
+                    }
+                    $api.setStorage("loginaccount", {
+                        username: this.username,
+                        password: this.password
+                    }); //记录登录帐号，用于下次直接登录
+                    var that = this;
+                    toast.loading({
+                        title: that.autologin ? '自动登录中...' : "登录中...",
+                        duration: 20000 //等待20秒
+                    });
+                    var that = this;
+                    wjbasepost($api.getStorage('loginserviceurl'), '',{ToolId:'IR',Uid:this.username,Pwd:this.password}, function(ret, err) {
+                        toast.hide();
+                        if (ret) {
+                            if (ret.Code==200&&ret.Message=='OK') {
+                                $api.setStorage("logininfo", ret.Data); //记录登录用户信息
+                                ////跳转到主页
+                                api.sendEvent({
+                                    name: 'viewappear',
+                                    extra: {
+                                        toview: 'home',
+                                        fromview: 'login',
+                                        data: {}
+                                    }
+                                });
+                            } else {
+                                api.alert({
+                                    msg: '登录失败， 用户名或密码不正确!'
+                                });
+                            }
+                        } else {
+                            api.alert({
+                                msg: '登录失败， 可能网络异常!'
+                            });
+                        }
+                    });
+
+                }
+            },
+            created: function() {
+                //让其自动登录
+                if (this.autologin && this.username && this.password) {
+                    this.login();
+                }
+            }
+        });
+    };
+</script>
+
+</html>

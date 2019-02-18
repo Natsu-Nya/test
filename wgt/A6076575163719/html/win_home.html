@@ -1,0 +1,324 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>底部导航</title>
+    <link rel="stylesheet" type="text/css" href="../css/lib/mint-ui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/css/win_home.css" />
+    <script type="text/javascript" src="../script/lib/api.js"></script>
+    <script type="text/javascript" src="../script/lib/vue.min.js"></script>
+    <script type="text/javascript" src="../script/lib/mint-ui.js"></script>
+    <script type="text/javascript" src="../script/lib/flexible.js"></script>
+    <script type="text/javascript" src="../script/wj-ajax.js"></script>
+    <style type="text/css">
+
+    </style>
+</head>
+
+<body>
+    <div id="wrap" class="flex-wrap flex-vertical">
+        <header class="type1" id="header" v-show="showHeader">
+            <ul>
+                <li class="type1">
+                    <div class="item-left" tapmode="hover"  @click="openSgsSelect">
+                        <span class="sgs-name" v-text="sgsName"></span>
+                        <span class="bottom-arrow"></span>
+                    </div>
+                    <div class="item-right">
+                        <div id="weather" v-html="weather.str"></div>
+                    </div>
+                    <!-- <select id="select" v-show="0" style="" v-model="sgsId" @change="sgsChange">
+                      <option v-for="item in sgsData" :value="item.Id">{{item.Name}}</option>
+                    </select> -->
+                </li>
+                <!-- <li class="type2">
+                    <div class="item-left"></div>
+                    <div class="item-center">
+                        <div class="title">欢迎您，工作人员!</div>
+                    </div>
+                    <div class="item-right">返回首页</div>
+                </li> -->
+
+            </ul>
+        </header>
+        <div id="main" class="flex-con">
+
+        </div>
+        <div id="footer" class="border-t">
+            <ul class="flex-wrap">
+                <li tapmode="hover" @click="randomSwitchBtn(index)" v-for="(item,index) in tabbarArrState" class="flex-con" :class="{active:tabbarArrState[index].active}">
+                    <div class="img"></div>
+                    <div class="label" v-text="item.label"></div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+
+</html>
+
+<script type="text/javascript">
+    function openwin_accountinfo() {
+        api.openWin({
+            name: 'win_accountinfo',
+            url: 'win_accountinfo.html',
+            bounces: false,
+            slidBackEnabled: true,
+            vScrollBarEnabled: false,
+            pageParam: {
+                data: {}
+            }
+        });
+    };
+
+    var myVue;
+    apiready = function() {
+        /*----------YHB2018/5/14---------*/
+        var pageParam=api.pageParam.name;
+
+        $api.fixStatusBar($api.dom('header'));
+        api.setStatusBarStyle({
+            style: 'light',
+            color: '#1875F0'
+        });
+
+        ////注意打开前必须先关闭group
+        api.closeFrameGroup({
+            name: 'group'
+        });
+        var headerHeight=$api.dom('header').offsetHeight;
+        var mainHeight=$api.dom('#main').offsetHeight;
+        ////处理业务
+        myVue = new Vue({
+            el: '#wrap',
+            data: {
+                PollingtNum: 0,
+                ProjectId: '',
+                showHeader:true,
+                tabbarArrState:[
+                    {label:'消息',pathName:'message',active:false,showHeader:true},
+                    {label:'视频监控',pathName:'vedio',active:false,showHeader:false},
+                    {label:'移动办公',pathName:'index',active:true,showHeader:true},
+                    {label:'通讯录',pathName:'',active:false,showHeader:true},
+                    {label:'我的',pathName:'personalcenter',active:false,showHeader:false},
+                ],
+                projectData: [], //工程列表
+                sgsId:'',//水管所id
+                sgsName:'',//水管所名称
+                sgsData:[],//水管所数据
+                sgsDataName:[],
+                weather:{str:''},//天气
+            },
+            methods: {
+                // 随意切换按钮
+                randomSwitchBtn:function(index) {
+                    if(!this.tabbarArrState[index].pathName){
+                        api.alert({
+                            msg: '功能暂未开放!'
+                        });
+                        return false;
+                    };
+                    this.showHeader=this.tabbarArrState[index].showHeader;
+                    api.setFrameGroupIndex({
+                        name: 'group',
+                        index: index,
+                        reload:index===1||false,
+                    });
+                    api.setFrameGroupAttr({
+                        name: 'group',
+                        rect: {
+                            //x: 0,
+                            y:this.showHeader?headerHeight:0,
+                            //w: api.winWidth,
+                            h:this.showHeader?mainHeight:mainHeight+headerHeight
+                        },
+                    });
+                    this.tabbarArrState.forEach(function(item,i,arr){
+                        if(i==index){
+                            arr[i].active=true;
+                            if(i==0){
+
+                            }else if(i==1){
+                                // var jsfun = "RefreshData();";
+                                // api.execScript({
+                                //     name: 'root',
+                                //     frameName: 'frame3',
+                                //     script: jsfun
+                                // });
+                            }
+                        }else{
+                            arr[i].active=false;
+                        }
+                    });
+
+                },
+                sgsChange:function(){
+                    var jsfun = "sgsChangevalue('"+this.sgsId+"');";
+                    api.execScript({
+                        name: 'root',
+                        frameName: 'frame0',
+                        script: jsfun
+                    });
+                },
+                openSgsSelect:function(){
+                    var that=this;
+                    api.actionSheet({
+                        title: '选择水管所',
+                        cancelTitle: '取消',
+                        destructiveTitle: '',
+                        buttons: this.sgsDataName
+                    }, function(ret, err) {
+                        if(ret.buttonIndex<=that.sgsDataName.length){
+                            var index = ret.buttonIndex-1;
+                            that.sgsName=that.sgsData[index].Name;
+                            that.sgsId=that.sgsData[index].Id;
+                        }
+                    });
+                },
+                getSgsdata: function() {//水管所
+                    var that = this;
+                    wjget("Home/GetOrganizations?bl=false", function(ret, err) {
+
+                        if (ret) {
+                            if (ret.Code == 200 && ret.Data) {
+                                that.sgsData = ret.Data;
+                                that.sgsData.unshift({Name:'全部区域',Id:0});
+                                //if(that.sgsData[0]){
+                                //console.log(that.sgsData[1].Id,'123455')
+                                    that.sgsId=that.sgsData[0].Id;
+                                    that.sgsName=that.sgsData[0].Name;
+                                    that.sgsData.forEach(function(item){
+                                        that.sgsDataName.push(item.Name);
+                                    })
+                                    //that.sgsChange();
+
+                                //}
+
+                            }
+                        }else{
+                            api.alert({
+                                msg: '网络异常,请重新加载!'
+                            });
+                        }
+                    });
+                },
+                getpollingtnum: function() {
+                    var that = this;
+                    wjget("AppHome/GetPollingtNum", function(ret, err) {
+                        if (ret) {
+                            if (ret.Code == 200 && ret.Data) {
+                                that.PollingtNum = ret.Data;
+                            }
+                        }
+
+                        ////延迟10秒再次执行
+                        setTimeout(function() {
+                            that.getpollingtnum();
+                        }, 10000);
+                    });
+                },
+                getWeather:function(){//获取天气
+                    var that=this;
+                    wjget("Daily_Forecast/GetIntradayWeather", function(ret, err) {
+                        console.log(JSON.stringify(ret))
+                        if(ret.Code==200&&ret.Data){
+                            that.weather=ret.Data;
+                            //that.weather.str='白天 <img src="../image/weather/'+that.weather.cond_code_d+'.png"/> <span style="color:#fff">'+that.weather.cond_txt_d+'</span> 夜间 <img src="../image/weather/'+that.weather.cond_code_n+'.png"/> <span style="color:#fff">'+that.weather.cond_txt_n+'</span> <span style="color:#fff">'+that.weather.wind_dir+'</span> <span style="color:#fff">'+that.weather.wind_sc+'级</span>';
+                            that.weather.str='<img src="../image/weather/'+that.weather.cond_code_d+'.png"/> <span style="color:#fff">'+that.weather.cond_txt_d+'</span> <span style="color:#fff">'+that.weather.wind_dir+'</span> <span style="color:#fff">'+that.weather.wind_sc+'级</span>';
+                        }else{
+                            that.$toast({
+                                message: '天气获取失败!',
+                                iconClass:'mintui mintui-field-error',
+                                 duration: 2000
+                            });
+                        }
+                    })
+                },
+                exit: function(type) {
+                    var that = this;
+                    //跳转到登录
+                    api.sendEvent({
+                        name: 'viewappear',
+                        extra: {
+                            toview: 'login',
+                            fromview: 'home'
+                        }
+                    });
+                },
+                initTabbarGroup:function(){//初始化tabbar
+                    var frames = [],index;
+                    for (var i = 0;i<this.tabbarArrState.length;i++) {
+                        frames.push({
+                            name: 'frm_' + this.tabbarArrState[i].pathName,
+                            url: '../html/frm_' +this.tabbarArrState[i].pathName+ '.html',
+                            bgColor: 'rgba(0,0,0,.2)',
+                            bounces: false
+                        });
+                        this.tabbarArrState[i].active&&(index=i);
+                    }
+                    this.showHeader=this.tabbarArrState[index].showHeader;
+                    //首次默认打开的页面
+                    api.openFrameGroup({
+                        name: 'group',
+                        scrollEnabled: false,//左右滑动切换
+                        rect: {
+                            x: 0,
+                            y: this.showHeader?$api.dom('header').offsetHeight:0,
+                            w: api.winWidth,
+                            h: $api.dom('#main').offsetHeight
+                        },
+                        index:index,
+                        preload:0,//预加载页面数量
+                        frames: frames
+                    }, function(ret, err) {
+                        //this.randomSwitchBtn(ret.index);
+                    }.bind(this));
+                },
+                ShowAccountInfo: function() {
+                    openwin_accountinfo();
+                }
+            },
+            created: function() {
+                //this.getpollingtnum();
+                this.getSgsdata();
+                this.getWeather();
+                this.initTabbarGroup();
+            },
+            mounted:function(){
+                
+            }
+        })
+
+        api.addEventListener({
+            name: 'keyback'
+        }, function(ret, err) {//关闭当前window
+            console.log(JSON.stringify(frameNameArr));
+            console.log(JSON.stringify(ret));
+            console.log(JSON.stringify(err));
+            if(frameNameArr.length>0){
+                 api.closeFrame({
+                      name:frameNameArr[frameNameArr.length-1]
+                 })
+                 frameNameArr.pop();
+             }else{
+                 api.closeFrame({
+                     name: 'frm_vedio'
+                 });
+                  vedioLogout();
+             }
+        });
+    }
+    var frameNameArr=[];
+    function pushframe(name){
+        frameNameArr.push(name);
+    }
+    function vedioLogout(){
+        myVue.randomSwitchBtn(2);
+    }
+    function cleanFrameArr(){
+        frameNameArr.splice(0,frameNameArr.length);
+    }
+</script>

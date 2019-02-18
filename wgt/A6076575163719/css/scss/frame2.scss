@@ -1,0 +1,47 @@
+@import "common.scss";
+html,body{
+    height: 100%;
+}
+#vedioPage{
+  height: 100%;
+  background-color: #999;
+}
+#addressView{
+    height:1.46rem;
+    // line-height: 1.46rem;
+    background-color: #FCFDFF;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    position: relative;
+    span{
+        @include fontStyle(0.4rem,#7E87AD);
+    }
+    .projectName{
+        color: #64697B;
+        padding-left: 0.4rem;
+    }
+    .gateName{
+        padding-left: 0.533333rem;
+    }
+
+    .rightArrow{
+        @include allArrow($type:right,$right:0.4rem,$color: #979797);
+        position: absolute !important;
+        right: 0.86rem;
+    }
+}
+.active{
+
+}
+#vedio-content{
+
+}
+.noVedio{
+    height:calc(100% - 1.46rem);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    @include fontStyle(0.32rem,#64697B);
+    background-color: #fff;
+}

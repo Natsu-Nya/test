@@ -1,0 +1,103 @@
+@import './common.scss';
+
+#waitDealWork{
+    overflow: scroll;
+    height:100%;
+    background: #fff;
+    ul{
+        padding-left:0.4rem;
+        margin-bottom:0.4rem;
+        border-top: 1px solid #E4E7F0;
+        border-bottom: 1px solid #E4E7F0;
+        li{
+            padding-top:0.4rem;
+            border-bottom: 1px solid #E4E7F0;
+            display: flex;
+            flex-direction:column;
+            &:last-child{
+                border-bottom: 0;
+            }
+            .top{
+                display: flex;
+                flex-direction:row;
+                .imgbox{
+                    margin-top:0.053333rem;
+                    width:0.826667rem;
+                    .img{
+                        width:0.426667rem;
+                        height:0.426667rem;
+                        background: url('../../image/waitdealwork.png') no-repeat center;
+                        background-size: 0.426667rem 0.426667rem;
+                    }
+
+                }
+                .infobox{
+                    // border-bottom: 1px dashed #E4E7F0;
+                    width:calc(100% - 0.826667rem);
+                    .name-model{
+                        line-height: 0.533333rem;
+                        height: 0.533333rem;
+                        .name{
+                            font-size: 0.373333rem;
+                            font-weight: bold;
+                            color:#64697B;
+                            min-width: 4.0rem;
+                        }
+                    }
+                    .data{
+                        padding-right:0.4rem;
+                        padding-bottom: 0.213333rem;
+
+                        .item{
+                            display: flex;
+                            flex-direction:row;
+                            margin-top: 0.106667rem;
+                            .text-value{
+                                width:50%;
+                                height:0.56rem;
+                                line-height: 0.56rem;
+                                color:#A1A6BB;
+                                font-size: 0.373333rem;
+                                .icon{
+                                    width: 0.373333rem;
+                                    height: 0.373333rem;
+                                    vertical-align: middle;
+                                }
+                                .time{
+                                    font-size: 0.32rem;
+                                }
+                                .value{
+                                    font-family:'Arial';
+                                    color:#64697B;
+                                    font-size: 0.453333rem;
+                                    font-style: italic;
+                                }
+                            }
+                            .content{
+                                line-height:0.533333rem;
+                                height: 1.066667rem;
+                                color:#7E87AD;
+                                font-size: 0.346667rem;
+                                display: -webkit-box;
+                                -webkit-box-orient: vertical;
+                                -webkit-line-clamp:2;
+                                overflow: hidden;
+                                text-overflow:ellipsis;
+                            }
+                        }
+
+                    }
+                }
+            }
+            .bottom{
+                text-align: right;
+                .btn{
+                    margin:0.266667rem 0.4rem 0.266667rem 0;
+                    @include tag($lineHeight:0.586667rem);
+                    @include active;
+                }
+            }
+
+        }
+    }
+}

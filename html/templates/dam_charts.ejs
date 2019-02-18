@@ -1,0 +1,23 @@
+<% _.each(rows, function(item) { %>
+    <div class="panel">
+        <div class="panel-heading">
+            <h2><%= item.name %></h2>
+        </div>
+        <% _.each(item.charts, function(chart) { %>
+            <div class="chart-block">
+                <div class="chart-block-header">
+                    <div class="title"><% if (chart.chartType == 'wl') { %>渗压水位过程线<% } else { %>渗压值过程线<% } %></div>
+                </div>
+                <div class="chart-block-main">
+                    <div id="<%= chart.chartId %>" style="height: 280px;"></div>
+                </div>
+                <!--
+                <div class="line-dotted"></div>
+                <div class="chart-block-footer clearfix">
+                    <div class="btn pull-right" tapmode="highlight" onclick="fullVolume();">全屏查看</div>
+                </div>
+                -->
+            </div>
+        <% }); %>
+    </div>
+<% }); %>

@@ -1,0 +1,62 @@
+@import "common.scss";
+@import "header.scss";
+.warn-title{
+    height:1.24rem;
+    border-bottom: 1px solid #E4E7F0;
+    line-height: 1.24rem;
+    margin: 0 0.4rem;
+    .warn-time{
+        @include fontStyle(0.32rem,#A1A6BB);
+        float: right;
+    }
+    .warn-name{
+        @include fontStyle(0.346667rem,#1875F0);
+        float: left;
+    }
+}
+
+.warn-main{
+    padding: 0.4rem;
+    border-bottom: 1px solid #E4E7F0;
+    display: flex;
+    .warn-img{
+        @include background($bgImg:bottombtn0401,$bgSizeX:100%,$bgSizeY:100%);
+        width: 4%;
+        height: 0.4rem;
+        vertical-align: top;
+    }
+    .warn-content{
+        width:96%;
+        height: 100%;
+        padding-left: 0.4rem;
+        h3{
+            @include fontStyle(0.4rem,#222328);
+        }
+        .warn-msg{
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.16rem;
+            span{
+                @include fontStyle(0.346667rem,#A1A6BB);
+            }
+            i{
+                color: #E55757;
+                &.num{
+                    font-size: 0.453333rem;
+                }
+            }
+            .item-msg{
+                display: flex;
+
+            }
+            .msg-right{
+                @include fontStyle(0.346667rem,#A1A6BB);
+            }
+        }
+        .water-wrap{
+            p{
+                @include fontStyle(0.346667rem,#A1A6BB);
+            }
+        }
+    }
+}

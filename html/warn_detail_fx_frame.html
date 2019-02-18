@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>warn detail fx frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/glyphicons.css" />
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+    }
+
+    .calendar {
+        height: 300px;
+        background: rgba(255, 255, 255, 1);
+        border: 1px solid rgba(228, 231, 240, 1);
+    }
+
+    .abc {
+        height: 50px;
+        line-height: 50px;
+        position: relative;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
+    .abc .warn {
+        height: 50px;
+        font-size: 15px;
+        color: rgba(126, 135, 173, 1);
+        line-height: 50px;
+
+        position: absolute;
+        right: 15px;
+        top: 0px;
+    }
+
+    .abc .datatime {
+        height: 50px;
+        font-size: 15px;
+        color: rgba(34, 35, 40, 1);
+        line-height: 50px;
+        font-weight: bold;
+    }
+
+    .collapse {
+        display: none;
+    }
+
+    .collapse.in {
+        display: block;
+    }
+
+    .media-collapse {
+        background: rgba(228, 231, 240, 0.2);
+        box-sizing: border-box;
+        padding: 12px;
+        margin-right: -15px;
+        margin-top: 15px;
+    }
+
+    .media-collapse p {
+        height: 16px;
+        font-size: 12px;
+        color: rgba(161, 166, 187, 1);
+        line-height: 16px;
+    }
+
+    .media-collapse p strong {
+        font-size: 12px;
+        color: rgba(34, 35, 40, 1);
+    }
+
+    .media-heading {
+        height: 21px;
+        font-size: 15px;
+        color: rgba(34, 35, 40, 1);
+        line-height: 21px;
+    }
+
+    .media .media-right {
+    }
+    
+    .media .collapse-arrow {
+        background: url(../image/arrow_up.png);
+        background-repeat: no-repeat;
+        background-size: 13px 7px;
+        background-position: right 0px center;
+    }
+
+    .media .collapse-arrow.in {
+        background: url(../image/arrow_down.png);
+        background-repeat: no-repeat;
+        background-size: 13px 7px;
+        background-position: right 0px center;
+    }
+    </style>
+</head>
+
+<body class="flex-box-v">
+    <div id="calendar1" class="calendar">
+    </div>
+    <div class="abc">
+        <div class="datatime">2018年05月06日</div>
+        <div class="warn">预警信息: <strong>3</strong>条</div>
+    </div>
+    <div id="mediaList" class="media-warp">
+        <div class="media" tapmode="active">
+            <div class="media-left">
+                <span class="label label-danger">危险</span>
+            </div>
+            <div class="media-body">
+                <h4 class="media-heading">水位 21.33m>20.00m</h4>
+                <p class="media-footing">
+                    2018.06.09 22:40:00 - 2018.06.09 22:50:00
+                </p>
+            </div>
+            <div class="media-right collapse-arrow">&nbsp;</div>
+            <div class="media-collapse collapse">
+                <p><strong>水位 20.34m>20.00m (警戒线)</strong> <span>2018.06.05 23:30:00</span></p>
+                <p><strong>水位 20.34m>20.00m (警戒线)</strong> <span>2018.06.05 23:30:00</span></p>
+                <p><strong>水位 20.34m>20.00m (警戒线)</strong> <span>2018.06.05 23:30:00</span></p>
+            </div>
+        </div>
+        <div class="media" tapmode="active">
+            <div class="media-left">
+                <span class="label label-danger">危险</span>
+            </div>
+            <div class="media-body">
+                <h4 class="media-heading">水位 21.33m>20.00m</h4>
+                <p class="media-footing">
+                    2018.06.04 22:40:00 - 2018.06.05 00:50:00
+                </p>
+            </div>
+            <div class="media-right">
+            </div>
+        </div>
+        <div class="media" tapmode="active">
+            <div class="media-left">
+                <span class="label label-warning">警告</span>
+            </div>
+            <div class="media-body">
+                <h4 class="media-heading">水位 21.33m>20.00m</h4>
+                <p class="media-footing">
+                    2018.06.04 22:40:00 - 2018.06.05 00:50:00
+                </p>
+            </div>
+            <div class="media-right">
+            </div>
+        </div>
+        <div class="media" tapmode="active">
+            <div class="media-left">
+                <span class="label label-warning">警告</span>
+            </div>
+            <div class="media-body">
+                <h4 class="media-heading">水位 21.33m>20.00m</h4>
+                <p class="media-footing">
+                    2018.06.02 22:40:00 - 2018.06.03 00:50:00
+                </p>
+            </div>
+            <div class="media-right">
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/listview.js"></script>
+<script type="text/javascript">
+var UICalendar1 = null;
+
+var lstMedia = LDListView('#mediaList', '.media', function(index) {
+
+});
+
+function test() {
+    var $calendar1 = document.querySelector('#calendar1');
+    var rect = $api.offset($calendar1);
+
+    UICalendar1 = api.require('UICalendar');
+    UICalendar1.open({
+        rect: {
+            x: rect.l,
+            y: rect.t,
+            w: rect.w,
+            h: rect.h
+        },
+        styles: {
+            bg: 'rgba(0,0,0,0)',
+            week: {
+                weekdayColor: '#3b3b3b',
+                weekendColor: '#a8d400',
+                size: 12
+            },
+            date: {
+                color: '#3b3b3b',
+                selectedColor: '#fff',
+                selectedBg: '#a8d500',
+                size: 12
+            },
+            today: {
+                color: 'rgb(230,46,37)',
+                bg: '#ff0'
+            },
+            specialDate: {
+                color: '#a8d500',
+                bg: '#f00'
+            }
+        },
+        specialDate: [{
+            date: '2018-06-26'
+        }],
+        switchMode: 'none',
+        fixedOn: api.frameName,
+        fixed: false
+    }, function(ret, err) {
+        // if (ret) {
+        //     alert(JSON.stringify(ret));
+        // } else {
+        //     alert(JSON.stringify(err));
+        // }
+    });
+}
+
+apiready = function() {
+    test();
+};
+</script>
+
+</html>

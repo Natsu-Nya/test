@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>project detail frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/glyphicons.css" />
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+    }
+
+    .photos {
+        box-sizing: border-box;
+    }
+
+    .photos .photo {
+        box-sizing: border-box;
+        /*padding: 15px;*/
+        padding: 15px;
+        padding-bottom: 0px;
+    }
+
+    .photos .photo.left {
+        padding-right: 8px;
+    }
+
+    .photos .photo.right {
+        padding-left: 8px;
+    }
+
+    .photos img {
+        height: 165px;
+        width: 100%;
+        border-radius: 5px;
+    }
+
+    .photos .photo-title {
+        font-size: 15px;
+        color: rgba(34, 35, 40, 1);
+        line-height: 18px;
+    }
+
+    .photos .datetime {
+        height: 18px;
+        font-size: 12px;
+        color: rgba(126, 135, 173, 1);
+        line-height: 18px;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="tab">
+        <div class="tab-warp">
+            <ul class="tabs list-unstyled">
+                <li class="tab-item active" tapmode data-toggle="rtdetail">基本信息</li>
+                <li class="tab-item" tapmode data-toggle="rtphoto">工程图片</li>
+                <li class="tab-item" tapmode data-toggle="rtfile">工程文档</li>
+            </ul>
+        </div>
+    </div>
+    <div class="tab-content">
+        <div class="tab-pane active" id="rtdetail">
+        </div>
+        <div class="tab-pane" id="rtphoto">
+            <div class="photos">
+            </div>
+        </div>
+        <div class="tab-pane" id="rtfile">
+            <div id="search" tapmode onclick="openSearchWindow();">
+                <div class="search-warp">
+                    <input type="text" placeholder="输入关键字名称查找" readonly="readonly">
+                </div>
+            </div>
+            <div id="file_con">
+                <div class="panel">
+                    <div class="panel-heading">
+                        <h2>附件:</h2>
+                    </div>
+                    <div id="fileList" class="media-warp">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/tab.js"></script>
+<script type="text/javascript" src="../script/searchbar.js"></script>
+<script type="text/javascript" src="../script/onlinefile.js"></script>
+<script type="text/javascript" src="../script/underscore-min.js"></script>
+<script type="text/javascript" src="../script/templates.js"></script>
+<script type="text/javascript">
+var tab = new LDTab(),
+    searchBar = null,
+    photoBrowser = null,
+    onlineFile = null,
+    photoImages = [],
+    $detail = document.querySelector('#rtdetail'),
+    $photo = document.querySelector('#rtphoto .photos'),
+    $file = document.querySelector('#fileList');
+
+apiready = function() {
+    var UISearchBar = api.require('UISearchBar');
+    searchBar = new LDSearchBar(UISearchBar, '输入关键字名称查找', function(ret) {
+        loadFile(ret.text);
+    });
+    photoBrowser = api.require('photoBrowser');
+    onlineFile = new app.OnlineFile();
+
+    loadDetail();
+};
+
+function loadDetail() {
+    app.ajax({
+        url: app.urls.project_detail,
+        data: {
+            projectId: api.pageParam.id,
+        },
+        template: JST.project_detail,
+        debug: false,
+        template_data: function(row, rows, index) {
+            row.WHReservoir = row.WHReservoir[0];
+            return row;
+        },
+        success: function(data, html) {
+            $detail.innerHTML = html;
+            loadPhoto();
+        }
+    });
+}
+
+function loadPhoto() {
+    app.ajax({
+        url: app.urls.project_photo,
+        data: {
+            projectId: api.pageParam.id,
+        },
+        template: JST.project_photo,
+        debug: false,
+        template_data: function(row, rows, index) {
+            row.SavePath = app.rootDomain + row.SavePath;
+            row.RowIndex = index;
+            photoImages.push(row.SavePath);
+            return row;
+        },
+        success: function(data, html) {
+            $photo.innerHTML = html;
+            loadFile();
+        }
+    });
+}
+
+function loadFile(name) {
+    app.ajax({
+        url: app.urls.project_file,
+        data: {
+            projectId: api.pageParam.id,
+            name: name || ''
+        },
+        template: JST.project_file,
+        debug: false,
+        template_data: function(row, rows, index) {
+            row.SavePath = app.rootDomain + row.SavePath;
+            row.FileType = onlineFile.getFileType(row.SavePath);
+            return row;
+        },
+        success: function(data, html) {
+            api.hideProgress();
+            app.refreshHeaderLoadDone();
+            $file.innerHTML = html;
+        }
+    });
+}
+
+function openFile(url) {
+    onlineFile.open(url);
+}
+
+function openPhoto(activeIndex) {
+    photoBrowser.open({
+        images: photoImages,
+        activeIndex: activeIndex || 0,
+        bgColor: '#000'
+    }, function(ret, err) {
+        if (ret) {
+            if (ret.eventType == 'click') {
+                photoBrowser.close();
+            }
+        } else {
+            alert(JSON.stringify(err));
+        }
+    });
+}
+
+function openSearchWindow() {
+    searchBar.open();
+}
+</script>
+
+</html>

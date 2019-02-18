@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>历史检查内容页面</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui-pull-refresh.css" />
+    <link rel="stylesheet" type="text/css" href="../css/wj-framework.css" />
+    <style>
+        .btnreport {
+            border-radius: 4px;
+            padding: 4px 6px;
+            font-size: 0.7rem;
+            color: #fff;
+            background-color: rgb(185, 0, 0);rgb(3,169,245)
+        }
+
+        .btnfinfishreport {
+            border-radius: 4px;
+            padding: 4px 6px;
+            font-size: 0.7rem;
+            color: #fff;
+            background-color: rgb(3,169,245);
+        }
+
+        .btnright {
+            border-radius: 4px;
+            border: 1px solid #dddddd;
+            padding: 4px 6px;
+            font-size: 0.7rem;
+            color: rgb(12, 171, 221);
+        }
+
+        .labitem {
+            color: rgb(12, 171, 221) !important;
+        }
+
+        .aui-list-item-input {
+            border: 1px solid #dddddd;
+            background: none;
+            border-radius: 4px;
+        }
+
+        .savebtn {
+            height: 2.5rem !important;
+            line-height: 2.5rem !important;
+            font-size: 0.8rem !important;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="content" v-cloak>
+        <section class="aui-refresh-content" style="position: absolute;top:0px;bottom: 0px;left: 0px;right: 0px;">
+            <div class="aui-content aui-margin-b-15">
+                <ul class="aui-list aui-media-list">
+                    <li class="aui-media-list">
+                        <div class="aui-list-item">
+                            <div class="aui-list-item-inner">
+                                <div class="aui-list-item-title">
+                                    <span style="vertical-align: middle;line-height:1.2rem;">巡检安排</span>
+                                    <img src="../image/clock.png" style="margin-left:10px;height:1.2rem;line-height:1.2rem;display: inline-block;vertical-align: middle;">
+                                    <span style="vertical-align: middle;font-size:0.7rem;line-height:1.2rem;">{{taskdata.StartTime|dateformat}}-{{taskdata.EndTime|dateformat}}</span>
+                                </div>
+                                <div class="aui-list-item-title aui-margin-t-10"><span class="labletitleline">检查项</span></div>
+                                <div class="aui-list-item-title aui-margin-t-10" style="height:1.2rem;">
+                                    <img v-if="taskdata.CheckStatus==0" src="../image/yiwen.png" style="height:100%;display: inline-block;vertical-align: middle;" />
+                                    <img v-if="taskdata.CheckStatus==1" src="../image/zhengchang.png" style="height:100%;display: inline-block;vertical-align: middle;" />
+                                    <img v-if="taskdata.CheckStatus==2" src="../image/cuowu.png" style="height:100%;display: inline-block;vertical-align: middle;" />
+                                    <!-- <img src="../image/right.png" style="height:100%;display: inline-block;vertical-align: middle;"> -->
+                                    <span style="vertical-align: middle;">{{taskdata.ItemName}}</span>
+                                </div>
+                                <!-- <div class="aui-list-item-title aui-margin-t-10" style="height:1rem;font-size:0.6rem;">
+                                <img src="../image/see.png" style="height:100%;display: inline-block;vertical-align: middle;">
+                                <span style="vertical-align: middle;">检查内容</span>
+                            </div> -->
+                            </div>
+                        </div>
+                    </li>
+                    <li class="aui-list-item" v-for="(item,index) in listitem">
+                        <div class="aui-media-list-item-inner">
+                            <div class="aui-list-item-inner labitem">
+                                {{item.ContentName}}
+                            </div>
+                            <div class="aui-list-item-media">
+                                <span :class="item.ProcessStatus==1 ? 'btnfinfishreport' : 'btnreport' " class="btnreport" v-on:click="errorreport(item)" v-if="item.ExceptionStatus==1">
+                                 {{item.ProcessStatus|opernameformat}}
+                             </span>
+                                <span class="btnright" v-if="item.ExceptionStatus==0">
+                                <span v-if="taskdata.CheckStatus!=0">&emsp;正常&emsp;</span>
+                                <span v-if="taskdata.CheckStatus==0">未完成</span>
+                                </span>
+                            </div>
+                        </div>
+                    </li>
+                    <!-- <li class="aui-list-item">
+                    <div class="aui-list-item-inner">
+                        <div class="aui-list-item-title labitem">备注</div>
+                        <div class="aui-list-item-right" style="max-width:100%;margin-left: 0rem;">
+                            <div class="aui-list-item-input">
+                                <textarea placeholder="填写备注"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </li> -->
+                </ul>
+            </div>
+        </section>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/aui-toast.js"></script>
+<script type="text/javascript" src="../script/aui-pull-refresh.js"></script>
+<script type="text/javascript" src="../script/wj-framework.js"></script>
+<script type="text/javascript" src="../script/wj-ajax.js"></script>
+<script type="text/javascript">
+    function openwin_errorsolve(data) {
+        api.openWin({
+            name: 'win_errorsolve',
+            url: 'win_errorsolve.html',
+            bounces: false,
+            slidBackEnabled: true,
+            vScrollBarEnabled: false,
+            pageParam: {
+                data: {
+                    LogItemId: data.LogItemId,
+                    ContentName: data.ContentName,
+                    parentview:'frm_listhischeckcontent'
+                }
+            }
+        });
+    };
+
+    ////设置问题描述内容
+    function RefreshData() {
+        myvue.loaddata(true, '刷新中...', true);
+    }
+    var myvue;
+    apiready = function() {
+        var pageParamdata = api.pageParam.data; //接收传递的参数
+        var toast = new auiToast();
+        ////处理业务
+        myvue = new Vue({
+            el: '#content',
+            data: {
+                taskdata: pageParamdata,
+                listitem: []
+            },
+            filters: {
+                dateformat: function(value) {
+                    return formatDateFormat(value, 'yyyy-MM-dd').replace(/-/g, '.');
+                },
+                opernameformat: function(ProcessStatus) {
+                    if (ProcessStatus == 1) {
+                        return "处理完成";
+                    }
+
+                    return "问题处理";
+                }
+            },
+            methods: {
+                IsFinishCheck: function() {
+                    var that = this;
+                    if (that.listitem != null && that.listitem.length > 0) {
+                        for (var i = 0; i < that.listitem.length; i++) {
+                            if (that.listitem[i].CheckStatus == 0) {
+                                return false;
+                            }
+                        }
+                    }
+
+                    return true;
+                },
+                errorreport: function(item) {
+                    var that = this;
+                    openwin_errorsolve(item);
+                },
+                finishcheck: function() {
+                    //完成检查
+                    wjget("AppPolling/FinishCheckItem?LogId=" + +pageParamdata.LogId + "&ItemId=" + pageParamdata.ItemId, function(ret, err) {
+                        toast.hide();
+                        if (ret) {
+                            if (ret.Code == 200 && ret.Data) {
+                                api.alert({
+                                    msg: '完成检查成功!'
+                                }, function() {
+                                    var jsfun = "RefreshData();";
+                                    api.execScript({
+                                        name: 'win_listcheckitem',
+                                        frameName: 'frm_listcheckitem',
+                                        script: jsfun
+                                    });
+                                    api.closeWin();
+                                });
+                            } else {
+                                api.alert({
+                                    msg: '完成检查失败!'
+                                });
+                            }
+                        } else {
+                            api.alert({
+                                msg: '网络异常,请重新操作!'
+                            });
+                        }
+                    });
+                },
+                loaddata: function(isrefresh, title, ishidetoast) {
+                    var that = this;
+                    if (!ishidetoast) {
+                        toast.loading({
+                            title: title || "加载中...",
+                            duration: 20000 //等待20秒
+                        });
+                    }
+                    wjget("AppPolling/GetListCheckContent?LogId=" + pageParamdata.LogId + "&ItemId=" + pageParamdata.ItemId, function(ret, err) {
+                        toast.hide();
+                        if (ret) {
+                            if (ret.Code == 200 && ret.Data) {
+                                that.listitem = ret.Data;
+                            } else {
+                                if (!ishidetoast) {
+                                    api.alert({
+                                        msg: '数据加载失败!'
+                                    });
+                                }
+                            }
+                        } else {
+                            if (!ishidetoast) {
+                                api.alert({
+                                    msg: '网络异常,请重新加载!'
+                                });
+                            }
+                        }
+                    });
+                }
+            },
+            created: function() {
+                this.loaddata(true);
+            },
+            mounted: function() {
+                var that = this;
+                ////实现下拉刷新
+                PullToRefresh(this);
+            }
+        });
+    };
+</script>
+
+</html>

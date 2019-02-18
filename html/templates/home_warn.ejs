@@ -1,0 +1,89 @@
+<div class="title">今日预警数统计</div>
+<div class="warn flex-box-h">
+    <!-- <div class="warn-item" tapmode="highlight" data-page="fxrsvr.html">
+        <div><span class="count count-danger">3</span><span class="count count-default">/</span><span class="count count-default">7</span></div>
+        <div><span class="subtitle">水库防汛</span><span class="label label-warning">预警</span></div>
+    </div> -->
+
+    <div class="warn-item" tapmode="highlight" data-page="fxrsvr.html" onclick="goPage('fxrsvr.html');">
+        <div>
+            <% if (rsvr_alarm > 0) { %>
+                <span class="count count-danger"><%= rsvr_alarm %></span>
+            <% } else { %>
+                <span class="count count-success"><%= rsvr_alarm %></span>
+            <% } %>
+            <span class="count count-default">/</span><span class="count count-default"><%= rsvr_total %></span>
+        </div>
+        <div>
+            <span class="subtitle">水库防汛</span>
+            <% if (rsvr_alarm > 0) { %>
+                <span class="label label-warning">预警</span>
+            <% } else { %>
+                <span class="label label-success">正常</span>
+            <% } %>
+        </div>
+    </div>
+    <div class="flex-1"></div>
+    <div class="warn-item" tapmode="highlight" data-page="river.html" onclick="goPage('river.html');">
+        <div>
+            <% if (river_alarm > 0) { %>
+                <span class="count count-danger"><%= river_alarm %></span>
+            <% } else { %>
+                <span class="count count-success"><%= river_alarm %></span>
+            <% } %>
+            <span class="count count-default">/</span><span class="count count-default"><%= river_total %></span>
+        </div>
+        <div>
+            <span class="subtitle">河道水位</span>
+            <% if (river_alarm > 0) { %>
+                <span class="label label-warning">预警</span>
+            <% } else { %>
+                <span class="label label-success">正常</span>
+            <% } %>
+        </div>
+    </div>
+    <div class="flex-1"></div>
+    <div class="warn-item" tapmode="highlight" data-page="pptn.html" onclick="goPage('pptn.html');">
+        <div>
+            <% if (pptn_alarm > 0) { %>
+                <span class="count count-danger"><%= pptn_alarm %></span>
+            <% } else { %>
+                <span class="count count-success"><%= pptn_alarm %></span>
+            <% } %>
+            <span class="count count-default">/</span><span class="count count-default"><%= pptn_total %></span>
+        </div>
+        <div>
+            <span class="subtitle">降雨</span>
+            <% if (pptn_alarm > 0) { %>
+                <span class="label label-warning">预警</span>
+            <% } else { %>
+                <span class="label label-success">正常</span>
+            <% } %>
+        </div>
+    </div>
+</div>
+<div class="warn flex-box-h">
+    <div class="warn-item" tapmode="highlight" data-page="channel.html" onclick="goPage('channel.html');">
+        <div>
+            <% if (channel_alarm > 0) { %>
+                <span class="count count-danger"><%= channel_alarm %></span>
+            <% } else { %>
+                <span class="count count-success"><%= channel_alarm %></span>
+            <% } %>
+            <span class="count count-default">/</span><span class="count count-default"><%= channel_total %></span>
+        </div>
+        <div>
+            <span class="subtitle">渠道水位</span>
+            <% if (channel_alarm > 0) { %>
+                <span class="label label-warning">预警</span>
+            <% } else { %>
+                <span class="label label-success">正常</span>
+            <% } %>
+        </div>
+    </div>
+    <div class="flex-1"></div>
+    <div class="warn-item">
+    </div>
+    <div class="flex-1"></div>
+    <div class="warn-item"></div>
+</div>

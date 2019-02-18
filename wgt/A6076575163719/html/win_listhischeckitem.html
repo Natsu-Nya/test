@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>巡检项页面</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <style>
+        body {}
+    </style>
+</head>
+
+<body>
+    <header class="aui-bar aui-bar-nav" id="aui-header">
+        <a class="aui-pull-left aui-btn" tapmode onclick="closeWin()">
+            <span class="aui-iconfont aui-icon-left"></span>
+        </a>
+        <div class="aui-title" style="left:2rem;right:0rem;">{{TaskName}}-历史记录</div>
+    </header>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        //api.parseTapmode();
+        var pageParamdata = api.pageParam.data; //接收传递的参数
+        var header = $api.byId('aui-header');
+        $api.fixStatusBar(header); //可以解决ios和一些安卓状态栏重贴问题
+        var headerPos = $api.offset(header);
+        var body_h = $api.offset($api.dom('body')).h;
+        api.openFrame({
+            name: 'frm_listhischeckitem',
+            url: 'frm_listhischeckitem.html', //注意此处用相对路径，否则下拉无效
+            bounces: false,
+            rect: {
+                x: 0,
+                y: headerPos.h,
+                w: 'auto',
+                h: 'auto'
+            },
+            pageParam: {
+                data: pageParamdata
+            }
+        });
+
+        ////处理返回键事件
+        api.addEventListener({
+            name: 'keyback'
+        }, function(ret, err) {
+            //关闭当前window
+            closeWin();
+        });
+
+        ////处理业务
+        new Vue({
+            el: '#aui-header',
+            data: {
+                ProjectName: pageParamdata.ProjectName,
+                TaskName: pageParamdata.TaskName
+            },
+            methods: {
+
+            },
+            created: function() {
+
+            },
+            mounted: function() {
+                var that = this;
+            }
+        });
+    };
+
+    function closeWin() {
+        api.closeWin();
+    }
+</script>
+
+</html>

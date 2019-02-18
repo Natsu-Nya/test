@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>历史巡检记录</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui-pull-refresh.css" />
+    <link rel="stylesheet" type="text/css" href="../css/wj-framework.css" />
+    <style>
+        body {
+            background-color: #fff;
+        }
+
+        .aui-list-item,
+        .aui-list-item-input,
+        .aui-list-item-label {
+            padding-left: 0rem !important;
+            padding-right: 0rem !important;
+            text-align: center !important;
+            font-size: 0.7rem !important;
+        }
+
+        .aui-list-header {
+            font-size: 0.8rem !important;
+            background-color: rgb(239, 242, 247) !important;
+        }
+
+        .aui-list-item-inner {
+            border-top: 1px solid #e8e9eb;
+        }
+
+        .itemlable {
+            width: 50% !important;
+            min-width: 3rem !important;
+            border-right: 1px solid #e8e9eb;
+            display: inline-block !important;
+        }
+
+        .divpanel {
+            border-radius: 4px;
+            border: 6px solid rgb(239, 242, 247);
+            margin: 10px;
+        }
+
+        .detaillable {
+            float: right;
+            color: rgb(25, 171, 222);
+        }
+
+        #searchheader {
+            position: fixed;
+            width: 100%;
+            z-index: 9999;
+            background-color: rgb(230, 230, 230);
+            padding: 10px 10px 10px 0px;
+            text-align: right;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="content" v-cloak>
+        <div id="searchheader" style="color: rgb(25, 171, 222);">
+            <label><input class="aui-checkbox" type="checkbox" v-model="normalCheck" @change="checkChange" name="checkbox1" >正常</label>
+            <span style="margin-left:10px;"></span>
+            <label><input class="aui-checkbox" type="checkbox" v-model="exceptionCheck" @change="checkChange" name="checkbox2" >异常</label>
+        </div>
+        <section class="aui-refresh-content" style="position: absolute;top: 1.2rem;bottom: 0px;left: 0px;right: 0px;">
+            <div class="aui-content aui-margin-b-15" v-show="!(isloaderror&&pageIndex==1)">
+                <div class="divpanel" v-for="(item,index) in listitem">
+                    <ul class="aui-list aui-form-list">
+                        <li class="aui-list-header">
+                            <span>{{item.TaskName}}</span><span class="detaillable" v-on:click="lookdetail(item)">详情&nbsp;&#62;</span>
+                        </li>
+                        <li class="aui-list-item">
+                            <div class="aui-list-item-inner">
+                                <div class="aui-list-item-label itemlable">
+                                    问题数量
+                                </div>
+                                <div class="aui-list-item-input">
+                                    <lable v-show="item.ErrorContentNumber" style="color:red;">有{{item.ErrorContentNumber}}处问题</lable>
+                                    <lable v-show="!item.ErrorContentNumber">无</lable>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="aui-list-item">
+                            <div class="aui-list-item-inner">
+                                <div class="aui-list-item-label itemlable">
+                                    问题审批情况
+                                </div>
+                                <div class="aui-list-item-input">
+                                    <lable>{{item.AuditDetail}}</lable>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="aui-list-item">
+                            <div class="aui-list-item-inner">
+                                <div class="aui-list-item-label itemlable">
+                                    问题处理情况
+                                </div>
+                                <div class="aui-list-item-input">
+                                    <lable>{{item.ProcessDetail}}</lable>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="aui-list-item">
+                            <div class="aui-list-item-inner">
+                                <div class="aui-list-item-label itemlable">
+                                    巡检状态
+                                </div>
+                                <div class="aui-list-item-input">
+                                    <lable>{{item.PollingStatusName}}</lable>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="aui-list-item">
+                            <div class="aui-list-item-inner">
+                                <div class="aui-list-item-label itemlable">
+                                    开始时间
+                                </div>
+                                <div class="aui-list-item-input">
+                                    <lable>{{item.StartTime}}</lable>
+                                </div>
+                            </div>
+                        </li>
+                        <li class="aui-list-item">
+                            <div class="aui-list-item-inner">
+                                <div class="aui-list-item-label itemlable">
+                                    结束时间
+                                </div>
+                                <div class="aui-list-item-input">
+                                    <lable>{{item.EndTime}}</lable>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div v-show="loadfinished&&listitem.length<1" class="aui-card-list">
+                    <div class="aui-card-list-footer aui-text-center">
+                        暂无数据
+                    </div>
+                </div>
+                <div v-show="!isloaderror&&!isloadalldata&&pageIndex>1" class="aui-card-list" v-on:click="loaddata(false)">
+                    <div class="aui-card-list-footer aui-text-center">
+                        加载更多...
+                    </div>
+                </div>
+                <div v-show="isloaderror&&!isloadalldata&&pageIndex>1" class="aui-card-list" v-on:click="loaddata(false)">
+                    <div class="aui-card-list-footer aui-text-center">
+                        网络异常,点击加载更多...
+                    </div>
+                </div>
+            </div>
+            <div v-show="isloaderror&&pageIndex==1" class="recovery" v-on:click="loaddata(false)">
+                <div>
+                    <span><img src="../image/wifi.png"/></span>
+                    <p>网络异常</p>
+                    <p>点击屏幕,重新加载</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/aui-toast.js"></script>
+<script type="text/javascript" src="../script/aui-pull-refresh.js"></script>
+<script type="text/javascript" src="../script/aui-scroll.js"></script>
+<script type="text/javascript" src="../script/wj-framework.js"></script>
+<script type="text/javascript" src="../script/wj-ajax.js"></script>
+<script type="text/javascript">
+    ////更新dom属性
+    function upadtedocument() {
+        var searchheaderheight = $api.cssVal($api.dom('#searchheader'), 'height').replace("px", "");
+        var contenttopheight = parseInt(searchheaderheight);
+        $api.css($api.dom('.aui-refresh-content'), 'top:' + contenttopheight + 'px;');
+    }
+
+    function openwin_listhischeckitem(data) {
+        api.openWin({
+            name: 'win_listhischeckitem',
+            url: 'win_listhischeckitem.html',
+            bounces: false,
+            slidBackEnabled: true,
+            vScrollBarEnabled: false,
+            pageParam: {
+              data: {
+                  ProjectName: data.ProjectName,
+                  TaskName: data.TaskName,
+                  LogId: data.Logid,
+                  StartTime: data.StartTime,
+                  EndTime: data.EndTime
+              }
+            }
+        });
+    };
+
+    apiready = function() {
+        var pageParamdata = api.pageParam.data; //接收传递的参数
+        var toast = new auiToast();
+        ////处理业务
+        new Vue({
+            el: '#content',
+            data: {
+                listitem: [],
+                isloadalldata: false, //是否已经加载了所有数据
+                loadfinished: true, //当次数据加载是否完成
+                pageIndex: 1,
+                pageSize: 3,
+                totalpage: 1,
+                isloaderror: false, //是否加载异常
+                normalCheck: true, //正常
+                exceptionCheck: true, //异常
+            },
+            methods: {
+                lookdetail: function(item) {
+                    var that = this;
+                    openwin_listhischeckitem(item);
+                },
+                checkChange: function() { //复选框变化
+                    this.loaddata(true);
+                },
+                loaddata: function(isrefresh, title) {
+                    var that = this;
+                    if (!this.loadfinished) {
+                        return; //上次没有请求完，不能执行当前请求
+                    }
+                    if (isrefresh) {
+                        //刷新数据,注意恢复默认值
+                        this.pageIndex = 1;
+                        this.totalpage = 1;
+                        this.isloadalldata = false;
+                    }
+
+                    if (this.isloadalldata) {
+                        return; //没有数据了，不要加载
+                    }
+
+                    this.loadfinished = false; //标识开始加载数据
+                    toast.loading({
+                        title: title || "加载中...",
+                        duration: 20000 //等待20秒
+                    });
+
+                    // var ProjectId = 0;
+                    // if (pageParamdata && pageParamdata.ProjectId) {
+                    //     ProjectId = pageParamdata.ProjectId;
+                    // }
+
+                    var param = {
+                        // ProjectId: ProjectId,
+                        PageSize: this.pageSize,
+                        PageIndex: this.pageIndex
+                    };
+                    if (this.normalCheck && this.exceptionCheck) {
+                        param.ExceptionStatus = -1;
+                    } else if (this.normalCheck) {
+                        param.ExceptionStatus = 0;
+                    } else if (this.exceptionCheck) {
+                        param.ExceptionStatus = 1;
+                    } else {
+                        param.ExceptionStatus = -1;
+                    }
+                    var that = this;
+                    wjpost("AppPolling/GetPageListHisPollingLog", param, function(ret, err) {
+                        toast.hide();
+                        that.loadfinished = true; //标识已加载完成数据
+                        if (ret) {
+                            if (ret.Code == 200 && ret.Data) {
+                                if (isrefresh) {
+                                    that.listitem = []; //注意刷新操作需要清空数据
+                                }
+
+                                that.totalpage = Math.ceil(ret.Data.Total / that.pageSize); //向上取整获取页总数
+                                that.pageIndex = that.pageIndex + 1; //预备下一页
+                                ////将至页数大于当前总页数,不用加载了
+                                if (that.pageIndex > that.totalpage) {
+                                    that.isloadalldata = true; //标识已经加载了所有数据
+                                }
+
+                                for (var i = 0; i < ret.Data.Rows.length; i++) {
+                                    that.listitem.push(ret.Data.Rows[i]); //注意是追加数据
+                                }
+
+                                that.isloaderror = false; //标识加载正常
+                            } else {
+                                that.isloaderror = true; //标识加载异常
+                                api.alert({
+                                    msg: '数据加载失败!'
+                                });
+                            }
+                        } else {
+                            that.isloaderror = true; //标识加载异常
+                            api.alert({
+                                msg: '网络异常,请重新加载!'
+                            });
+                        }
+                    });
+                }
+            },
+            created: function() {
+                this.loaddata(true);
+            },
+            mounted: function() {
+                var that = this;
+                upadtedocument();
+                ////实现下拉刷新
+                PullToRefresh(this);
+                ////实现加载更多数据
+                LoadMoreData(this);
+            },
+            updated: function() {
+                ////注意计算高度应该在数据绑定之后，因为没数据时dom高度是0
+                upadtedocument();
+            }
+        });
+    };
+    //apiready();
+</script>
+
+</html>

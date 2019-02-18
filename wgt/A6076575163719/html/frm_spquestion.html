@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>问题审批</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/wj-framework.css" />
+    <style>
+        * {
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            /* Firefox */
+            -webkit-box-sizing: border-box;
+            /* Safari */
+        }
+
+        .btnchoice {
+            border-radius: 4px;
+            padding: 4px 6px;
+            color: #fff;
+            background-color: rgb(12, 171, 221);
+        }
+
+        body {
+            background-color: #fff;
+            font-size: 0.8rem;
+        }
+
+        .aui-list .aui-list-item:active {
+            background-color: #fff;
+        }
+
+        .aui-list {
+            background-size: 0px !important;
+            background-image: none !important;
+        }
+
+        .aui-list .aui-list-item {
+            padding-left: 0px !important;
+        }
+
+        .aui-list .aui-list-item-inner {
+            padding-right: 0px !important;
+        }
+
+        .aui-list-item-input {
+            border: 1px solid #dddddd;
+            background: none;
+            border-radius: 4px;
+        }
+
+        .aui-list-item-input textarea {
+            overflow: auto;
+            margin: 0.5rem 0;
+            height: 5rem;
+            line-height: 1rem;
+            resize: none;
+        }
+
+        .imgitempanel {
+            background-color: rgba(0, 0, 0, 0);
+            margin: 0px;
+            text-align: center;
+            position: relative;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .addimgitempanel {
+            background-color: rgb(75, 75, 75) !important;
+            border: none !important;
+        }
+
+        .imgitempanel .imgitempanel2 {
+            /*padding: 10%;*/
+            position: relative;
+            color: #fff;
+        }
+
+        .imgitempanel2 {
+            height: 100%;
+        }
+
+        .imgitemremovepanel {
+            text-align: center;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            width: 25%;
+            height: 25%;
+        }
+
+        .imgitempanel2 img {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        .savebtn {
+            height: 2.5rem !important;
+            line-height: 2.5rem !important;
+            font-size: 0.8rem !important;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="content" v-cloak>
+        <div style="margin:0.75rem;">
+            <div style="overflow:hidden;">
+                <span class="labletitleline" style="float:left;vertical-align: middle;display: inline-block;padding: 4px 0px;">问题描述</span>
+            </div>
+            <div style="">
+                <div class="aui-list-item-input" style="margin-top:10px;border:0;border-bottom: 1px solid #dddddd;">
+                    {{pageParamdata.ContentRemark}}
+                </div>
+            </div>
+            <div class="aui-content aui-margin-b-15 aui-margin-t-15">
+                <ul class="aui-list aui-media-list">
+                    <li class="aui-list-item">
+                        <div class="aui-list-item-inner">
+                            <div class="aui-row aui-row-padded">
+                                <div class="aui-col-xs-3" v-for="(item,index) in listimage">
+                                    <div class="imgitempanel">
+                                        <div class="imgitempanel2">
+                                            <img v-bind:src="getimage(item)" v-on:click="imgpreview(index)" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div style="margin-top:0.75rem;">
+                <div class="aui-list-item-input">
+                    <textarea v-model="DealingRemark" placeholder="审批描述"></textarea>
+                </div>
+            </div>
+
+            <!-- <div class="aui-content aui-margin-b-15 aui-margin-t-15">
+                <ul class="aui-list aui-media-list">
+                    <li class="aui-list-item">
+                        <div class="aui-list-item-inner">
+                            <div class="aui-row aui-row-padded">
+                                <div class="aui-col-xs-3" v-for="(item,index) in listimage">
+                                    <div class="imgitempanel">
+                                        <div class="imgitempanel2">
+                                            <img v-bind:src="getimage(item)" v-on:click="imgpreview(index)" />
+                                            <div class="imgitemremovepanel">
+                                                <img src="../image/cuowu.png" v-on:click="removeimg(index)" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="aui-col-xs-3">
+                                    <div class="imgitempanel addimgitempanel" v-on:click="addimg()">
+                                        <div class="imgitempanel2">
+                                            <div class="verticalmiddle">
+                                                <span>拍摄</span>
+                                                <br>
+                                                <span style="font-size:0.6rem;">现场图片</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div> -->
+            <div style="margin-top:0.75rem;">
+                <div v-on:click="save" class="savebtn aui-btn aui-btn-info aui-btn-block aui-btn-sm">保 存</div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/aui-toast.js"></script>
+<script type="text/javascript" src="../script/wj-framework.js"></script>
+<script type="text/javascript" src="../script/wj-ajax.js"></script>
+<script type="text/javascript" src="../script/imgCompress.js"></script>
+<script type="text/javascript" src="../script/uploadFile.js"></script>
+<script type="text/javascript">
+    var imageBrowser = null;
+    var imageFilter = null;
+
+    ////更新dom属性
+    function upadtedocument() {
+        //注意在渲染后获取高度
+        var listimgitemplane = $api.domAll('.imgitempanel');
+        for (var i = 0; i < listimgitemplane.length; i++) {
+            var el = listimgitemplane[i];
+            var imgpanelheight = $api.cssVal(el, 'width');
+            $api.css(el, "height:" + imgpanelheight);
+        }
+    }
+
+    apiready = function() {
+        var pageParamdata = api.pageParam.data; //接收传递的参数
+        console.log(JSON.stringify(pageParamdata))
+        var rootserviceurl = $api.getStorage('rootserviceurl');
+        imageBrowser = api.require('imageBrowser');
+        // 引入过滤压缩模块
+        imageFilter = api.require("imageFilter");
+        var toast = new auiToast();
+        ////处理业务
+        new Vue({
+            el: '#content',
+            data: {
+                pageParamdata:pageParamdata,
+                DealingRemark: '',
+                listimage: pageParamdata.listContentImage
+            },
+            methods: {
+                getimage: function(item) {
+                    if (!item) {
+                        return "../image/noneimg.png";
+                    } else {
+                        return rootserviceurl + item.replace('/Resource/upload/',''); //+"?v="+new Date().getTime();
+                    }
+                },
+                addimg: function() {
+                    var that = this;
+                    api.actionSheet({
+                        title: '拍摄现场照片',
+                        cancelTitle: '取消',
+                        buttons: ['开始拍照'] //, 禁止'从手机相册选择'
+                    }, function(ret, err) {
+                        if (ret) {
+                            getPicture(ret.buttonIndex, that.listimage);
+                        }
+                    });
+                },
+                removeimg: function(index) {
+                    this.listimage.splice(index, 1);
+                },
+                imgpreview: function(index) {
+                    var that = this;
+                    var activeIndex = index;
+                    var imageUrls = new Array();
+                    for (var i = 0; i < that.listimage.length; i++) {
+                        imageUrls.push(that.getimage(that.listimage[i]));
+                    }
+
+                    imageBrowser.openImages({
+                        showList: false,
+                        activeIndex: activeIndex,
+                        imageUrls: imageUrls
+                    });
+                },
+                save: function() {
+                    //上报问题
+                    var that = this;
+                    if (StringNullOrEmpty(that.DealingRemark)) {
+                        api.alert({
+                            msg: '审批描述不能为空!'
+                        });
+                        return;
+                    }
+
+                    // if (!that.listimage || that.listimage.length < 1) {
+                    //     api.alert({
+                    //         msg: '请拍摄至少一张现场图片!'
+                    //     });
+                    //     return;
+                    // }
+
+                    //var DealingImages = "";
+                    // for (var i = 0; i < that.listimage.length; i++) {
+                    //     DealingImages = DealingImages + "|" + getfilename(that.listimage[i]);//注意只要文件名
+                    // }
+                    //
+                    // if (DealingImages.substr(0, 1) == '|') {
+                    //     DealingImages = DealingImages.substr(1); //去掉多余竖杠
+                    // }
+
+                    var param = {
+                        LogItemId: pageParamdata.LogItemId,
+                        AuditContent: that.DealingRemark,
+                        //DealingImages: DealingImages
+                    };
+                    toast.loading({
+                        title: "保存中...",
+                        duration: 20000 //等待20秒
+                    });
+
+                    //开始上报问题
+                    wjpost("Polling/AuditErrorPollingItem", param, function(ret, err) {
+                        toast.hide();
+                        if (ret) {
+                            if (ret.Code == 200 && ret.Data) {
+                                api.alert({
+                                    msg: '保存成功!'
+                                }, function() {
+                                    var jsfun = "refreshData();";
+                                    api.execScript({
+                                        name: 'win_spsolve',
+                                        frameName: 'frm_spsolve',
+                                        script: jsfun
+                                    });
+                                    api.closeWin();
+                                });
+                            } else {
+                                api.alert({
+                                    msg: '保存失败!'
+                                });
+                            }
+                        } else {
+                            api.alert({
+                                msg: '网络异常,请重新保存!'
+                            });
+                        }
+                    });
+                }
+            },
+            created: function() {
+
+            },
+            mounted: function() {
+                var that = this;
+                upadtedocument();
+            },
+            updated: function() {
+                upadtedocument();
+            }
+        });
+    };
+
+    function getPicture(sourceType, listimage) {
+        if (sourceType == 1) { // 目前只允许拍照上传图片，不允许用户从本地选择图片
+            //获取一张图片
+            api.getPicture({
+                sourceType: 'camera',
+                encodingType: 'jpg',
+                mediaValue: 'pic',
+                destinationType: 'url', //返回数据类型,使用base64处理速度很慢,url路径是/storage/emulated/0/
+                allowEdit: false,
+                quality: 50, //图片质量,不要设置太高，会影响加载效率
+                saveToPhotoAlbum: false //,不保存到相册,拍照或录制视频后是否保存到相册
+            }, function(ret, err) {
+                // 获取拍照数据并处理
+                if (ret) {
+                    //alert(JSON.stringify(ret));
+                    var imgSrc = ret.data;
+                    if (imgSrc != "") {
+                        // 对图片进行压缩,减小上传流量,0.5, 0.5
+                        imgCompress(imgSrc, 0.4, 0.4, getExt(imgSrc), function(compressImg) {
+                            api.showProgress({
+                                title: '图片处理中...',
+                                text: '请耐心等待...',
+                                modal: true
+                            });
+
+                            // ################### 直接上传图片 #########################
+                            uploadFile($api.getStorage('apiserviceurl') + "/AppPolling/UploadImage", compressImg, function(serverImg) {
+                                /*加载新图片*/
+                                listimage.push(serverImg);
+                            });
+                        });
+                    }
+                } else {
+                    alert("获取图片失败，请重新拍照");
+                }
+            });
+        }
+    }
+
+    // 获取文件拓展名
+    function getExt(fileName) {
+        return fileName.substring(fileName.lastIndexOf('.') + 1);
+    }
+
+    //apiready();
+</script>
+
+</html>

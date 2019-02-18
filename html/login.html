@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>login window</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style type="text/css">
+    html,
+    body {
+        background-color: transparent;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="header"></div>
+    <div id="footer"></div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+apiready = function() {
+    var header = $api.byId('header');
+    var footer = $api.byId('footer');
+
+    var headerH = $api.fixStatusBar(header);
+    var footerH = $api.fixTabBar(footer);
+
+    api.openFrame({
+        name: 'login_frame',
+        url: 'login_frame.html',
+        bounces: false,
+        rect: {
+            marginTop: headerH,
+            marginBottom: footerH,
+            w: 'auto'
+        },
+        softInputBarEnabled: false
+    });
+
+    // 拦截Android的返回键，在首页点击返回键，提示退出应用
+    api.addEventListener({
+        name: 'keyback'
+    }, function(ret, err) {
+        api.confirm({
+            title: '提示',
+            msg: '是否退出应用',
+            buttons: ['确定', '取消']
+        }, function(ret, err) {
+            if (ret.buttonIndex == 1) {
+                // 关闭当前的主Widget，就可以实现推出APP的效果
+                api.closeWidget({
+                    silent: true //直接退出，无需提示
+                });
+            }
+        });
+    });
+};
+</script>
+
+</html>

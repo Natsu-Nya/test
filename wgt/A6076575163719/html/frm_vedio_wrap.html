@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>视频监控</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <script type="text/javascript" src="../script/lib/flexible.js"></script>
+    <link rel="stylesheet" type="text/css" href="../css/css/frm_vedio.css" />
+</head>
+
+<body>
+    <div id="vedioPage">
+        <!-- 我是视频监控页面vedio_wrap -->
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+    function closeWin() {
+        api.closeWin();
+    }
+    function videoPlay(p){
+        vm.videoPlay(p);
+    }
+    var vm;
+    apiready = function(){
+        $api.fixStatusBar($api.dom('#vedioPage'));
+        // var header = $api.byId('header');
+        // $api.fixStatusBar(header); //可以解决ios和一些安卓状态栏重贴问题
+        api.setStatusBarStyle({
+            style: 'light',
+            color: '#343851'
+        })
+        // var headerHeight = $api.cssVal($api.dom('#header'), 'height').replace("px", "");
+        // api.openFrame({
+        //     name: 'frm_vedio',
+        //     url: 'frm_vedio.html',//注意此处用相对路径，否则下拉无效
+        //     bounces: false,
+        //     rect: {
+        //         x: 0,
+        //         y: 0,
+        //         w: 'auto',
+        //         h: 'auto'
+        //     }
+        // })
+        api.openWin({
+            name: 'win_vedio',
+            url: './win_vedio.html',
+            pageParam: {
+                data: 60
+            },
+            // reload:true
+        });
+
+        // api.closeFrame();
+    };
+</script>
+
+</html>

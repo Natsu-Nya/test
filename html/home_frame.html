@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>home_frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style>
+    body {
+        /*background-color: red;*/
+    }
+
+    .highlight {
+        opacity: 0.7;
+    }
+
+    #banner {
+        position: relative;
+        height: 150px;
+        border-radius: 2px;
+        overflow: hidden;
+        padding: 15px;
+        padding-bottom: 0px;
+    }
+
+    #banner img {
+        height: 150px;
+        width: 100%;
+    }
+
+    #banner .bottom {
+        position: absolute;
+        bottom: 0px;
+        left: 15px;
+        right: 15px;
+        height: 30px;
+        line-height: 30px;
+        background: rgba(34, 35, 40, 1);
+        opacity: 0.6;
+    }
+
+    #banner .title {
+        font-size: 13px;
+        color: #ffffff;
+        text-align: left;
+        text-indent: 10px;
+    }
+
+    .split-line {
+        height: 11px;
+        background-color: #FCFCFD;
+    }
+
+    .warn-warp {
+        border-bottom: 1px solid #F0F2F6;
+        padding: 15px 15px;
+        text-align: center;
+    }
+
+    .warn-warp .title {
+        height: 21px;
+        line-height: 21px;
+        color: #222328;
+        font-size: 15px;
+        text-align: left;
+    }
+
+    .warn-warp .subtitle {
+        height: 20px;
+        line-height: 20px;
+        font-size: 14px;
+        color: rgba(100, 105, 123, 1);
+        margin-right: 4px
+    }
+
+    .warn-warp .count {
+        padding: 0, 2px;
+        height: 27px;
+        line-height: 27px;
+        font-size: 24px;
+    }
+
+    .warn-warp .count-default {
+        color: rgba(161, 166, 187, 1);
+    }
+
+    .warn-warp .count-danger {
+        color: #d9534f;
+    }
+
+    .warn-warp .count-success {
+        color: #00da68;
+    }
+
+    .warn-warp .warn {
+        margin-top: 10px;
+    }
+
+    .warn .warn-item {
+        width: 100px;
+    }
+
+    .nav-warp {
+        border-top: 1px solid #F0F2F6;
+        padding: 10px 15px;
+    }
+
+    .nav-warp .title {
+        height: 21px;
+        line-height: 21px;
+        color: #222328;
+        font-size: 15px;
+    }
+
+    .nav-warp .subtitle {
+        height: 17px;
+        line-height: 17px;
+        font-size: 12px;
+        color: rgba(100, 105, 123, 1);
+        margin-left: -1em;
+        margin-right: -1em
+    }
+
+    .nav-warp .nav {
+        margin-top: 15px;
+    }
+
+    .nav-warp .nav-item {
+        width: 50px;
+        text-align: center;
+    }
+
+    .nav-warp .nav-item img {
+        height: 50px;
+        width: 50px;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="banner" tapmode="highlight" onclick="openMessageDetailWindow();">
+        <img src="../image/home/banner.png" alt="">
+        <div class="bottom">
+            <marquee class="title" behavior="scroll" scrollamount="3">
+            </marquee>
+        </div>
+    </div>
+    <div id="today-warn" class="warn-warp">
+        <div class="title">今日预警数统计</div>
+        <div class="warn flex-box-h">
+            <!-- <div class="warn-item" tapmode="highlight" data-page="fxrsvr.html">
+                <div><span class="count count-danger">3</span><span class="count count-default">/</span><span class="count count-default">7</span></div>
+                <div><span class="subtitle">水库防汛</span><span class="label label-warning">预警</span></div>
+            </div> -->
+            <div class="warn-item" tapmode="highlight" data-page="fxrsvr.html">
+                <div><span class="count count-default">--</span></div>
+                <div><span class="subtitle">水库防汛</span></div>
+            </div>
+            <div class="flex-1"></div>
+            <div class="warn-item" tapmode="highlight" data-page="river.html">
+                <div><span class="count count-default">--</span></div>
+                <div><span class="subtitle">河道水位</span></div>
+            </div>
+            <div class="flex-1"></div>
+            <div class="warn-item" tapmode="highlight" data-page="pptn.html">
+                <div><span class="count count-default">--</span></div>
+                <div><span class="subtitle">降雨</span></div>
+            </div>
+        </div>
+        <div class="warn flex-box-h">
+            <div class="warn-item" tapmode="highlight" data-page="channel.html">
+                <div><span class="count count-default">--</span></div>
+                <div><span class="subtitle">渠道水位</span></div>
+            </div>
+            <div class="flex-1"></div>
+            <div class="warn-item">
+            </div>
+            <div class="flex-1"></div>
+            <div class="warn-item"></div>
+        </div>
+    </div>
+    <div class="split-line"></div>
+    <div id="main">
+        <div class="nav-warp">
+            <div class="title">水资源管理</div>
+            <div class="nav flex-box-h">
+                <div class="nav-item" tapmode="highlight" data-page="rsvr.html">
+                    <img src="../image/home/nav/shape_shuiku.png">
+                    <div class="subtitle">水库监测</div>
+                </div>
+                <div class="flex-1"></div>
+                <div class="nav-item" tapmode="highlight" data-page="groundwater.html">
+                    <img src="../image/home/nav/shape_dixiashui.png">
+                    <div class="subtitle">地下水监测</div>
+                </div>
+                <div class="flex-1"></div>
+                <div class="nav-item" tapmode="highlight" data-page="plan.html">
+                    <img src="../image/home/nav/shape_niandujihua.png">
+                    <div class="subtitle">年度用水计划</div>
+                </div>
+                <div class="flex-1"></div>
+                <div class="nav-item"></div>
+            </div>
+        </div>
+        <div class="nav-warp">
+            <div class="title">输水管理</div>
+            <div class="nav flex-box-h">
+                <div class="nav-item" tapmode="highlight" data-page="channel.html">
+                    <img src="../image/home/nav/shape_qudao.png">
+                    <div class="subtitle">渠道计量</div>
+                </div>
+                <div class="flex-1"></div>
+                <div class="nav-item" tapmode="highlight" data-page="pipeline.html">
+                    <img src="../image/home/nav/shape_nongye.png">
+                    <div class="subtitle">田间计量</div>
+                </div>
+                <div class="flex-1"></div>
+                <div class="nav-item"></div>
+                <div class="flex-1"></div>
+                <div class="nav-item"></div>
+            </div>
+        </div>
+        <div class="nav-warp">
+            <div class="title">灌溉管理</div>
+            <div class="nav flex-box-h">
+                <div class="nav-item" tapmode="highlight" data-page="gate.html">
+                    <img src="../image/home/nav/shape_zhamen.png">
+                    <div class="subtitle">闸门控制</div>
+                </div>
+                <div class="flex-1"></div>
+                <div class="nav-item" tapmode="highlight" data-page="irr.html">
+                    <img src="../image/home/nav/shape_guanqu.png">
+                    <div class="subtitle">灌区管理</div>
+                </div>
+                <div class="flex-1"></div>
+                <div class="nav-item" tapmode="highlight" data-page="meteorology.html">
+                    <img src="../image/home/nav/shape_qixiang.png">
+                    <div class="subtitle">气象信息</div>
+                </div>
+                <div class="flex-1"></div>
+                <div class="nav-item" tapmode="highlight" data-page="soil.html">
+                    <img src="../image/home/nav/shape_shangqing.png">
+                    <div class="subtitle">田间墒情</div>
+                </div>
+            </div>
+        </div>
+        <div class="nav-warp">
+            <div class="title">工程管理</div>
+            <div class="nav flex-box-h">
+                <div class="nav-item" tapmode="highlight" data-page="dam.html">
+                    <img src="../image/home/nav/shape_daba.png">
+                    <div class="subtitle">大坝安全</div>
+                </div>
+                <div class="flex-1"></div>
+                <div class="nav-item" tapmode="highlight" data-page="project.html">
+                    <img src="../image/home/nav/shape_gongcheng.png">
+                    <div class="subtitle">工程信息</div>
+                </div>
+                <div class="flex-1"></div>
+                <div class="nav-item" tapmode="highlight" data-page="wgt" data-wgt="A6076575163719">
+                    <img src="../image/home/nav/yidongxunjian.png">
+                    <div class="subtitle">工程巡检</div>
+                </div>
+                <div class="flex-1"></div>
+                <div class="nav-item"></div>
+            </div>
+        </div>
+        <div class="nav-warp">
+            <div class="title">防汛抗旱</div>
+            <div class="nav flex-box-h">
+                <div class="nav-item" tapmode="highlight" data-page="river.html">
+                    <img src="../image/home/nav/shape_hedao.png">
+                    <div class="subtitle">河道水情</div>
+                </div>
+                <div class="flex-1"></div>
+                <div class="nav-item" tapmode="highlight" data-page="pptn.html">
+                    <img src="../image/home/nav/shape_jiangyu.png">
+                    <div class="subtitle">降雨信息</div>
+                </div>
+                <div class="flex-1"></div>
+                <div class="nav-item" tapmode="highlight" data-page="fxrsvr.html">
+                    <img src="../image/home/nav/shape_shuiku.png">
+                    <div class="subtitle">水库水情</div>
+                </div>
+                <div class="flex-1"></div>
+                <!-- <div class="nav-item" tapmode="highlight" data-page="fxcontacts.html">
+                    <img src="../image/home/nav/shape_tongxunlu.png">
+                    <div class="subtitle">防汛通讯录</div>
+                </div> -->
+                <div class="nav-item" tapmode="highlight" data-page="program.html">
+                    <img src="../image/home/nav/shape_fangxunyuan.png">
+                    <div class="subtitle">防汛预案</div>
+                </div>
+            </div>
+            <!-- <div class="nav flex-box-h">
+                <div class="nav-item" tapmode="highlight" data-page="program.html">
+                    <img src="../image/home/nav/shape_fangxunyuan.png">
+                    <div class="subtitle">防汛预案</div>
+                </div>
+                <div class="flex-1"></div>
+                <div class="nav-item"></div>
+                <div class="flex-1"></div>
+                <div class="nav-item"></div>
+                <div class="flex-1"></div>
+                <div class="nav-item"></div>
+            </div> -->
+        </div>
+        <div class="nav-warp">
+            <div class="title">通用版块</div>
+            <div class="nav flex-box-h">
+                <!--
+                <div class="nav-item" tapmode="highlight" data-page="warn.html">
+                    <img src="../image/home/nav/shape_yujing.png">
+                    <div class="subtitle">预警信息</div>
+                </div>
+                <div class="flex-1"></div>
+                -->
+                <div class="nav-item" tapmode="highlight" data-page="policy.html">
+                    <img src="../image/home/nav/shape_zhengce.png">
+                    <div class="subtitle">政策法规</div>
+                </div>
+                <div class="flex-1"></div>
+                <div class="nav-item" tapmode="highlight" data-page="note.html">
+                    <img src="../image/home/nav/shape_tongzhi.png">
+                    <div class="subtitle">通知公告</div>
+                </div>
+                <div class="flex-1"></div>
+                <!--
+                <div class="nav-item" tapmode="highlight" data-page="report_group.html">
+                    <img src="../image/home/nav/shape_tongji.png">
+                    <div class="subtitle">统计报表</div>
+                </div>
+                -->
+                <div class="nav-item"></div>
+                <div class="flex-1"></div>
+                <div class="nav-item"></div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/listview.js"></script>
+<script type="text/javascript" src="../script/underscore-min.js"></script>
+<script type="text/javascript" src="../script/templates.js"></script>
+<script type="text/javascript">
+var listView = new LDListView('#main', '.nav-item[data-page]', function(index, target) {
+    if (target.dataset.page == 'wgt') {
+        goWgt(target.dataset.wgt);
+    } else {
+        goPage(target.dataset.page);
+    }
+});
+
+var listview1 = new LDListView('.warn-warp', '.warn-item[data-page]', function(index, target) {
+    goPage(target.dataset.page);
+});
+
+function goPage(pageName) {
+    var winName = pageName.replace('.html', '');
+    api.openWin({
+        name: winName,
+        url: pageName,
+        pageParam: {
+            name: 'value'
+        }
+    });
+}
+
+function goWgt(wgtId) {
+    var userInfo = app.getUser();
+
+    api.openWidget({
+        id: wgtId,
+        wgtParam: {
+            userInfo: userInfo
+        }
+    }, function(ret, err) {
+        // if (ret) {
+        //     alert(JSON.stringify(ret));
+        // } else {
+        //     alert(JSON.stringify(err));
+        // }
+    });
+}
+
+var $bannerImg = document.querySelector('#banner img'),
+    $bannerMarquee = document.querySelector('#banner marquee');
+
+apiready = function() {
+    app.setRefreshHeaderInfo(loadData);
+    loadData();
+};
+
+var openMessageDetailWindow = function() {};
+
+function loadData(kw) {
+    var userId = app.getUser().UserId;
+    app.ajax({
+        url: app.urls.getSystemMessageList,
+        data: {
+            userId: userId,
+            name: kw || ''
+        },
+        success: function(data, html) {
+            api.hideProgress();
+            app.refreshHeaderLoadDone();
+
+            loadWarn();
+
+            if (data && data.length > 0) {
+                openMessageDetailWindow = function() {
+                    api.openWin({
+                        name: 'message_detail',
+                        url: 'message_detail.html',
+                        pageParam: {
+                            data: data[0]
+                        }
+                    });
+                };
+                $bannerMarquee.innerHTML = data[0].Title;
+            }
+        }
+    });
+}
+
+function loadWarn() {
+     app.ajax({
+        url: app.urls.getAlarmFeatures,
+        data: {
+            organizationId: '955645959231115264'
+        },
+        showProgress: false,
+        success: function(data, html) {
+            // api.hideProgress();
+            // app.refreshHeaderLoadDone();
+
+            var d = {},
+                item = null;
+
+            for (var i = 0; i < data.length; i++) {
+                item = data[i];
+
+                if (item.Type == 0) {
+                    d['channel_total'] = item.Total;
+                    d['channel_alarm'] = item.AlarmCount;
+                } else if (item.Type == 1) {
+                    d['rsvr_total'] = item.Total;
+                    d['rsvr_alarm'] = item.AlarmCount;
+                } else if (item.Type == 2) {
+                    d['river_total'] = item.Total;
+                    d['river_alarm'] = item.AlarmCount;
+                } else if (item.Type == 4) {
+                    d['pptn_total'] = item.Total;
+                    d['pptn_alarm'] = item.AlarmCount;
+                }
+            }
+            document.querySelector('#today-warn').innerHTML = JST.home_warn(d);
+        }
+    });
+}
+</script>
+
+</html>

@@ -1,0 +1,162 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>消息详情弹框</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/wj-framework.css" />
+    <style>
+        html,
+        body {
+            height: 98%;
+            background: transparent;
+            -webkit-touch-callout: none;
+            font-family: Tahoma, Geneva, sans-serif;
+            font-style: normal;
+        }
+
+        #dialog {
+            background-color: #e7e7e7;
+            border-radius: 6px;
+            position: absolute;
+            margin: auto;
+            /*left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;*/
+            width: 90%;
+            max-height: 70%;
+            /*min-height: 225px;*/
+            /*-webkit-transition: all .1s;
+            transition: all .1s;
+            -webkit-transform: scale(0);
+            transform: scale(0);*/
+            opacity: 0;
+            overflow: scroll;
+        }
+
+        #dialog.in {
+            -webkit-transform: scale(1);
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .okbtn {
+            height: 2.5rem !important;
+            line-height: 2.5rem !important;
+            font-size: 0.7rem !important;
+            border-radius: 6px;
+            margin: 20px 25%;
+            display: block;
+            position: relative;
+            /*position: absolute;
+            bottom: 0px;*/
+        }
+
+        .maincontent {}
+    </style>
+</head>
+
+<body>
+    <div id="dialog" v-cloak>
+        <div style="margin: 10px;">
+            <!-- <div class="messagetitle" style="font-size:0.8rem;color:rgb(105,105,105);">巡检任务：{{data.TaskName}}</div> -->
+            <div class="messagecontent">
+                <div style="font-size:0.8rem;">巡检任务：{{data.TaskName}}</div>
+                <div style="font-size:0.8rem;">巡检内容：{{data.ContentName}}</div>
+                <div style="font-size:0.8rem;">处理状态：{{data.ProcessStatusName}}</div>
+                <div style="font-size:0.8rem;">审批状态：{{data.AuditStatusName}}</div>
+                <div style="font-size:0.8rem;">上报时间：{{data.LogTime}}</div>
+                <div style="font-size:0.7rem;color:rgb(105,105,105);">备注：{{data.ContentRemark}}</div>
+            </div>
+            <div v-on:click="closeFrame" class="okbtn aui-btn aui-btn-info aui-btn-sm">确定</div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/zepto.min.js"></script>
+<script type="text/javascript">
+    $('#dialog').addClass('in');
+    apiready = function() {
+        var pageParamdata = api.pageParam.data; //接收传递的参数
+        var rootserviceurl = $api.getStorage('rootserviceurl');
+        imageBrowser = api.require('imageBrowser');
+        $(document.body).on('touchend', function(e) {
+            var dialog = $("#dialog")[0];
+            if (!$.contains(dialog, e.target)) {
+                $('#dialog').removeClass('in');
+                setTimeout(function() {
+                    api.closeFrame();
+                }, 200);
+            }
+        });
+
+        ////处理业务
+        new Vue({
+            el: '#dialog',
+            data: {
+                data: pageParamdata
+            },
+            methods: {
+                getimage: function(item) {
+                    if (!item) {
+                        return "../image/noneimg.png";
+                    } else {
+                        return rootserviceurl + item; //+"?v="+new Date().getTime();
+                    }
+                },
+                dealingimgpreview: function(listimage, index) {
+                    var that = this;
+                    var activeIndex = index;
+                    var imageUrls = new Array();
+                    for (var i = 0; i < listimage.length; i++) {
+                        imageUrls.push(that.getimage(listimage[i]));
+                    }
+
+                    imageBrowser.openImages({
+                        showList: false,
+                        activeIndex: activeIndex,
+                        imageUrls: imageUrls
+                    });
+                },
+                imgpreview: function(index) {
+                    var that = this;
+                    var activeIndex = index;
+                    var imageUrls = new Array();
+                    for (var i = 0; i < that.listimage.length; i++) {
+                        imageUrls.push(that.getimage(that.listimage[i]));
+                    }
+
+                    imageBrowser.openImages({
+                        showList: false,
+                        activeIndex: activeIndex,
+                        imageUrls: imageUrls
+                    });
+                },
+                closeFrame: function() {
+                    api.closeFrame();
+                }
+            },
+            created: function() {
+
+            },
+            mounted: function() {
+                var odialog = $api.dom('#dialog');
+                var messagetitle = $api.dom('.messagetitle');
+                var messagecontent = $api.dom('.messagecontent');
+                var left = (document.documentElement.clientWidth - odialog.offsetWidth) / 2 + 'px';
+                var top = (document.documentElement.clientHeight - odialog.offsetHeight) / 2 + 'px';
+                $api.css(odialog, 'top:' + top + ";left:" + left);
+            },
+            updated: function() {
+
+            }
+        });
+    };
+</script>
+
+</html>

@@ -1,0 +1,42 @@
+<div class="avatar">
+    <div class="photo">
+        <img src="../image/boy.png">
+    </div>
+
+    <div class="user">
+        <span id="userName" class="name"><%= Name %></span>
+        <span id="job" class="job label label-success"><%= UserRoles %></span>
+    </div>
+</div>
+<div id="main" class="main">
+    <div class="list-block">
+        <div class="list-block-main">
+            <div class="row">
+                <div class="text-left">职务：</div>
+                <div class="flex-1 text-right" onclick="toggleAllOrganization();">
+                    <%= MainOrganization %>
+                </div>
+            </div>
+            <div id="organization" class="row hide" onclick="toggleAllOrganization();">
+                <div class="text-left">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                <div class="flex-1 text-right">
+                    <%= Organization %>
+                </div>
+            </div>
+            <div class="row">
+                <div class="flex-1 text-left">电话：</div>
+                <div class="flex-1 text-right"><%= Mobile %></div>
+            </div>
+        </div>
+    </div>
+    <ul id="userMenu" class="list-group">
+        <!--
+        <li class="list-group-item arrow" tapmode="active">
+            <img src="../image/list_me.png" class="icon">管理工程列表
+        </li>
+        -->
+        <li class="list-group-item arrow" tapmode="active" onclick="openSettingWindow('<%= Name %>','<%= Mobile %>');">
+            <img src="../image/setting_me.png" class="icon">个人设置
+        </li>
+    </ul>
+</div>

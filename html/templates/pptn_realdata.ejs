@@ -1,0 +1,46 @@
+<div class="row" style="display: none;">
+    <div class="flex-1 text-left"><span class="label label-danger pull-right">危险</span>24小时雨量：<span class="text-red"><em>11.98</em></span>mm (警戒线: 9.45 mm)</div>
+</div>
+<div class="row">
+    <div class="flex-1 text-left">今日雨量: </div>
+    <div class="flex-1 text-right"><em><%= app.isNull(DayRainfall) %></em>mm</div>
+</div>
+<div class="row">
+    <div class="flex-1 text-left">昨日雨量: </div>
+    <div class="flex-1 text-right"><em><%= app.isNull(YestdayRainfall) %></em>mm</div>
+</div>
+<div class="line-dotted"></div>
+<div class="row">
+    <div class="flex-1 text-left">24小时雨量: </div>
+    <div class="flex-1 text-right"><em><%= app.isNull(HourRainfall_24H) %></em>mm</div>
+</div>
+<div class="line-dotted"></div>
+<div class="row">
+    <div class="flex-1 text-left">12小时雨量: </div>
+    <div class="flex-1 text-right"><em><%= app.isNull(HourRainfall_12H) %></em>mm</div>
+</div>
+<div class="row">
+    <div class="flex-1 text-left">6小时雨量: </div>
+    <div class="flex-1 text-right"><em><%= app.isNull(HourRainfall_6H) %></em>mm</div>
+</div>
+<div class="row">
+    <div class="flex-1 text-left">3小时雨量: </div>
+    <div class="flex-1 text-right"><em><%= app.isNull(HourRainfall_3H) %></em>mm</div>
+</div>
+<div class="row">
+    <div class="flex-1 text-left">1小时雨量: </div>
+    <div class="flex-1 text-right"><em><%= app.isNull(HourRainfall_1H) %></em>mm</div>
+</div>
+<div class="row" style="display: none;">
+    <div class="flex-1 text-left">5分钟雨量: </div>
+    <div class="flex-1 text-right"><em>0</em>mm</div>
+</div>
+<div class="line-dotted"></div>
+<div class="row">
+    <div class="flex-1 text-left">本月雨量: </div>
+    <div class="flex-1 text-right"><em><%= app.isNull(ACCPCurrentMonth) %></em>mm</div>
+</div>
+<div class="row">
+    <div class="flex-1 text-left">上月雨量: </div>
+    <div class="flex-1 text-right"><em><%= app.isNull(ACCPLastMonth) %></em>mm</div>
+</div>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>rsvr detail frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/glyphicons.css" />
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+    }
+    </style>
+</head>
+
+<body>
+     <div id="filter">
+        <div class="filter-warp">
+            <div class="filter-item" tapmode onclick="openVideoSelectorFrame();">
+                <span id="unit"></span>
+                <span id="rsvr"></span><span class="glyphicon glyphicon-triangle-bottom"></span>
+            </div>
+            <div class="filter-item"></div>
+            <div class="filter-item text-right">
+                <span id="date"></span><span class="glyphicon glyphicon-triangle-bottom"></span>
+            </div>
+        </div>
+    </div>
+    <div id="main">
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/underscore-min.js"></script>
+<script type="text/javascript" src="../script/templates.js"></script>
+
+<script type="text/javascript">
+apiready = function() {
+
+};
+
+function fnOpenPicker() {
+    api.openPicker({
+        type: 'date',
+        date: '2018-06',
+        title: '选择时间'
+    }, function(ret, err) {
+        if (ret) {
+            alert(JSON.stringify(ret));
+        } else {
+            alert(JSON.stringify(err));
+        }
+    });
+}
+</script>
+
+</html>

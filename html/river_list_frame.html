@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>river_list_frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/glyphicons.css" />
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+    }
+    </style>
+</head>
+
+<body class="flex-box-v">
+    <div id="search" tapmode onclick="openSearchWindow();">
+        <div class="search-warp">
+            <input type="text" placeholder="输入关键字名称查找" readonly="readonly">
+        </div>
+    </div>
+    <div id="filter">
+        <div class="filter-warp">
+            <div class="filter-item" tapmode onclick="openUnitActionSheet();">
+                <span id="unit"></span><span class="glyphicon glyphicon-triangle-bottom"></span>
+            </div>
+            <div class="filter-item hide" tapmode onclick="openWptActionSheet();">
+                <span id="wpt"></span><span class="glyphicon glyphicon-triangle-bottom"></span>
+            </div>
+            <div class="filter-item"></div>
+        </div>
+    </div>
+    <div id="main">
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/searchbar.js"></script>
+<script type="text/javascript" src="../script/underscore-min.js"></script>
+<script type="text/javascript" src="../script/templates.js"></script>
+<script type="text/javascript">
+var searchBar = null,
+    $container = document.querySelector('#main'),
+    $wpt = document.querySelector('#wpt'),
+    wptSheet = createWptActionSheet(),
+    sheet = app.unitActionSheet('#unit', function(selectedIndex, selectedValue, selectedItem) {
+        loadData()
+    });
+
+var searchBar = null;
+apiready = function() {
+    var UISearchBar = api.require('UISearchBar');
+    searchBar = new LDSearchBar(UISearchBar, '输入关键字名称查找', function(ret) {
+        loadData(ret.text);
+    });
+
+    app.setRefreshHeaderInfo(loadData);
+    loadData();
+};
+
+function loadData(name) {
+    app.ajax({
+        url: app.urls.river_list,
+        data: {
+            organizationId: sheet.getSelectedItem().Id,
+            wpt: wptSheet.getSelectedItem().Code,
+            reserviorIsOrNo: 2,
+            type: 0,
+            name: name || ''
+        },
+        template: JST.river_list,
+        debug: false,
+        sortBy: function (data) {
+            return _.sortBy(data, 'Md').reverse();
+        },
+        success: function(data, html) {
+            api.hideProgress();
+            app.refreshHeaderLoadDone();
+            $container.innerHTML = html;
+        }
+    });
+}
+
+function createWptActionSheet() {
+    var data = [
+        { 'code': '*', 'name': '全部' },
+        { 'code': '5', 'name': '涨' },
+        { 'code': '4', 'name': '落' },
+        { 'code': '6', 'name': '平' }
+    ];
+    
+    var sheet = new app.ActionSheet({
+        title: '切换水势',
+        cancelTitle: '取消',
+        dataSource: data,
+        fieldName: 'name',
+        success: function(selectedIndex, selectedValue, selectedItem) {
+            $wpt.innerHTML = selectedValue;
+            loadData();
+        }
+    });
+    $wpt.innerHTML = sheet.getSelectedValue();
+    return sheet;
+}
+
+function openSearchWindow() {
+    searchBar.open();
+}
+
+function openUnitActionSheet() {
+    sheet.open();
+}
+
+function openWptActionSheet() {
+    wptSheet.open();
+}
+
+function openGroupFrames(id, name) {
+    api.openWin({
+        name: 'river_group',
+        url: 'river_group.html',
+        pageParam: {
+            id: id,
+            name: name
+        }
+    });
+}
+</script>
+
+</html>

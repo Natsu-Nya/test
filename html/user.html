@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>user window</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+    }
+
+    #header {
+        width: 100%;
+        height: 130px;
+        background: url(../image/cover.png);
+        background-size: 100% 155px;
+        background-position: center top;
+        background-repeat: no-repeat;
+    }
+
+    #header .title {
+        position: relative;
+        width: 100%;
+        height: 44px;
+        text-align: center;
+        color: #fff;
+        font-size: 18px;
+        line-height: 44px;
+        font-weight: bold;
+    }
+    </style>
+</head>
+
+<body class="flex-box-v">
+    <div id="header">
+        <div class="title">个人中心</div>
+    </div>
+    <div id="main" class="flex-1">
+    </div>
+    <footer id="tabbar" class="flex-box-h">
+        <div class="menu flex-1"></div>
+        <div class="menu flex-1"></div>
+        <div class="menu flex-1"></div>
+        <div class="menu flex-1"></div>
+        <div class="menu flex-1"></div>
+    </footer>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/tabbar.js"></script>
+<script type="text/javascript">
+apiready = function() {
+    var header = $api.byId('header');
+    var footer = $api.dom('footer');
+
+    var headerH = $api.fixStatusBar(header);
+    var footerH = $api.fixTabBar(footer);
+
+    api.openFrame({
+        name: 'user_frame',
+        url: 'user_frame.html',
+        rect: {
+            marginTop: headerH - 45,
+            marginBottom: footerH,
+            w: 'auto',
+            h: 'auto'
+        },
+        bounces: false
+    });
+
+    var NVTabBar = api.require('NVTabBar');
+    new LDTabbar(NVTabBar, 4);
+
+    api.addEventListener({
+        name: 'keyback'
+    }, function(ret, err) {
+        api.toLauncher();
+    });
+};
+</script>
+
+</html>

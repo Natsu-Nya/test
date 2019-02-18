@@ -1,0 +1,254 @@
+html, body, header, section, footer, div, ul, ol, li, img, a, span, em, del, legend, center, strong, var, fieldset, form, label, dl, dt, dd, cite, input, hr, time, mark, code, figcaption, figure, textarea, h1, h2, h3, h4, h5, h6, p {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  font-style: normal;
+}
+
+html, body {
+  -webkit-touch-callout: none;
+  -webkit-text-size-adjust: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-user-select: none;
+  background-color: #fff;
+}
+
+nav, article, aside, details, main, header, footer, section, fieldset, figcaption, figure {
+  display: block;
+}
+
+img, a, button, em, del, strong, var, label, cite, small, time, mark, code, textarea {
+  display: inline-block;
+}
+
+header, section, footer {
+  position: relative;
+}
+
+ol, ul {
+  list-style: none;
+}
+
+input, button, textarea {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  /*-webkit-appearance:none;*/
+  background-color: rgba(0, 0, 0, 0);
+}
+
+span {
+  display: inline-block;
+}
+
+a:active, a:hover {
+  outline: 0;
+}
+
+a, a:visited {
+  text-decoration: none;
+}
+
+label {
+  word-wrap: break-word;
+  word-break: break-all;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+td, th {
+  padding: 0;
+}
+
+html {
+  font-family: 'PingFangSC Regular',"Microsoft YaHei";
+  font-weight: normal;
+  font-style: normal;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  height: 100%;
+  background: #fff;
+}
+
+* {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  /* Firefox */
+  -webkit-box-sizing: border-box;
+  /* Safari */
+}
+
+[v-cloak] {
+  display: none;
+}
+
+#tips-panel {
+  text-align: center;
+  font-size: 0.5rem;
+  color: #A1A6BB;
+  padding-top: 50%;
+}
+
+#tips-panel .tips-panel-img {
+  width: 0.666667rem;
+  height: 0.666667rem;
+  display: inline-block;
+  background: url(../../image/wifi.png) no-repeat center;
+  background-size: 0.666667rem 0.666667rem;
+}
+
+#more-tips-panel {
+  text-align: center;
+  font-size: 0.4rem;
+  color: #A1A6BB;
+  padding: 10px 0;
+}
+
+#waitDealWork {
+  overflow: scroll;
+  height: 100%;
+  background: #fff;
+}
+
+#waitDealWork ul {
+  padding-left: 0.4rem;
+  margin-bottom: 0.4rem;
+  border-top: 1px solid #E4E7F0;
+  border-bottom: 1px solid #E4E7F0;
+}
+
+#waitDealWork ul li {
+  padding-top: 0.4rem;
+  border-bottom: 1px solid #E4E7F0;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+
+#waitDealWork ul li:last-child {
+  border-bottom: 0;
+}
+
+#waitDealWork ul li .top {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: row;
+  flex-direction: row;
+}
+
+#waitDealWork ul li .top .imgbox {
+  margin-top: 0.053333rem;
+  width: 0.826667rem;
+}
+
+#waitDealWork ul li .top .imgbox .img {
+  width: 0.426667rem;
+  height: 0.426667rem;
+  background: url("../../image/waitdealwork.png") no-repeat center;
+  background-size: 0.426667rem 0.426667rem;
+}
+
+#waitDealWork ul li .top .infobox {
+  width: calc(100% - 0.826667rem);
+}
+
+#waitDealWork ul li .top .infobox .name-model {
+  line-height: 0.533333rem;
+  height: 0.533333rem;
+}
+
+#waitDealWork ul li .top .infobox .name-model .name {
+  font-size: 0.373333rem;
+  font-weight: bold;
+  color: #64697B;
+  min-width: 4.0rem;
+}
+
+#waitDealWork ul li .top .infobox .data {
+  padding-right: 0.4rem;
+  padding-bottom: 0.213333rem;
+}
+
+#waitDealWork ul li .top .infobox .data .item {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  margin-top: 0.106667rem;
+}
+
+#waitDealWork ul li .top .infobox .data .item .text-value {
+  width: 50%;
+  height: 0.56rem;
+  line-height: 0.56rem;
+  color: #A1A6BB;
+  font-size: 0.373333rem;
+}
+
+#waitDealWork ul li .top .infobox .data .item .text-value .icon {
+  width: 0.373333rem;
+  height: 0.373333rem;
+  vertical-align: middle;
+}
+
+#waitDealWork ul li .top .infobox .data .item .text-value .time {
+  font-size: 0.32rem;
+}
+
+#waitDealWork ul li .top .infobox .data .item .text-value .value {
+  font-family: 'Arial';
+  color: #64697B;
+  font-size: 0.453333rem;
+  font-style: italic;
+}
+
+#waitDealWork ul li .top .infobox .data .item .content {
+  line-height: 0.533333rem;
+  height: 1.066667rem;
+  color: #7E87AD;
+  font-size: 0.346667rem;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#waitDealWork ul li .bottom {
+  text-align: right;
+}
+
+#waitDealWork ul li .bottom .btn {
+  margin: 0.266667rem 0.4rem 0.266667rem 0;
+  display: inline-block;
+  vertical-align: middle;
+  width: 1.6rem;
+  height: 0.64rem;
+  background: #fff;
+  border: 1px solid #24C174;
+  text-align: center;
+  font-size: 0.32rem;
+  color: #24C174;
+  line-height: 0.58667rem;
+  border-radius: 0.06667rem;
+}
+
+#waitDealWork ul li .bottom .btn:active {
+  background: #F1F2F7;
+}

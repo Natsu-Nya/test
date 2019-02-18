@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>闸门控制</title>
+    <link rel="stylesheet" type="text/css" href="../css/lib/mint-ui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/css/frm_zmcontrol.css" />
+    <script type="text/javascript" src="../script/lib/api.js"></script>
+    <script type="text/javascript" src="../script/lib/vue.min.js"></script>
+    <script type="text/javascript" src="../script/lib/mint-ui.js"></script>
+    <script type="text/javascript" src="../script/lib/flexible.js"></script>
+    <script type="text/javascript" src="../script/wj-ajax.js"></script>
+    <style type="text/css">
+
+    </style>
+</head>
+<body>
+    <div id="main" v-cloak>
+        <!-- <mt-loadmore :top-method="loadTop" @top-status-change="handleTopChange" ref="loadmore"> -->
+            <section id="section">
+                <ul v-show="hasData">
+                    <li>
+                        <div class="item top-title">
+                            <span>{{zmName}}</span>
+                            <span>开度控制</span>
+                        </div>
+                        <div class="item">
+                            <span class="label">闸门模式</span>
+                            <span @click="openModelPop" class="text">{{form.planmodel | modelFormat}}</span>
+                            <span class="item-icon"></span>
+                        </div>
+                        <div class="item">
+                            <span class="label">开始时间</span>
+                            <span @click="openTimePicker" class="text time" v-show="form.planstart">{{form.planstart | dateFormat}}</span>
+                            <span @click="openTimePicker" class="text time" style="color:#A1A6BB;" v-show="!form.planstart">{{form.planstart | dateFormat}}</span>
+                            <span class="item-icon"></span>
+                        </div>
+                        <div class="item">
+                            <span class="label">开度上限</span>
+                            <span class="text">{{maxHeight}} mm</span>
+                        </div>
+                        <div class="item" v-show="form.planmodel!=0">
+                            <span class="label">模式数值</span>
+                            <span class="text"><input v-model="form.planvalue" type="number" placeholder="请输入数值"/></span>
+                            <span class="item-icon"></span>
+                        </div>
+                        <div class="item">
+                            <span class="label">操作密码</span>
+                            <span class="text"><input type="password" v-model="form.pwd" placeholder="请输入密码"/></span>
+                            <span class="item-icon"></span>
+                        </div>
+                        <div class="item">
+                            <span class="label">忘记密码</span>
+                            <span @click="resetPwd" class="text">重置密码</span>
+                            <span class="item-icon"></span>
+                        </div>
+                    </li>
+                </ul>
+                <div id="bottom-btn">
+                    <div class="cancel" @click="closeWin">取消</div>
+                    <div class="sure" @click="zmControl">执行</div>
+                </div>
+                <mt-popup v-model="popupVisible">
+                    <div id="pop">
+                        <div class="pop-wrap">
+                            <div @click="selectModel(0)" class="item">手动模式</div>
+                            <div @click="selectModel(1)" class="item">恒定开度</div>
+                            <div @click="selectModel(2)" class="item">恒定流量</div>
+                            <div @click="selectModel(3)" class="item">恒定闸前水位</div>
+                            <div @click="selectModel(4)" class="item">恒定堰槽水位</div>
+                        </div>
+                    </div>
+                </mt-popup>
+                <mt-datetime-picker
+                    type="datetime"
+                    ref="timePicker"
+                    :start-date="startDate"
+                    @confirm="timeConfirm"
+                    >
+                </mt-datetime-picker>
+                <!-- 暂无数据,网络异常提示 -->
+                <div id="tips-panel" v-show="!hasData||!loadNormal" style="">
+                    <div v-show="!hasData&&loadNormal">
+                        <div>暂无数据</div>
+                    </div>
+                    <div v-show="!loadNormal">
+                        <div class="tips-panel-img"></div>
+                        <div style="margin:10px 0;">网络或服务异常</div>
+                        <div>下拉重新加载</div>
+                    </div>
+                </div>
+            </section>
+            <!-- <div slot="top" class="mint-loadmore-top" style="font-size:0.5rem;text-align:center;color:#A1A6BB;">
+                <div v-show="topStatus !== 'loading'" :class="{ 'rotate': topStatus === 'drop' }">↓</div>
+                <div v-show="topStatus === 'loading'">
+                    <mt-spinner size="20" style="display: inline-block;vertical-align: middle;" type="fading-circle"></mt-spinner>
+                    <span>加载中...</span>
+                </div>
+            </div> -->
+        </mt-loadmore>
+    </div>
+</body>
+<script type="text/javascript">
+    //设置dom高度
+    function setDomHeight(){
+        var bodyHeight = $api.cssVal($api.dom('body'),'height');
+        $api.css($api.dom('#section'),'min-height:'+bodyHeight);
+    }
+    function addZero(v){
+        if(v<10){
+            return '0'+v;
+        }else{
+            return v;
+        }
+    }
+    function getCurrentTime(date){
+        if(date){
+            var year = date.getFullYear();
+            var month = addZero(date.getMonth() + 1);
+            var day = addZero(date.getDate());
+            var hour = addZero(date.getHours());
+            var minute = addZero(date.getMinutes());
+            var second = addZero(date.getSeconds());
+            return year + '-' + month + '-' + day + ' ' + hour + ':' + minute+':00';
+        }else{
+            return '';
+        }
+    }
+
+    var myVue;
+    apiready = function() {
+        api.setStatusBarStyle({
+            style: 'light',
+            color: '#1875F0'
+        });
+        //接收传递的参数
+        var pageParamData = api.pageParam.data;
+        //处理业务
+        myVue = new Vue({
+            el: '#main',
+            data: {
+                topStatus: '',//下拉状态
+                loadNormal:true, //是否加载正常
+                hasData: true, //是否有数据
+                popupVisible:false,//显隐pop
+                startDate:new Date(),//最小时间
+                zmName:pageParamData.gate_name,
+                maxHeight:pageParamData.gate_height,
+                form: {
+                    gatesn:pageParamData.gate_sn,
+                    planmodel:pageParamData.RealData&&pageParamData.RealData.gateinfo_kzms,
+                    //planstart:new Date(),
+                    planstart:'',
+                    planvalue: '',
+                    pwd: '',
+                }
+            },
+            filters: {
+                dateFormat: function(date) {
+                    if(date){
+                        var year = date.getFullYear();
+                        var month = date.getMonth() + 1;
+                        var day = date.getDate();
+                        var hour = date.getHours();
+                        var minute = date.getMinutes();
+                        var second = date.getSeconds();
+                        return year + '-' + month + '-' + day + ' ' + hour + ':' + minute;
+                    }else{
+                        return '不选择时间默认立即执行';
+                    }
+                },
+                modelFormat:function(v){
+                    if(v==0){
+                        return '手动模式';
+                    }else if(v==1){
+                        return '恒定开度';
+                    }else if(v==2){
+                        return '恒定流量';
+                    }else if(v==3){
+                        return '恒定闸前水位';
+                    }else if(v==4){
+                        return '恒定堰槽水位';
+                    }
+                }
+
+            },
+            methods: {
+                loadTop:function(){//下拉加载数据
+                    this.loadData();
+                },
+                //设置加载后状态
+                setLoadState:function(loadNormal,hasData,data){
+                    this.loadNormal=loadNormal;
+                    this.hasData=hasData;
+                    this.zmList=data;
+                },
+                handleTopChange:function(status) {//监听下拉状态
+                    this.topStatus = status;
+                },
+                openModelPop:function(){
+                    this.popupVisible=true;
+                },
+                selectModel:function(type){
+                    this.form.planmodel=type;
+                    this.popupVisible=false;
+                },
+                openTimePicker:function() {//打开时间选择
+                    this.startDate=new Date();
+                    this.$refs.timePicker.open();
+                },
+                timeConfirm:function(time){
+                    this.form.planstart=time;
+                },
+                updateTime:function(){
+                    setInterval(function(){
+                        if(this.form.planstart){
+                            if(this.form.planstart<new Date()){
+                                this.form.planstart=new Date();
+                            }
+                        }
+                    }.bind(this),1000);
+                },
+                closeWin:function(){
+                    api.closeWin();
+                },
+                resetPwd:function(){
+                    var that=this;
+                    api.confirm({
+                        title: '密码重置',
+                        msg: '确定重置闸控密码?',
+                        buttons: ['确定','取消']
+                    }, function(ret, err) {
+                        var index = ret.buttonIndex;
+                        if(index==2) return;
+                        that.$indicator.open();
+                        wjget("YiTiGate/ResetPwd?id="+pageParamData.gate_id,function(ret, err) {
+                            that.$indicator.close();
+                            console.log(JSON.stringify(ret));
+                            console.log(JSON.stringify(err));
+                            if (ret) {
+                                if (ret.Code == 200 && ret.Data&&ret.Data==true) {
+                                    that.$toast({
+                                        message: '操作成功',
+                                        iconClass:'mintui mintui-success',
+                                         duration: 2000
+                                    });
+                                } else {
+                                    api.alert({
+                                        msg:(ret.Data&&ret.Data.message)||'操作失败!'
+                                    });
+                                }
+                            } else {
+                                if (err && err.body && err.body.Message) {
+                                    api.alert({
+                                        msg: err.body.Message
+                                    });
+                                } else {
+                                    api.alert({
+                                        msg: '网络异常,请重新操作!'
+                                    });
+                                }
+                            }
+                        })
+                    });
+                },
+                zmControl: function() { //设置闸孔开度
+                    var that = this;
+                    var gatesn=this.form.gatesn;
+                    var planmodel=this.form.planmodel;
+                    var planstart=getCurrentTime(this.form.planstart);
+                    var planvalue=this.form.planvalue;
+                    var pwd=this.form.pwd;
+                    if (planvalue === ""&&planmodel!=0) {
+                        api.alert({
+                            msg: '目标开度不能为空!'
+                        });
+                        return;
+                    }
+
+                    if (planmodel==1&&(this.maxHeight && this.maxHeight > 0) && (planvalue > this.maxHeight)) {
+                        api.alert({
+                            msg: '目标开度超过了闸门开度上限!'
+                        });
+                        return;
+                    }
+                    if (pwd === ""){
+                        api.alert({
+                            msg: '操作密码不能为空!'
+                        });
+                        return;
+                    };
+                    that.$indicator.open();
+                    console.log(gatesn)
+                    console.log(planmodel)
+                    console.log(planstart)
+                    console.log(planvalue)
+                    console.log(pwd)
+                    wjget("YiTiGate/ControlGate?gatesn="+gatesn+"&planmodel="+planmodel+"&planstart="+planstart+"&planvalue="+planvalue+"&pwd="+pwd, function(ret, err) {
+                        that.$indicator.close();
+                        console.log(JSON.stringify(ret));
+                        console.log(JSON.stringify(err));
+                        if (ret) {
+                            if (ret.Code == 200 && ret.Data&&ret.Data.code==200) {
+                                that.$toast({
+                                    message: '操作成功',
+                                    iconClass:'mintui mintui-success',
+                                     duration: 2000
+                                });
+                                setTimeout(function(){
+                                    that.closeWin();
+                                },2000)
+                            } else {
+                                api.alert({
+                                    msg:(ret.Data&&ret.Data.message)||'操作失败!'
+                                });
+                            }
+                        } else {
+                            if (err && err.body && err.body.Message) {
+                                api.alert({
+                                    msg: err.body.Message
+                                });
+                            } else {
+                                api.alert({
+                                    msg: '网络异常,请重新操作!'
+                                });
+                            }
+                        }
+                    });
+                }
+            },
+            created: function() {
+                this.updateTime();
+            },
+            mounted: function() {
+                setDomHeight();
+            }
+        });
+    };
+</script>
+</html>

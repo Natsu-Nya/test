@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>channel detail frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/glyphicons.css" />
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+    }
+    </style>
+</head>
+
+<body class="flex-box-v">
+    <div id="main">
+        <div id="filter">
+            <div class="filter-warp">
+                <div class="filter-item" tapmode onclick="openDateModeActionSheet();">
+                    <span id="dateMode"></span><span class="glyphicon glyphicon-triangle-bottom"></span>
+                </div>
+                <div id="intvWrap" class="filter-item" tapmode hidden="hidden">
+                    <span id="intv"></span><span class="glyphicon glyphicon-triangle-bottom"></span>
+                </div>
+                <div class="filter-item"></div>
+            </div>
+        </div>
+        <div class="chart-block">
+            <div class="chart-block-header">
+                <div class="title">水位流量统计</div>
+            </div>
+            <div class="chart-block-main">
+                <div class="row">最高水位: <em id="maxWater">--</em> m</div>
+                <div class="row">最大流量: <em id="maxFlow">--</em> m³/s</div>
+                <div id="chart1" style="height: 280px;"></div>
+            </div>
+            <div class="line-dotted"></div>
+            <div class="chart-block-footer clearfix">
+                <div class="btn pull-right" tapmode="highlight" onclick="fullFlow();">全屏查看</div>
+            </div>
+        </div>
+        <div class="chart-block">
+            <div class="chart-block-header">
+                <div class="title">水量统计</div>
+            </div>
+            <div class="chart-block-main">
+                <div class="row">用水量总计: <em id="sumVolume">--</em>万m³</div>
+                <div id="chart" style="height: 280px;"></div>
+            </div>
+            <div class="line-dotted"></div>
+            <div class="chart-block-footer clearfix">
+                <div class="btn pull-right" tapmode="highlight" onclick="fullVolume();">全屏查看</div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/highcharts.js"></script>
+<script type="text/javascript" src="../script/underscore-min.js"></script>
+<script type="text/javascript" src="../script/moment.min.js"></script>
+<script type="text/javascript" src="../script/templates.js"></script>
+<script type="text/javascript" src="../script/charts.js"></script>
+<script type="text/javascript">
+var datePicker = null,
+    sheet = null,
+    chart1 = null,
+    chart2 = null,
+    $dataMode = document.querySelector('#dataMode'),
+    $intvWrap = document.querySelector('#intvWrap'),
+    $intv = document.querySelector('#intv');
+
+var dateModeActionSheet = function(element, success) {
+    var $element = document.querySelector(element);
+    var sheet = new app.ActionSheet({
+        title: '切换显示方式',
+        cancelTitle: '取消',
+        dataSource: [
+            { name: '最近30天', format: 'now' },
+            { name: '按月显示', format: 'yearAndMonth' },
+            { name: '按日显示', format: 'date' }
+        ],
+        fieldName: 'name',
+        success: function(selectedIndex, selectedValue, selectedItem) {
+            $element.innerHTML = selectedValue;
+            if (typeof success === 'function') {
+                success(selectedIndex, selectedValue, selectedItem);
+            }
+        }
+    });
+    $element.innerHTML = sheet.getSelectedValue();
+    return sheet;
+};
+
+sheet = dateModeActionSheet('#dateMode', function(selectedIndex, selectedValue, selectedItem) {
+    openDatePicker(selectedItem.format);
+    if (selectedIndex == 0) {
+        $intvWrap.hidden = true;
+        load30Day();
+    } else {
+        $intvWrap.onclick = function() {
+            openDatePicker(selectedItem.format);
+        };
+    }
+});
+
+apiready = function() {
+    var UIDatePicker = api.require('UIDatePicker');
+    datePicker = new app.DatePicker(UIDatePicker, {
+        success: function(value, text, format, ret) {
+            $intvWrap.hidden = false;
+            $intv.innerHTML = text;
+
+            var dateMode = sheet.getSelectedIndex();
+            if (dateMode == 1) {
+                loadMonth();
+            } else if (dateMode == 2) {
+                loadDay();
+            }
+        }
+    });
+    chart1 = new app.Charts.ChannelVolume('chart');
+    chart2 = new app.Charts.ChannelFlow('chart1');
+
+    load30Day();
+};
+
+function load30Day() {
+    chart2.load30Day({
+        stcd: api.pageParam.id,
+        dateTime: datePicker.getSelectedValue(),
+        compareLast: true,
+        success: function(ret) {
+            app.innerHTML('#maxWater', ret.maxWater);
+            app.innerHTML('#maxFlow', ret.maxFlow);
+
+            chart1.load30Day({
+                data: ret.data,
+                success: function(ret) {
+                    app.innerHTML('#sumVolume', ret.sumVolume);
+                }
+            });
+        }
+    });
+}
+
+function loadMonth() {
+    var selectedDate = datePicker.getSelectedValue();
+    var start = moment(selectedDate, 'YYYY-MM');
+    var end = moment(selectedDate, 'YYYY-MM').add(1, 'months').add(-1, 'days');
+
+    chart2.loadMonth({
+        stcd: api.pageParam.id,
+        start: start.format('YYYY-MM-DD'),
+        end: end.format('YYYY-MM-DD'),
+        compareLast: true,
+        success: function(ret) {
+            app.innerHTML('#maxWater', ret.maxWater);
+            app.innerHTML('#maxFlow', ret.maxFlow);
+
+            chart1.loadMonth({
+                data: ret.data,
+                success: function(ret) {
+                    app.innerHTML('#sumVolume', ret.sumVolume);
+                }
+            });
+        }
+    });
+}
+
+function loadDay() {
+    var dt = moment(datePicker.getSelectedValue(), 'YYYY-MM-DD');
+    chart2.loadDay({
+        stcd: api.pageParam.id,
+        dateTime: dt.format('YYYY-MM-DD'),
+        compareLast: true,
+        success: function(ret) {
+            app.innerHTML('#maxWater', ret.maxWater);
+            app.innerHTML('#maxFlow', ret.maxFlow);
+
+            chart1.loadDay({
+                data: ret.data,
+                success: function(ret) {
+                    app.innerHTML('#sumVolume', ret.sumVolume);
+                }
+            });
+        }
+    });
+}
+
+function fullVolume() {
+    api.setScreenOrientation({
+        orientation: 'landscape_left'
+    });
+    api.openFrame({
+        name: 'channel_chart_volume_frame',
+        url: 'channel_chart_volume_frame.html',
+        rect: {
+            x: 0,
+            y: 0,
+            w: 'auto',
+            h: 'auto'
+        },
+        pageParam: {
+            dateMode: sheet.getSelectedIndex(),
+            data: chart1.data
+        },
+        bounces: false
+    });
+}
+
+function fullFlow() {
+    api.setScreenOrientation({
+        orientation: 'landscape_left'
+    });
+    api.openFrame({
+        name: 'channel_chart_flow_frame',
+        url: 'channel_chart_flow_frame.html',
+        rect: {
+            x: 0,
+            y: 0,
+            w: 'auto',
+            h: 'auto'
+        },
+        pageParam: {
+            dateMode: sheet.getSelectedIndex(),
+            data: chart2.data
+        },
+        bounces: false
+    });
+}
+
+function openDateModeActionSheet() {
+    sheet.open();
+}
+
+function openDatePicker(type) {
+    datePicker.open(type);
+}
+</script>
+
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>login frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style type="text/css">
+    html,
+    body {
+        background-color: transparent;
+    }
+
+    #header {
+        margin-bottom: 40px;
+    }
+
+    #header-offset {
+        height: 100px;
+    }
+
+    .logo {
+        width: auto;
+        text-align: center;
+        margin-top: 80px;
+        margin-bottom: 15px;
+    }
+
+    .sysName h1 {
+        width: 100%;
+        height: 31px;
+        font-size: 22px;
+        color: rgba(255, 255, 255, 1);
+        line-height: 31px;
+        text-align: center;
+        margin: 0px;
+    }
+
+    .sysName h2 {
+        width: 100%;
+        height: 28px;
+        font-size: 20px;
+        color: rgba(255, 255, 255, 1);
+        line-height: 28px;
+        text-align: center;
+        margin: 0px;
+    }
+
+    .row {
+        width: auto;
+        box-sizing: border-box;
+        margin-left: 32px;
+        margin-right: 32px;
+        margin-bottom: 20px;
+        border-bottom: 1px solid rgba(228, 231, 240, 1);
+        padding-bottom: 15px;
+        opacity: 0.4;
+    }
+
+    .input {
+        width: 100%;
+        height: 20px;
+        border: none;
+        outline: none;
+        font-size: 16px;
+        line-height: 20px;
+        background-color: transparent;
+    }
+
+    .btn-login {
+        width: auto;
+        height: 50px;
+        margin-left: 32px;
+        margin-right: 32px;
+        margin-top: 32px;
+        line-height: 50px;
+        color: #fff;
+        font-size: 18px;
+        text-align: center;
+        background: rgba(24, 117, 240, 1);
+        border-radius: 8px;
+        border: 1px solid rgba(94, 119, 133, 0.5);
+    }
+
+    .highlight {
+        opacity: 0.7;
+    }
+
+    footer {
+        position: absolute;
+        bottom: 15px;
+        left: 0px;
+        height: 32px;
+        width: 100%;
+        text-align: center;
+    }
+
+    footer div {
+        height: 16px;
+        line-height: 16px;
+        font-size: 12px;
+        color: rgba(228, 231, 240, 1);
+    }
+    </style>
+</head>
+
+<body>
+    <div id="header">
+        <div class="logo">
+            <img src="../image/logo.png" alt="" width="38" height="30">
+        </div>
+        <div class="sysName">
+            <h1>吉木乃县智慧水利</h1>
+            <h2>综合管理平台</h2>
+        </div>
+    </div>
+    <div id="header-offset" class="hide"></div>
+    <div id="contenter">
+        <div class="loginBox">
+            <div class="row">
+                <input id="username" class="input" type="text" readonly="readonly">
+                <div class="loginNameErr"></div>
+            </div>
+            <div class="row">
+                <input id="password" class="input" type="password" readonly="readonly">
+                <div class="loginPwdErr"></div>
+            </div>
+            <div class="row" style="display: none;">
+                <input id="verCode" class="input" type="text">
+                <div class="VerCodeErr"></div>
+            </div>
+            <div class="loginBtn" style="margin-bottom: 50px;">
+                <div class="btn-login" tapmode="highlight" onclick="fnLogin();">登录</div>
+            </div>
+        </div>
+        <div class="pwdFind" style="display: none;">忘记密码</div>
+    </div>
+    <footer id="copyright">
+        <div>研发单位：成都万江港利科技股份有限公司</div>
+        <div>版权所有：吉木乃县水利局</div>
+    </footer>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/input.js"></script>
+<script type="text/javascript">
+var uIInput,
+    $username,
+    $password,
+    $copyright,
+    $header,
+    $header_offset,
+    usernameInput,
+    passwordInput;
+
+var positionKeyboard = function() {
+    $api.addCls($copyright, 'hide');
+    $api.addCls($header, 'hide');
+    $api.removeCls($header_offset, 'hide');
+
+    var usernameRect = $api.offset($username);
+    var passwordRect = $api.offset($password);
+
+    uIInput.resetPosition({
+        position: {
+            x: usernameRect.l,
+            y: usernameRect.t
+        },
+        id: usernameInput.id()
+    });
+
+    uIInput.resetPosition({
+        position: {
+            x: passwordRect.l,
+            y: passwordRect.t
+        },
+        id: passwordInput.id()
+    });
+}
+
+var popupKeyboard = function(input) {
+    if (api.systemType == 'android') {
+        setTimeout(function() {
+            uIInput.popupKeyboard({
+                id: input.id()
+            });
+        }, 200);
+    } else {
+        uIInput.popupKeyboard({
+            id: input.id()
+        });
+    }
+}
+
+apiready = function() {
+    var userPwd = $api.getStorage('user_pwd');
+    if (userPwd) {
+        sendLogin(userPwd.username, userPwd.password);
+    }
+
+    $username = $api.byId('username');
+    $password = $api.byId('password');
+    $copyright = $api.byId('copyright');
+    $header = $api.byId('header');
+    $header_offset = $api.byId('header-offset');
+    uIInput = api.require('UIInput');
+
+    usernameInput = new LDUIInput(uIInput, $username, '请输入您的账号或手机号', 'text', positionKeyboard);
+    passwordInput = new LDUIInput(uIInput, $password, '请输入您的密码', 'password', positionKeyboard);
+};
+
+function loginComplete(userInfo) {
+    app.setUser(userInfo);
+    api.sendEvent({
+        name: 'login_complete',
+        extra: {
+            key1: 'value1',
+            key2: 'value2'
+        }
+    });
+}
+
+function fnLogin() {
+    usernameInput.closeKeyboard();
+    passwordInput.closeKeyboard();
+
+    var usernameValue = usernameInput.value(),
+        passwordValue = passwordInput.value();
+
+    if (!usernameValue) {
+        api.toast({
+            msg: '用户名不能为空，请重新输入。',
+            duration: 2000,
+            location: 'middle'
+        });
+
+        popupKeyboard(usernameInput);
+        return;
+    }
+
+    if (!passwordValue) {
+        api.toast({
+            msg: '密码不能为空，请重新输入。',
+            duration: 2000,
+            location: 'middle'
+        });
+
+        popupKeyboard(passwordInput);
+        return;
+    }
+
+    // 18997790200
+    // 790200
+
+    // usernameValue = '15884526946';
+    // passwordValue = '526946';
+
+    sendLogin(usernameValue, passwordValue);
+}
+
+function sendLogin(usernameValue, passwordValue) {
+    app.ajax({
+        url: app.urls.loginApp2,
+        data: {
+            "ToolId": 'IR',
+            "Uid": usernameValue,
+            "Pwd": passwordValue
+        },
+        authorization: false,
+        progress: {
+            title: '登录中...',
+            text: '请稍后...',
+            modal: true
+        },
+        success: function(data) {
+            $api.setStorage('user_pwd', { 'username': usernameValue, 'password': passwordValue });
+            loginComplete(data);
+        }
+    });
+}
+</script>
+
+</html>

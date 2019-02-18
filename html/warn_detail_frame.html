@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>warn detail group</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+    }
+    </style>
+</head>
+
+<body class="flex-box-v">
+    <div id="tab">
+        <div class="tab-warp">
+            <ul class="tabs list-unstyled">
+                <li class="tab-item active" tapmode data-toggle="rtdata">防汛抗旱</li>
+                <li class="tab-item" tapmode data-toggle="rtchart">大坝安全</li>
+            </ul>
+        </div>
+    </div>
+    <div class="tab-content">
+        <div class="tab-pane active" id="rtdata">
+        </div>
+        <div class="tab-pane" id="rtchart">
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/tab.js"></script>
+<script type="text/javascript">
+var tab = new LDTab({
+    success: function(ret) {
+        api.setFrameGroupIndex({
+            name: 'warnDetailFrameGroup',
+            index: ret.tabIndex,
+            scroll: true
+        });
+    }
+});
+
+apiready = function() {
+    var frames = [],
+        tab = $api.byId('tab'),
+        tabH = $api.offset(tab).h;
+
+    api.addEventListener({
+        name: 'warn_detail_changed'
+    }, function(ret, err) {
+        api.setFrameGroupAttr({
+            name: 'warnDetailFrameGroup',
+            hidden: ret.value.hidden
+        });
+    });
+
+    frames.push({ name: 'warn_detail_fx_frame', url: 'warn_detail_fx_frame.html' });
+    frames.push({ name: 'warn_detail_dam_frame', url: 'warn_detail_dam_frame.html', pageParam: {} });
+
+    api.openFrameGroup({
+        name: 'warnDetailFrameGroup',
+        scrollEnabled: false,
+        rect: {
+            marginTop: tabH + (api.pageParam.headerH || 0),
+            marginBottom: api.pageParam.footerH || 0,
+            w: 'auto',
+            h: 'auto'
+        },
+        index: 0,
+        frames: frames,
+        preload: frames.length
+    }, function(ret, err) {});
+
+    api.setFrameGroupAttr({
+        name: 'warnDetailFrameGroup',
+        hidden: api.pageParam.hidden || false
+    });
+};
+</script>
+
+</html>

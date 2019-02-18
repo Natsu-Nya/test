@@ -1,0 +1,47 @@
+<ul id="userMenu" class="list-group">
+    <li class="list-group-item" tapmode="active">
+        当前水库水位: <strong><%= WaterValue %> m</strong><span class="text-red hidden">↑</span>
+    </li>
+    <li class="list-group-item" tapmode="active">
+        采集时间: <span class="datetime"><%= TM %></span>
+    </li>
+</ul>
+
+<% if (SymbolList && SymbolList.length > 0) { %>
+    <% _.each(SymbolList, function(symbol) { %>
+
+    <div class="panel">
+        <div class="panel-heading">
+            <h2><%= symbol.DuanMian %></h2>
+        </div>
+        <div class="list-block">
+            <div class="list-block-main">
+                <% _.each(symbol.SymbolData, function(d) { %>
+                <div class="row">
+                    <div class="flex-1 text-left"><strong><%= d.Symbol %></strong></div>
+                </div>
+                <div class="row">
+                    <div class="flex-1 text-left">渗压值：<span class="text-red"><em><%= d.PZTBPR %></em></span>Kpa</div>
+                    <!--
+                    <div class="flex-1 text-right"><small>预警阈值: 17.00 KPa</small></div>
+                    -->
+                </div>
+                <div class="row">
+                    <div class="flex-1 text-left">渗压水位：<span class="text-red"><em><%= d.PZTBWL %></em></span>m<span class="text-red hidden">↑</span></div>
+                    <!--
+                    <div class="flex-1 text-right"><small>预警阈值: 8.00 m</small></div>
+                    -->
+                </div>
+                <div class="line-dotted"></div>
+                <% }); %>
+            </div>
+        </div>
+    </div>
+    <% }); %>
+<% } else { %>
+<div class="list-block">
+    <div class="list-block-header clearfix">
+        <span class="title">无断面数据。</span>
+    </div>
+</div>
+<% } %>

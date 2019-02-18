@@ -1,0 +1,123 @@
+@import './common.scss';
+
+#main{
+    background: #fff;
+    #section{
+        position: relative;
+    }
+    ul{
+
+        li{
+            .item{
+                height: 1.386667rem;
+                border-bottom:1px solid #E4E7F0;
+                padding-left: 0.4rem;
+                font-size: 0;
+                @include active;
+                &.top-title{
+                    height: 0.88rem;
+                    color:#222328;
+                    font-size: 0.32rem;
+                    background: #F1F2F7;
+                    span{
+                        margin-right: 0.2rem;
+                        line-height: 0.88rem;
+                    }
+                }
+                span{
+                    display: inline-block;
+                    vertical-align: top;
+                    line-height:1.386667rem;
+                    height: 100%;
+                    input{
+                        border: 0;
+                        font-size: 0.4rem;
+                        text-align: right;
+                        width: 100%;
+                        outline:none;
+                        background: transparent;
+                    }
+                    &.label{
+                        width:1.786667rem;
+                        color:#A1A6BB;
+                        font-size: 0.4rem;
+                    }
+                    &.text{
+                        width:6.933333rem;
+                        color:#222328;
+                        text-align: right;
+                        font-size: 0.4rem;
+                        &.time{
+                            height: 1.373333rem;
+                        }
+                    }
+                    &.item-icon{
+                        width:0.88rem;
+                        @include allArrow($size:0.213333rem);
+                    }
+                }
+            }
+        }
+    }
+    #bottom-btn{
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width:100%;
+        display: flex;
+        flex-direction:row;
+        background: #fff;
+        div{
+            width:50%;
+            height: 1.306667rem;
+            font-size:0.48rem;
+            line-height:1.306667rem;
+            border:1px solid #1875F0;
+            font-weight: bold;
+            text-align: center;
+
+            &:nth-child(1){
+                color:#1875F0;
+                &:active{
+                    background: darken(#fff,10%);
+                }
+            }
+            &:nth-child(2){
+                color:#fff;
+                background:#1875F0;
+                &:active{
+                    background: darken(#1875F0,10%);
+                }
+            }
+        }
+    }
+
+    #pop{
+        background: rgba(0,0,0,.5);
+        padding: 0.133333rem;
+        width:100%;
+        .pop-wrap{
+            border-radius: 0.4rem;
+            background: #fff;
+            .item{
+                width:6.666667rem;
+                height: 1.333333rem;
+                line-height: 1.333333rem;
+                font-size: 0.4rem;
+                text-align: center;
+                border-bottom:1px solid #E4E7F0;
+                &:active{
+                    background:#F1F2F7;
+                }
+                &:first-child{
+                    border-radius:0.4rem 0.4rem 0 0;
+                }
+                &:last-child{
+                    border:0;
+                    border-radius:0 0 0.4rem 0.4rem;
+                }
+            }
+        }
+    }
+}
+

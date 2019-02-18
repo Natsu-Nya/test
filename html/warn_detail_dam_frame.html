@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>warn detail dam frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/glyphicons.css" />
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+    }
+
+    .calendar {
+        height: 320px;
+        background: rgba(255, 255, 255, 1);
+        border: 1px solid rgba(228, 231, 240, 1);
+    }
+    </style>
+</head>
+
+<body class="flex-box-v">
+    <div id="calendar1" class="calendar">
+    </div>
+    <div id="mediaList" class="media-warp">
+        <div class="media" tapmode="active">
+            <div class="media-left">
+                <img src="../image/avatar.png" style="width: 16px; height: 16px;">
+            </div>
+            <div class="media-body">
+                <p>123为进一步加强公司对标管理和节能降耗管理，有效控制 生产成本，科学合理利用水资源…</p>
+                <p class="media-footing">
+                    发布单位: <span class="text-blue">吉木乃县水管所</span><span class="pull-right">2018.06.01</span>
+                </p>
+            </div>
+        </div>
+        <div class="media" tapmode="active">
+            <div class="media-left">
+                <img src="../image/avatar.png" style="width: 16px; height: 16px;">
+            </div>
+            <div class="media-body">
+                <p>为进一步加强公司对标管理和节能降耗管理，有效控制 生产成本，科学合理利用水资源…</p>
+                <p class="media-footing">
+                    发布单位: <span class="text-blue">闹海水库</span><span class="pull-right">2018.06.01</span>
+                </p>
+            </div>
+        </div>
+        <div class="media" tapmode="active">
+            <div class="media-left">
+                <img src="../image/avatar.png" style="width: 16px; height: 16px;">
+            </div>
+            <div class="media-body">
+                <p>为进一步加强公司对标管理和节能降耗管理，有效控制 生产成本，科学合理利用水资源…</p>
+                <p class="media-footing">
+                    发布单位: <span class="text-blue">红旗水库水位站</span><span class="pull-right">2018.06.01</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+var UICalendar1 = null;
+
+function fnSetScreenOrientation() {
+    api.setScreenOrientation({
+        orientation: 'landscape_left'
+    });
+    api.openFrame({
+        name: 'rsvrBarChartFrame',
+        url: 'rsvr_bar_chart_frame.html',
+        rect: {
+            x: 0,
+            y: 0,
+            w: 'auto',
+            h: 'auto'
+        },
+        pageParam: {
+            name: 'value'
+        },
+        bounces: false
+    });
+}
+
+function test() {
+    var $calendar1 = document.querySelector('#calendar1');
+    var rect = $api.offset($calendar1);
+
+    UICalendar1 = api.require('UICalendar');
+    UICalendar1.open({
+        rect: {
+            x: rect.l,
+            y: rect.t,
+            w: rect.w,
+            h: rect.h
+        },
+        styles: {
+            bg: 'rgba(0,0,0,0)',
+            week: {
+                weekdayColor: '#3b3b3b',
+                weekendColor: '#a8d400',
+                size: 12
+            },
+            date: {
+                color: '#3b3b3b',
+                selectedColor: '#fff',
+                selectedBg: '#a8d500',
+                size: 12
+            },
+            today: {
+                color: 'rgb(230,46,37)',
+                bg: '#ff0'
+            },
+            specialDate: {
+                color: '#a8d500',
+                bg: '#f00'
+            }
+        },
+        specialDate: [{
+            date: '2018-06-26'
+        }],
+        switchMode: 'none',
+        fixedOn: api.frameName,
+        fixed: false
+    }, function(ret, err) {
+        // if (ret) {
+        //     alert(JSON.stringify(ret));
+        // } else {
+        //     alert(JSON.stringify(err));
+        // }
+    });
+}
+
+apiready = function() {
+    test();
+};
+</script>
+
+</html>

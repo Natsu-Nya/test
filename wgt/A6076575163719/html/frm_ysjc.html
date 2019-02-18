@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>扬水监测</title>
+    <link rel="stylesheet" type="text/css" href="../css/lib/mint-ui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/css/frm_ysjc.css" />
+    <script type="text/javascript" src="../script/lib/api.js"></script>
+    <script type="text/javascript" src="../script/lib/vue.min.js"></script>
+    <script type="text/javascript" src="../script/lib/mint-ui.js"></script>
+    <script type="text/javascript" src="../script/lib/flexible.js"></script>
+    <script type="text/javascript" src="../script/wj-ajax.js"></script>
+    <style type="text/css">
+
+    </style>
+</head>
+<body>
+    <div id="main" v-cloak>
+        <mt-loadmore :top-method="loadTop" @top-status-change="handleTopChange" ref="loadmore">
+            <section id="section">
+                <ul class="data-list" v-show="hasData&&dataListWarning.length">
+                    <li v-for="item in dataListWarning">
+                        <div class="top">
+                            <div class="imgbox">
+                                <div class="img"></div>
+                            </div>
+                            <div class="infobox">
+                                <div class="name-model">
+                                    <div class="name">
+                                        {{item.Name}}
+                                    </div>
+                                </div>
+                                <div class="data">
+                                    <div class="item">
+                                        <div class="text-value">
+                                            <span>流量：</span>
+                                            <span><span class="value">{{item.Flow }}</span> m/s</span>
+                                        </div>
+                                        <div v-if="item.WarningType==1" class="text-value">
+                                            <span class="warning">流量预警</span>
+                                        </div>
+                                    </div>
+                                    <div class="item">
+                                        <div class="text-value">
+                                            <span>年度水量：</span>
+                                            <span><span class="value">{{item.WaterYear  }}</span> 万m³</span>
+                                        </div>
+                                        <!-- <div  class="text-value"><span class="warning">年度水量预警</span></div> -->
+                                    </div>
+                                    <div class="item">
+                                        <div class="text-value" style="width:100%">
+                                            <span>采集时间：</span>
+                                            <span>{{item.Md | dateFormat}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="data-list" :class="{normal:dataListWarning.length}" v-show="hasData&&dataListNormal.length">
+                    <li v-for="item in dataListNormal">
+                        <div class="top normal">
+                            <div class="imgbox">
+                                <div class="img"></div>
+                            </div>
+                            <div class="infobox">
+                                <div class="name-model">
+                                    <div class="name">
+                                        {{item.Name}}
+                                    </div>
+                                    <div class="model normal">正常</div>
+                                </div>
+                                <div class="data">
+                                    <div class="item">
+                                        <div class="text-value">
+                                            <span>流量：</span>
+                                            <span><span class="value">{{item.Flow }}</span> m/s</span>
+                                        </div>
+                                    </div>
+                                    <div class="item">
+                                        <div class="text-value">
+                                            <span>年度水量：</span>
+                                            <span><span class="value">{{item.WaterYear}}</span> 万m³</span>
+                                        </div>
+                                    </div>
+                                    <div class="item">
+                                        <div class="text-value" style="width:100%">
+                                            <span>采集时间：</span>
+                                            <span>{{item.Md | dateFormat}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <!-- 暂无数据,网络异常提示 -->
+                <div id="tips-panel" v-show="!hasData||!loadNormal" style="">
+                    <div v-show="!hasData&&loadNormal">
+                        <div>暂无数据</div>
+                    </div>
+                    <div v-show="!loadNormal">
+                        <div class="tips-panel-img"></div>
+                        <div style="margin:10px 0;">网络或服务异常</div>
+                        <div>下拉重新加载</div>
+                    </div>
+                </div>
+            </section>
+            <div slot="top" class="mint-loadmore-top" style="font-size:0.4rem;text-align:center;color:#A1A6BB;">
+                <div v-show="topStatus == 'pull'" class="rotate">↓ 下拉刷新</div>
+                <div v-show="topStatus == 'drop'" :class="{ 'rotate': topStatus === 'drop' }">↑ 释放更新</div>
+                <div v-show="topStatus === 'loading'">
+                    <mt-spinner size="20" style="display: inline-block;vertical-align: middle;" type="fading-circle"></mt-spinner>
+                    <span>加载中...</span>
+                </div>
+            </div>
+        </mt-loadmore>
+    </div>
+</body>
+<script type="text/javascript">
+    //设置dom高度
+    function setDomHeight(){
+        var bodyHeight = $api.cssVal($api.dom('body'),'height');
+        $api.css($api.dom('#section'),'min-height:'+bodyHeight);
+    }
+
+    //刷新数据
+    function refreshData() {
+        myVue.loadData();
+    }
+
+    var myVue;
+    apiready = function() {
+        api.setStatusBarStyle({
+            style: 'light',
+            color: '#1875F0'
+        });
+        //处理业务
+        myVue = new Vue({
+            el: '#main',
+            data: {
+                topStatus: '',//下拉状态
+                loadNormal:true, //是否加载正常
+                hasData: true, //是否有数据
+                dataListWarning:[],//雨量站列表
+                dataListNormal:[],//雨量站列表
+            },
+            filters: {
+                dateFormat: function(date) {
+                    if(date&&date!='0001-01-01 00:00:00'){
+                        return date.replace('T',' ');
+                    }else{
+                        return '-';
+                    }
+                },
+            },
+            methods: {
+                loadTop:function(){//下拉加载数据
+                    this.loadData();
+                },
+                //设置加载后状态
+                setLoadState:function(loadNormal,hasData,dataWarning,dataNormal){
+                    this.loadNormal=loadNormal;
+                    this.hasData=hasData;
+                    this.dataListWarning=dataWarning;
+                    this.dataListNormal=dataNormal;
+                },
+                handleTopChange:function(status) {
+                    this.topStatus = status;
+                },
+                loadData: function(showLoading) { //获取闸孔列表
+                    var that = this;
+                    showLoading&&that.$indicator.open('加载中...');
+                    wjget("WH_Flow_Station/GetListByProjectId?projectId="+$api.getStorage('projectIdList').ysjc,function(ret, err) {
+                        showLoading&&that.$indicator.close();
+                        that.$refs.loadmore.onTopLoaded();
+                        console.log(JSON.stringify(ret))
+                        // console.log(JSON.stringify(err))
+                        if (ret) {
+                            if (ret.Code == 200) {
+                                if (ret.Data&&ret.Data.length) {
+                                    var dataWaring=[],dataNormal=[];
+                                    ret.Data.forEach(function(item){
+                                        item.ZType&&dataWaring.push(item);
+                                        !item.ZType&&dataNormal.push(item);
+                                    })
+                                    that.setLoadState(true,true,dataWaring,dataNormal);
+                                }else{
+                                    that.setLoadState(true,false,[],[]);
+                                }
+                            } else {
+                                that.setLoadState(false,false,[],[]);
+                            }
+                        } else {
+                            that.setLoadState(false,false,[],[]);
+                        }
+                    });
+                }
+            },
+            created: function() {
+                this.loadData(true);
+            },
+            mounted: function() {
+                setDomHeight();
+            }
+        });
+    };
+</script>
+
+</html>

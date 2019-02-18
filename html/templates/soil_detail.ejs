@@ -1,0 +1,78 @@
+<div class="list-block" style="margin-bottom: 0px; margin-top: -1px;">
+    <div class="list-block-main">
+        <div class="row">
+            <div class="flex-1 text-left">采集时间: </div>
+            <div class="flex-1 text-right"><%= TM %></div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">表层温度: </div>
+            <div class="flex-1 text-right"><%= app.isNull(SRLTEMP) %> ℃</div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">表层湿度: </div>
+            <div class="flex-1 text-right"><%= app.isNull(SRLSLM) %> %</div>
+        </div>
+    </div>
+</div>
+<h2>墒情变化实时数据</h2>
+<table class="grid">
+    <theader>
+        <tr>
+            <th>深度(cm)</th>
+            <th>温度(℃)</th>
+            <th>湿度(%)</th>
+        </tr>
+    </theader>
+    <tbody>
+        <tr>
+            <td>10</td>
+            <td><%= TEMP10 %></td>
+            <td><%= SLM10 %></td>
+        </tr>
+        <tr>
+            <td>20</td>
+            <td><%= TEMP20 %></td>
+            <td><%= SLM20 %></td>
+        </tr>
+        <tr>
+            <td>30</td>
+            <td><%= TEMP30 %></td>
+            <td><%= SLM30 %></td>
+        </tr>
+        <tr>
+            <td>40</td>
+            <td><%= TEMP40 %></td>
+            <td><%= SLM40 %></td>
+        </tr>
+        <tr>
+            <td>50</td>
+            <td><%= TEMP50 %></td>
+            <td><%= SLM50 %></td>
+        </tr>
+        <tr>
+            <td>60</td>
+            <td><%= TEMP60 %></td>
+            <td><%= SLM60 %></td>
+        </tr>
+        <tr>
+            <td>70</td>
+            <td><%= TEMP70 %></td>
+            <td><%= SLM70 %></td>
+        </tr>
+        <tr>
+            <td>80</td>
+            <td><%= TEMP80 %></td>
+            <td><%= SLM80 %></td>
+        </tr>
+        <tr>
+            <td>90</td>
+            <td><%= TEMP90 %></td>
+            <td><%= SLM90 %></td>
+        </tr>
+        <tr>
+            <td>100</td>
+            <td><%= TEMP100 %></td>
+            <td><%= SLM100 %></td>
+        </tr>
+    </tbody>
+</table>

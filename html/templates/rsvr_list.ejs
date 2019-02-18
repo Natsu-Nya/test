@@ -1,0 +1,42 @@
+<div class="list-block" tapmode="highlight" onclick="openGroupFrames('<%= ReservoirId %>', '<%= Name %>', '<%= ReportDate %>', '<%= DeviceID %>', '<%= ProjectId %>');">
+    <div class="list-block-header clearfix">
+        <span class="title">
+            <img class="icon" src="../image/home/nav/shape_shuiku.png" alt=""><%= Name %>
+        </span>
+        <% if (devFaultState) { %>
+            <span class="label label-danger pull-right">设备故障</span>
+        <% } %>
+    </div>
+    <div class="list-block-main">
+        <div class="row">
+            <div class="flex-1 text-left">当前库容：</div>
+            <div class="flex-1 text-right"><em><%= Capacity %></em>万m³</div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">当前库水位：</div>
+            <div class="flex-1 text-right">
+                <% if (OffsetWaterLevel > 0) { %>
+                    <em class="text-red"><%= WaterLevel %></em>m 
+                    <span class="text-red">↑</span>
+                <% } else if (OffsetWaterLevel < 0) { %>
+                    <em class="text-blue"><%= WaterLevel %></em>m 
+                    <span class="text-blue">↓</span>
+                <% } else { %>
+                    <em><%= WaterLevel %></em>m
+                <% } %>
+            </div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">出库流量：</div>
+            <div class="flex-1 text-right"><em><%= OutputFlow %></em>m³/s</div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">采集时间：</div>
+            <div class="flex-1 text-right datetime"><%= ReportDate %></div>
+        </div>
+    </div>
+    <div class="line-dotted"></div>
+    <div class="list-block-footer clearfix">
+        <div class="btn pull-right">查看详情</div>
+    </div>
+</div>

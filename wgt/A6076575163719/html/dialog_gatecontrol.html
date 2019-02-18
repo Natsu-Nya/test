@@ -1,0 +1,306 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>闸门控制弹框</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/wj-framework.css" />
+    <link rel="stylesheet" type="text/css" href="../css/mui.min.css" />
+    <link rel="stylesheet" type="text/css" href="../css/mui.picker.min.css" />
+    <style>
+        html,
+        body {
+            height: 98%;
+            background: transparent;
+            -webkit-touch-callout: none;
+            font-family: Tahoma, Geneva, sans-serif;
+            font-style: normal;
+        }
+
+        #dialog {
+            /*background-color: #e7e7e7;*/
+            background-color: #fff;
+            border-radius: 6px;
+            position: absolute;
+            margin: auto;
+            /*left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;*/
+            width: 90%;
+            max-height: 70%;
+            /*min-height: 225px;*/
+            /*-webkit-transition: all .1s;
+            transition: all .1s;
+            -webkit-transform: scale(0);
+            transform: scale(0);*/
+            opacity: 0;
+            overflow: scroll;
+        }
+
+        #dialog.in {
+            -webkit-transform: scale(1);
+            transform: scale(1);
+            opacity: 1;
+        }
+        #dialog input{
+            margin-bottom:0 !important;
+            /*margin-left: 10px;*/
+        }
+        .okbtn {
+            height: 2.5rem !important;
+            line-height: 2.5rem !important;
+            font-size: 0.7rem !important;
+            border-radius: 6px;
+            margin: 20px 25%;
+            display: block;
+            position: relative;
+            /*position: absolute;
+            bottom: 0px;*/
+        }
+    </style>
+</head>
+
+<body>
+    <div id="dialog" v-cloak>
+        <div class="aui-content">
+            <ul class="aui-list aui-form-list">
+                <li class="aui-list-header" style="font-size:0.8rem;">{{zmName}}-开度控制</li>
+                <li class="aui-list-item">
+                    <div class="aui-list-item-inner">
+                        <div class="aui-list-item-label">
+                            闸门模式
+                        </div>
+                        <div class="aui-list-item-input">
+                            <div class="select" class="aui-list-item-input" style="height:2rem;display:inline-block;float:left;width:100%;border:1px solid rgba(0,0,0,.2);border-radius:3px;padding-right: 14px;background: url('../image/choicearrow.png') no-repeat scroll right center transparent;background-size:16px 16px;">
+                                <select style="height:1.8rem;margin-left:10px;padding-left:0;margin-bottom:0;" v-model="kzModal.planmodel">
+                                  <option v-for="item in controlTypeArr" :value="item.Value" style="">{{item.Name}}</option>
+                              </select>
+                            </div>
+                        </div>
+                        <div class="aui-list-item-label-icon">
+                            &nbsp;
+                        </div>
+                    </div>
+                </li>
+                <li class="aui-list-item">
+                    <div class="aui-list-item-inner">
+                        <div class="aui-list-item-label">
+                            开始时间
+                        </div>
+                        <div class="aui-list-item-input" @click="selectTime" style="line-height:2.2rem;">
+                              <input type="text" v-model="kzModal.time" readonly style="margin-left:0;">
+                        </div>
+                        <div class="aui-list-item-label-icon" @click="clearTime">
+                            <i class="aui-iconfont aui-icon-close"></i>
+                        </div>
+                    </div>
+                </li>
+                <li class="aui-list-item">
+                    <div class="aui-list-item-inner">
+                        <div class="aui-list-item-label">
+                            开度上限
+                        </div>
+                        <div v-if="kzModal.MaxZMKD&&kzModal.MaxZMKD>0" class="aui-list-item-input">
+                            {{kzModal.MaxZMKD}}mm
+                        </div>
+                        <div v-if="!kzModal.MaxZMKD||kzModal.MaxZMKD<=0" class="aui-list-item-input">
+                            未设置
+                        </div>
+                    </div>
+                </li>
+                <li class="aui-list-item">
+                    <div class="aui-list-item-inner">
+                        <div class="aui-list-item-label">
+                            模式数值
+                        </div>
+                        <div class="aui-list-item-input">
+                            <!-- <input type="number" v-if="0" v-model="kzModal.height" class="zmkd-dom" placeholder="请输入闸门开度值" style="font-size:0.7rem;" required> -->
+                            <input type="number" v-if="kzModal.planmodel==1" v-model="kzModal.height" class="zmkd-dom" placeholder="请输入目标开度" style="font-size:0.7rem;" required>
+                            <input type="number" v-if="kzModal.planmodel==2" v-model="kzModal.height" class="zmkd-dom" placeholder="请输入目标流量" style="font-size:0.7rem;" required>
+                            <input type="number" v-if="kzModal.planmodel==3" v-model="kzModal.height" class="zmkd-dom" placeholder="请输入目标闸前水位" style="font-size:0.7rem;" required>
+                            <input type="number" v-if="kzModal.planmodel==4" v-model="kzModal.height" class="zmkd-dom" placeholder="请输入目标堰槽水位" style="font-size:0.7rem;" required>
+                        </div>
+                        <div class="aui-list-item-label-icon" style="padding-right:0;">
+                            <span v-show="kzModal.planmodel==1||kzModal.planmodel==3||kzModal.planmodel==4">mm</span>
+                            <span v-show="kzModal.planmodel==2">m/s</span>
+                        </div>
+                    </div>
+                </li>
+                <li class="aui-list-item">
+                    <div class="aui-list-item-inner">
+                        <div class="aui-list-item-label">
+                            操作密码
+                        </div>
+                        <div class="aui-list-item-input">
+                            <input type="password" v-model="kzModal.password" class="pwd-dom" style="font-size:0.7rem;" placeholder="请输入闸门控制密码" required>
+                        </div>
+                        <div class="aui-list-item-label-icon">
+                            &nbsp;
+                        </div>
+                    </div>
+                </li>
+                <li class="aui-list-item" style="background-image:none;">
+                    <div class="aui-list-item-inner aui-list-item-center aui-list-item-btn">
+                        <div v-on:click="run" class="aui-btn aui-btn-info aui-margin-r-5" style="width: 40%;">执行</div>
+                        <div v-on:click="closeFrame" class="aui-btn aui-btn-danger aui-margin-l-5" style="width: 40%;">取消</div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/aui-toast.js"></script>
+<script type="text/javascript" src="../script/wj-ajax.js"></script>
+<script type="text/javascript" src="../script/zepto.min.js"></script>
+<script type="text/javascript" src="../script/mui.min.js"></script>
+<script type="text/javascript" src="../script/mui.picker.min.js"></script>
+<script type="text/javascript">
+    $('#dialog').addClass('in');
+    apiready = function() {
+        var pageParamdata = api.pageParam.data; //接收传递的参数
+        // $(document.body).on('touchend', function(e) {
+        //     var dialog = $("#dialog")[0];
+        //     if (!$.contains(dialog, e.target)) {
+        //         $('#dialog').removeClass('in');
+        //         setTimeout(function() {
+        //             api.closeFrame();
+        //         }, 200);
+        //     }
+        // });
+        var toast = new auiToast();
+        ////处理业务
+        new Vue({
+            el: '#dialog',
+            data: {
+                zmName:pageParamdata.gate_name,
+                kzModal: {
+                    MaxZMKD:pageParamdata.gate_height,
+                    gatesn:pageParamdata.gate_sn,
+                    time:'',
+                    time1:'',
+                    height:'',
+                    password:'',
+                    planmodel:''
+                },
+                controlTypeArr:[
+                    {Name:'手动模式',Value:0},
+                    {Name:'恒定开度控制',Value:1},
+                    {Name:'恒定流量控制',Value:2},
+                    {Name:'恒定闸前水位控制',Value:3},
+                    {Name:'恒定堰槽水位控制',Value:4},
+                ],
+            },
+            methods: {
+                closeFrame: function() {
+                    api.closeFrame();
+                },
+                selectTime:function(){
+                    var dtPicker = new mui.DtPicker();
+                    dtPicker.show(function (selectItems) {
+
+                         var year=selectItems.y.value;
+                         var month=selectItems.m.value;
+                         var day=selectItems.d.value;
+                         var hour=selectItems.h.value;
+                         var i=selectItems.i.value;
+                         this.kzModal.time=year+'-'+month+'-'+day+' '+hour+':'+i;
+                         this.kzModal.time1=new Date(Number(year),Number(month)-1,Number(day),Number(hour),Number(i));
+                    }.bind(this));
+                },
+                clearTime:function(){
+                    this.kzModal.time='';
+                    this.kzModal.time1='';
+                },
+                run: function() {
+                    var planvalue = this.kzModal.height;
+                    var planstart = this.kzModal.time1;
+                    var gatesn = this.kzModal.gatesn;
+                    var planmodel=this.kzModal.planmodel;
+                    var password=this.kzModal.password;
+                    this.zmControl(gatesn,planmodel,planstart,planvalue,password);
+                },
+                zmControl: function(gatesn,planmodel,planstart,planvalue,password) { //设置闸孔开度
+                    var that = this;
+                    if (planvalue === "" || planvalue === undefined) {
+                        api.alert({
+                            msg: '目标开度不能为空!'
+                        });
+                        return;
+                    }
+
+                    if (planmodel==1&&(that.kzModal.MaxZMKD && that.kzModal.MaxZMKD > 0) && (planvalue > that.kzModal.MaxZMKD)) {
+                        api.alert({
+                            msg: '目标开度超过了闸门开度上限!'
+                        });
+                        return;
+                    }
+                    // else if (height > that.kzModal.Height) {
+                    //     api.alert({
+                    //         msg: '目标开度不允许超过闸门高度('+that.kzModal.Height+'m)!'
+                    //     });
+                    //     return;
+                    // }
+
+                    // if (password === "" || password === undefined) {
+                    //     api.alert({
+                    //         msg: '操作密码不能为空!'
+                    //     });
+                    //     return;
+                    // };
+                    toast.loading({
+                        title: "执行中...",
+                        duration: 20000 //等待20秒
+                    });
+                    console.log(planstart);
+                    wjget("YiTiGate/ControlGate?gatesn="+gatesn+"&planmodel="+planmodel+"&planstart="+planstart+"&planvalue="+planvalue+"&password="+password, function(ret, err) {
+                        toast.hide();
+                        console.log(JSON.stringify(ret));
+                        console.log(JSON.stringify(err));
+                        if (ret) {
+                            if (ret.Code == 200 && ret.Data) {
+                                $api.toast('操作成功!', 1000);
+                                setTimeout(function() {
+                                    api.closeFrame();
+                                },2000);
+                            } else {
+                                api.alert({
+                                    msg: '操作失败!'
+                                });
+                            }
+                        } else {
+                            if (err && err.body && err.body.Message) {
+                                api.alert({
+                                    msg: err.body.Message
+                                });
+                            } else {
+                                api.alert({
+                                    msg: '网络异常,请重新操作!'
+                                });
+                            }
+                        }
+                    });
+                }
+            },
+            created: function() {
+
+            },
+            mounted: function() {
+                var odialog = $api.dom('#dialog');
+                var left = (document.documentElement.clientWidth - odialog.offsetWidth) / 2 + 'px';
+                var top = (document.documentElement.clientHeight - odialog.offsetHeight) / 2 + 'px';
+                $api.css(odialog, 'top:' + top + ";left:" + left);
+            },
+            updated: function() {
+
+            }
+        });
+    };
+</script>
+
+</html>

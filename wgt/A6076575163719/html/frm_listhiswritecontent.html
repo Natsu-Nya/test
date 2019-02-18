@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>历史填报内容页面</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui-pull-refresh.css" />
+    <link rel="stylesheet" type="text/css" href="../css/wj-framework.css" />
+    <style>
+        .top-list-item:active {
+            background-color: #fff !important;
+        }
+
+        .aui-list-item-input {
+            border: 1px solid #dddddd;
+            margin: 4px;
+            background: none;
+            border-radius: 4px;
+        }
+
+        .top-list-item .aui-list-item-inner {
+            padding: 0px !important;
+        }
+
+        .top-list-item {
+            /*background-position: 0px !important;
+            background-size: 0px !important;
+            background-image: none !important;*/
+            background-position: bottom !important;
+            padding: 0.75rem !important;
+            /*border-bottom: 1px solid #dddddd !important;*/
+        }
+
+        .aui-content .aui-form-list,
+        .aui-form-list .aui-list-item {
+            background-size: 0px !important;
+            background-image: none !important;
+        }
+
+        .aui-list-item-inner .aui-list-item-label,
+        .aui-list-item-inner input {
+            line-height: 1.6rem;
+            height: 1.6rem;
+        }
+
+        .aui-list-item-label {
+            width: 60% !important;
+        }
+
+        .item-title {
+            color: rgb(25, 171, 222) !important;
+        }
+
+        .savebtn {
+            height: 2.5rem !important;
+            line-height: 2.5rem !important;
+            font-size: 0.8rem !important;
+            border-radius: 6px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="content" v-cloak>
+        <section class="aui-refresh-content" style="position: absolute;top:0px;bottom: 0px;left: 0px;right: 0px;">
+            <div class="aui-content aui-margin-b-15">
+                <ul class="aui-list aui-list-in">
+                    <li class="aui-media-list">
+                        <div class="aui-list-item">
+                            <div class="aui-list-item-inner">
+                                <div class="aui-list-item-title">
+                                    <span style="vertical-align: middle;line-height:1.2rem;">巡检安排</span>
+                                    <img src="../image/clock.png" style="margin-left:10px;height:1.2rem;line-height:1.2rem;display: inline-block;vertical-align: middle;">
+                                    <span style="vertical-align: middle;font-size:0.7rem;line-height:1.2rem;">{{taskdata.StartTime|dateformat}}-{{taskdata.EndTime|dateformat}}</span>
+                                </div>
+                                <div class="aui-list-item-title aui-margin-t-10"><span class="labletitleline">填报项</span></div>
+                                <div class="aui-list-item-title aui-margin-t-10" style="height:1.2rem;">
+                                    <img v-if="taskdata.CheckStatus==0" src="../image/yiwen.png" style="height:100%;display: inline-block;vertical-align: middle;" />
+                                    <img v-if="taskdata.CheckStatus==1" src="../image/zhengchang.png" style="height:100%;display: inline-block;vertical-align: middle;" />
+                                    <img v-if="taskdata.CheckStatus==2" src="../image/cuowu.png" style="height:100%;display: inline-block;vertical-align: middle;" />
+                                    <!-- <img src="../image/right.png" style="height:100%;display: inline-block;vertical-align: middle;"> -->
+                                    <span style="vertical-align: middle;">{{taskdata.ItemName}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="aui-list-item top-list-item">
+                        <div class="aui-list-item-inner">
+                            <div class="aui-content" style="width:100%">
+                                <ul class="aui-list aui-form-list">
+                                    <li class="aui-list-item" v-for="(item,index) in listitem">
+                                        <div class="aui-list-item-inner">
+                                            <div class="aui-list-item-label">
+                                                {{item.ContentName}}
+                                            </div>
+                                            <div class="aui-list-item-input">
+                                                <input readonly="readonly" v-model="item.ContentValue" type="text" >
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </section>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/aui-toast.js"></script>
+<script type="text/javascript" src="../script/aui-pull-refresh.js"></script>
+<script type="text/javascript" src="../script/wj-framework.js"></script>
+<script type="text/javascript" src="../script/wj-ajax.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        var pageParamdata = api.pageParam.data; //接收传递的参数
+        var toast = new auiToast();
+        ////处理业务
+        new Vue({
+            el: '#content',
+            data: {
+                taskdata: pageParamdata,
+                listitem: []
+            },
+            filters: {
+                dateformat: function(value) {
+                    return formatDateFormat(value, 'yyyy-MM-dd').replace(/-/g, '.');
+                }
+            },
+            methods: {
+                loaddata: function(isrefresh, title, ishidetoast) {
+                    var that = this;
+                    if (!ishidetoast) {
+                        toast.loading({
+                            title: title || "加载中...",
+                            duration: 20000 //等待20秒
+                        });
+                    }
+                    wjget("AppPolling/GetListCheckContent?LogId=" + pageParamdata.LogId + "&ItemId=" + pageParamdata.ItemId, function(ret, err) {
+                        toast.hide();
+                        if (ret) {
+                            if (ret.Code == 200 && ret.Data) {
+                                that.listitem = ret.Data;
+                            } else {
+                                if (!ishidetoast) {
+                                    api.alert({
+                                        msg: '数据加载失败!'
+                                    });
+                                }
+                            }
+                        } else {
+                            if (!ishidetoast) {
+                                api.alert({
+                                    msg: '网络异常,请重新加载!'
+                                });
+                            }
+                        }
+                    });
+                }
+            },
+            created: function() {
+                this.loaddata(true);
+            },
+            mounted: function() {
+                var that = this;
+                ////实现下拉刷新
+                PullToRefresh(this);
+            }
+        });
+    };
+</script>
+
+</html>

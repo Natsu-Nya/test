@@ -1,0 +1,39 @@
+@import './common.scss';
+
+#main{
+    background: #fff;
+    ul{
+        padding:0 0.4rem;
+        margin-bottom:0.4rem;
+        // border-top: 1px solid #E4E7F0;
+        border-bottom: 1px solid #E4E7F0;
+        .name-time{
+            height: 1.253333rem;
+            line-height: 1.253333rem;
+            border-bottom: 1px solid #E4E7F0;
+            font-size:0;
+            span{
+                display: inline-block;
+                vertical-align: middle;
+                font-size:0.346667rem;
+                &.name{
+                    color:#1875F0;
+                    width:60%;
+                }
+                &.time{
+                    color:#A1A6BB;
+                    width:40%;
+                    text-align: right;
+                }
+            }
+        }
+        .content{
+            .text{
+                font-size: 0.373333rem;
+                color:#64697B;
+                line-height: 0.613333rem;
+                padding:0.266667rem 0;
+            }
+        }
+    }
+}

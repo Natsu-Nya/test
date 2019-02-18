@@ -1,0 +1,65 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>城市选择Frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style>
+    html,
+    body {
+        background-color: rgba(0,0,0,0.8);
+    }
+
+    .unit-warp {
+        background-color: #fff;
+    }
+    </style>
+</head>
+
+<body class="flex-box-v">
+    <div id="main" class="unit-warp">
+        <ul id="unitGroup" class="list-group">
+            <li class="list-group-item selected" tapmode="active">
+                红山水库
+            </li>
+            <li class="list-group-item" tapmode="active">
+                乌拉斯特镇水管所
+            </li>
+            <li class="list-group-item" tapmode="active">
+                红旗水库
+            </li>
+            <li class="list-group-item" tapmode="active">
+                吐曼德井灌区
+            </li>
+            <li class="list-group-item" tapmode="active">
+                恰勒什海乡水管所
+            </li>
+        </ul>
+    </div>
+    <footer class="flex-1"></footer>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/listview.js"></script>
+<script type="text/javascript">
+var unitList = ['红山水库', '乌拉斯特镇水管所', '红旗水库', '吐曼德井灌区', '恰勒什海乡水管所'];
+var listGroup = new LDListView('#unitGroup', '.list-group-item', function(index) {
+    this.setIndex(index);
+
+    api.sendEvent({
+        name: 'unitChange',
+        extra: {
+            currentUnit: unitList[index]
+        }
+    });
+    api.setFrameAttr({
+        hidden: true
+    });
+});
+
+apiready = function() {};
+</script>
+
+</html>

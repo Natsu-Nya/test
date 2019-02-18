@@ -1,0 +1,49 @@
+ <div class="video-warp">
+    <div class="video" tapmode="active" onclick="playVideo(this, '<%= Url_data %>');">
+        <div class="photo">
+            <img src="../image/gate/<%= gate_sn %>.jpg" alt="" style="height: 150px; width: 100%;">
+        </div>
+    </div>
+</div>
+<div class="list-block">
+    <div class="list-block-main">
+        <div class="row">
+            <div class="text-left" style=" width: 70px;">设备状态：</div>
+            <div class="flex-1 text-left">
+                <% for (var item in EquipmentState) { %>
+                    <span class="label label-danger"><%= EquipmentState[item] %></span>
+                <% } %>
+            </div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">闸前水位：</div>
+            <div class="flex-1 text-right"><em><%= gateinfo_beforewtl %></em>m</div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">闸后水位：</div>
+            <div class="flex-1 text-right"><em><%= gateinfo_afterwtl %></em>m</div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">过闸流量：</div>
+            <div class="flex-1 text-right"><em><%= gateinfo_instantaneouswtl %></em>m³/s</div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">当前开度：</div>
+            <div class="flex-1 text-right"><em><%= gateinfo_zmkd %></em>mm</div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">本轮调水流量：</div>
+            <div class="flex-1 text-right"><em><%= gateinfo_thetotalwtl %></em>m³</div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">控制方式：</div>
+            <div class="flex-1 text-right">
+                <strong><%= gateinfo_kzms %></strong>
+            </div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">启闭状态：</div>
+            <div class="flex-1 text-right"><strong><%= gate_state %></strong></div>
+        </div>
+    </div>
+</div>

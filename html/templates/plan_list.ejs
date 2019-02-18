@@ -1,0 +1,35 @@
+<div class="list-block">
+    <div class="list-block-header clearfix">
+        <span class="title">
+            <img class="icon" src="../image/home/nav/shape_niandujihua.png" alt=""><%= Name %>
+        </span>
+    </div>
+    <div class="list-block-main">
+        <div class="row">
+            <div class="flex-1 text-left">计划年份: </div>
+            <div class="flex-1 text-right"><%= Year %></div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">总实际用水量: </div>
+            <div class="flex-1 text-right"><em><%= app.toFixed(TotalWaterYearActual, 2) %></em>万m³</div>
+        </div>
+        <div class="row">
+            <div class="flex-1 text-left">总计划用水量:</div>
+            <div class="flex-1 text-right"><em><%= app.toFixed(TotalWaterMasterPlan, 2) %></em>万m³</div>
+        </div>
+        <% if (data) { %>
+        <div class="line-dotted"></div>
+        <% } %>
+        <% for (var item in data) { %>
+            <h1><%= data[item].IRGARNM %></h1>
+            <div class="row">
+                <div class="flex-1 text-left">年度实际用水: </div>
+                <div class="flex-1 text-right"><em><%= app.toFixed(data[item].Water_YearPlan, 2) %></em>万m³</div>
+            </div>
+            <div class="row">
+                <div class="flex-1 text-left">年度计划用水: </div>
+                <div class="flex-1 text-right"><em><%= app.toFixed(data[item].Water_YearActual, 2) %></em>万m³</div>
+            </div>
+        <% } %>
+    </div>
+</div>

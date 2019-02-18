@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>message detail frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+    }
+    </style>
+</head>
+
+<body class="flex-box-v">
+    <header id="header">
+        <div class="back" tapmode onclick="api.closeWin();">
+            <img src="../image/back.png">
+        </div>
+        <div class="title">通知详情</div>
+    </header>
+    <div id="main" class="flex-1">
+    </div>
+    <footer id="footer">
+    </footer>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+apiready = function() {
+    var header = $api.byId('header'),
+        footer = $api.byId('footer'),
+        headerH = $api.fixStatusBar(header),
+        footerH = $api.fixTabBar(footer);
+
+    api.openFrame({
+        name: 'note_detail_frame',
+        url: 'note_detail_frame.html',
+        rect: {
+            marginTop: headerH,
+            marginBottom: footerH,
+            w: 'auto',
+            h: 'auto'
+        },
+        pageParam: {
+            name: 'value'
+        },
+        bounces: false
+    });
+};
+</script>
+
+</html>

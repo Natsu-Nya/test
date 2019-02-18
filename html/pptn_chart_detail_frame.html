@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>pptn_chart_detail_frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/glyphicons.css" />
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="main">
+        <div id="filter">
+            <div class="filter-warp">
+                <div class="filter-item" tapmode onclick="openDateModeActionSheet();">
+                    <span id="dateMode"></span><span class="glyphicon glyphicon-triangle-bottom"></span>
+                </div>
+                <div id="intvWrap" class="filter-item" tapmode>
+                    <span id="intv"></span><span class="glyphicon glyphicon-triangle-bottom"></span>
+                </div>
+                <div class="filter-item"></div>
+            </div>
+        </div>
+        <div class="chart-block">
+            <div class="chart-block-header">
+                <div class="title">降雨量统计</div>
+            </div>
+            <div class="chart-block-main">
+                <div id="chart_main" style="height: 280px;"></div>
+            </div>
+            <div class="line-dotted"></div>
+            <div class="chart-block-footer clearfix">
+                <div class="btn pull-right" tapmode="highlight" onclick="fullChart();">全屏查看</div>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/highcharts.js"></script>
+<script type="text/javascript" src="../script/underscore-min.js"></script>
+<script type="text/javascript" src="../script/moment.min.js"></script>
+<script type="text/javascript" src="../script/charts.js"></script>
+<script type="text/javascript">
+var datePicker = null,
+    sheet = null,
+    chart = null,
+    $dataMode = document.querySelector('#dataMode'),
+    $intvWrap = document.querySelector('#intvWrap'),
+    $intv = document.querySelector('#intv');
+
+
+var dateModeActionSheet = function(element, success) {
+    var $element = document.querySelector(element);
+    var sheet = new app.ActionSheet({
+        title: '切换显示方式',
+        cancelTitle: '取消',
+        dataSource: [
+            // { name: '最近30天', format: 'now' },
+            { name: '按月显示', format: 'yearAndMonth' },
+            { name: '按年显示', format: 'year' }
+        ],
+        fieldName: 'name',
+        success: function(selectedIndex, selectedValue, selectedItem) {
+            $element.innerHTML = selectedValue;
+            if (typeof success === 'function') {
+                success(selectedIndex, selectedValue, selectedItem);
+            }
+        }
+    });
+    $element.innerHTML = sheet.getSelectedValue();
+    return sheet;
+};
+
+sheet = dateModeActionSheet('#dateMode', function(selectedIndex, selectedValue, selectedItem) {
+    openDatePicker(selectedItem.format);
+});
+
+apiready = function() {
+    var UIDatePicker = api.require('UIDatePicker');
+    datePicker = new app.DatePicker(UIDatePicker, {
+        type: 'yearAndMonth',
+        success: function(value, text, format, ret) {
+            $intvWrap.hidden = false;
+            $intv.innerHTML = text;
+
+            var dateMode = sheet.getSelectedIndex();
+            if (dateMode == 0) {
+                loadMonth();
+            } else if (dateMode == 1) {
+                loadYear();
+            }
+        }
+    });
+
+    $intv.innerHTML = datePicker.getSelectedText();
+    $intvWrap.onclick = function() {
+        openDatePicker(sheet.getSelectedItem().format);
+    };
+
+    chart = new app.Charts.PptnBar('chart_main');
+    loadMonth();
+};
+
+function loadMonth() {
+    var selectedDate = datePicker.getSelectedValue();
+    var start = moment(selectedDate, 'YYYY-MM');
+    var end = moment(selectedDate, 'YYYY-MM').add(1, 'months').add(-1, 'days');
+
+    chart.loadMonth({
+        Ids: [api.pageParam.id],
+        sdateTime: start.format('YYYY-MM-DD'),
+        edateTime: end.format('YYYY-MM-DD'),
+        success: function(ret) {}
+    });
+}
+
+function loadYear() {
+    var selectedDate = datePicker.getSelectedValue();
+    var start = moment(selectedDate, 'YYYY');
+    var end = moment(selectedDate, 'YYYY').add(1, 'years').add(-1, 'days');
+
+    chart.loadYear({
+        Ids: [api.pageParam.id],
+        sdateTime: start.format('YYYY-MM-DD'),
+        edateTime: end.format('YYYY-MM-DD'),
+        success: function(ret) {}
+    });
+}
+
+function fullChart() {
+    api.setScreenOrientation({
+        orientation: 'landscape_left'
+    });
+    api.openFrame({
+        name: 'pptn_chart_frame',
+        url: 'pptn_chart_frame.html',
+        rect: {
+            x: 0,
+            y: 0,
+            w: 'auto',
+            h: 'auto'
+        },
+        pageParam: {
+            dateMode: sheet.getSelectedIndex(),
+            data: chart.data
+        },
+        bounces: false
+    });
+}
+
+function openDateModeActionSheet() {
+    sheet.open();
+}
+
+function openDatePicker(type) {
+    datePicker.open(type);
+}
+</script>
+
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>移动巡检</title>
+    <link rel="stylesheet" type="text/css" href="../css/css/header.css" />
+    <script type="text/javascript" src="../script/lib/api.js"></script>
+    <script type="text/javascript" src="../script/lib/vue.min.js"></script>
+    <script type="text/javascript" src="../script/lib/flexible.js"></script>
+    <script type="text/javascript" src="../script/wj-ajax.js"></script>
+    <style type="text/css">
+
+    </style>
+</head>
+
+<body>
+    <header class="type1" id="header">
+        <!-- type1 蓝色系,type2 白色系 -->
+        <ul>
+            <!-- type1 左右结构,type2 左中右结构 -->
+            <!-- <li class="type1">
+              <div class="item-left">通讯录</div>
+              <div class="item-right">晚间大雨</div>
+          </li> -->
+            <li class="type2">
+                <div class="item-left" onclick="closeWidget()"></div>
+                <div class="item-center">
+                    <div class="title">移动巡检</div>
+                </div>
+                <div class="item-right"></div>
+            </li>
+        </ul>
+    </header>
+</body>
+<script type="text/javascript">
+function closeWidget() {
+    api.closeWidget({
+        retData: {
+            name: 'resultParam'
+        }
+    });
+}
+
+apiready = function() {
+    /*$api.setStorage('apiserviceurl', 'http://182.150.28.58:8504/irrigation/api');
+    $api.setStorage('loginserviceurl', 'http://182.150.28.58:8504/framework/Account/LoginApp2');
+    $api.setStorage('rootserviceurl', 'http://182.150.28.58:8504/irrigation');
+    $api.setStorage('videoserviceurl', 'http://182.150.28.58:8001/api');*/
+    $api.setStorage('apiserviceurl', 'http://117.146.25.22:5561/irrigation/api');
+    $api.setStorage('loginserviceurl', 'http://117.146.25.22:5561/framework/Account/LoginApp2');
+    $api.setStorage('rootserviceurl', 'http://117.146.25.22:5561/irrigation');
+    $api.setStorage('videoserviceurl', 'http://117.146.25.22:5561/api');
+    var lastmessagetime = $api.getStorage("lastmessagetime");
+
+    if (!lastmessagetime) {
+        lastmessagetime = {
+            'lastwaitdealworktime': '2000-1-1',
+            'lastsystemmessagetime': '2000-1-1',
+            'lasterrorwarningtime': '2000-1-1'
+        };
+        $api.setStorage('lastmessagetime', lastmessagetime); //各个消息最后查看时间
+    }
+
+    var projectIdList = {
+        ysjc: '991941021447360512',
+        dbaq: '998907440466628608',
+        tjys: '986076075958341632'
+    };
+    $api.setStorage('projectIdList', projectIdList); //扬水监测,灌溉用水,田间用水
+
+    $api.setStorage("logininfo", api.wgtParam.userInfo);
+
+
+    //api.parseTapmode();
+    var pageParamdata = api.pageParam.data; //接收传递的参数
+    var header = $api.byId('header');
+    $api.fixStatusBar(header); //可以解决ios和一些安卓状态栏重贴问题
+    var headerPos = $api.offset(header);
+    var body_h = $api.offset($api.dom('body')).h;
+    api.openFrame({
+        name: 'frm_movepolling',
+        url: 'frm_movepolling.html', //注意此处用相对路径，否则下拉无效
+        bounces: false,
+        rect: {
+            x: 0,
+            y: headerPos.h,
+            w: 'auto',
+            h: 'auto'
+        },
+        pageParam: {
+            data: pageParamdata
+        }
+    });
+
+    api.addEventListener({
+        name: 'keyback'
+    }, function(ret, err) {
+        closeWidget();
+    });
+};
+</script>
+
+</html>

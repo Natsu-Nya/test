@@ -1,0 +1,244 @@
+html, body, header, section, footer, div, ul, ol, li, img, a, span, em, del, legend, center, strong, var, fieldset, form, label, dl, dt, dd, cite, input, hr, time, mark, code, figcaption, figure, textarea, h1, h2, h3, h4, h5, h6, p {
+  margin: 0;
+  border: 0;
+  padding: 0;
+  font-style: normal;
+}
+
+html, body {
+  -webkit-touch-callout: none;
+  -webkit-text-size-adjust: none;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-user-select: none;
+  background-color: #fff;
+}
+
+nav, article, aside, details, main, header, footer, section, fieldset, figcaption, figure {
+  display: block;
+}
+
+img, a, button, em, del, strong, var, label, cite, small, time, mark, code, textarea {
+  display: inline-block;
+}
+
+header, section, footer {
+  position: relative;
+}
+
+ol, ul {
+  list-style: none;
+}
+
+input, button, textarea {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  /*-webkit-appearance:none;*/
+  background-color: rgba(0, 0, 0, 0);
+}
+
+span {
+  display: inline-block;
+}
+
+a:active, a:hover {
+  outline: 0;
+}
+
+a, a:visited {
+  text-decoration: none;
+}
+
+label {
+  word-wrap: break-word;
+  word-break: break-all;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+td, th {
+  padding: 0;
+}
+
+html {
+  font-family: 'PingFangSC Regular',"Microsoft YaHei";
+  font-weight: normal;
+  font-style: normal;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  height: 100%;
+  background: #fff;
+}
+
+* {
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  /* Firefox */
+  -webkit-box-sizing: border-box;
+  /* Safari */
+}
+
+[v-cloak] {
+  display: none;
+}
+
+#tips-panel {
+  text-align: center;
+  font-size: 0.5rem;
+  color: #A1A6BB;
+  padding-top: 50%;
+}
+
+#tips-panel .tips-panel-img {
+  width: 0.666667rem;
+  height: 0.666667rem;
+  display: inline-block;
+  background: url(../../image/wifi.png) no-repeat center;
+  background-size: 0.666667rem 0.666667rem;
+}
+
+#more-tips-panel {
+  text-align: center;
+  font-size: 0.4rem;
+  color: #A1A6BB;
+  padding: 10px 0;
+}
+
+#main {
+  background: #fff;
+}
+
+#main .data-list {
+  padding-left: 0.4rem;
+  border-top: 1px solid #E4E7F0;
+  border-bottom: 1px solid #E4E7F0;
+}
+
+#main .data-list.normal {
+  margin-top: 0.373333rem;
+}
+
+#main .data-list li {
+  padding: 0.4rem 0;
+  padding-right: 0.4rem;
+  border-bottom: 1px solid #E4E7F0;
+}
+
+#main .data-list li:last-child {
+  border-bottom: 0;
+}
+
+#main .data-list li .top {
+  font-size: 0;
+}
+
+#main .data-list li .top .imgbox, #main .data-list li .top .infobox {
+  display: inline-block;
+  vertical-align: top;
+}
+
+#main .data-list li .top .imgbox {
+  width: 1.2rem;
+  overflow: hidden;
+}
+
+#main .data-list li .top .imgbox .img {
+  width: 0.853333rem;
+  height: 0.853333rem;
+  border-radius: 50%;
+  background-color: transparent;
+  background-image: url(../../image/icon.png);
+  background-repeat: no-repeat;
+  background-position: -20.96rem -0.8rem;
+  background-size: 72.89333rem 8.89333rem;
+}
+
+#main .data-list li .top .infobox {
+  width: calc(100% - 1.2rem);
+}
+
+#main .data-list li .top .infobox .name-model {
+  font-size: 0;
+}
+
+#main .data-list li .top .infobox .name-model .name, #main .data-list li .top .infobox .name-model .model {
+  display: inline-block;
+  vertical-align: top;
+}
+
+#main .data-list li .top .infobox .name-model .name {
+  font-size: 0.4rem;
+  font-weight: bold;
+  color: #222328;
+  min-width: 4.0rem;
+  height: 0.586667rem;
+  line-height: 0.586667rem;
+}
+
+#main .data-list li .top .infobox .name-model .model {
+  float: right;
+  padding: 0 0.2rem;
+  height: 0.453333rem;
+  line-height: 0.48rem;
+  border-radius: 0.066667rem;
+  font-size: 0.266667rem;
+  text-align: center;
+  color: #fff;
+}
+
+#main .data-list li .top .infobox .name-model .model.normal {
+  background: #6FBB18;
+}
+
+#main .data-list li .top .infobox .data {
+  padding-top: 0.08rem;
+  padding-bottom: 0.213333rem;
+}
+
+#main .data-list li .top .infobox .data .item {
+  margin-top: 0.106667rem;
+  font-size: 0;
+}
+
+#main .data-list li .top .infobox .data .item .text-value {
+  display: inline-block;
+  vertical-align: middle;
+  width: 50%;
+  height: 0.56rem;
+  line-height: 0.56rem;
+  color: #A1A6BB;
+  font-size: 0.373333rem;
+}
+
+#main .data-list li .top .infobox .data .item .text-value:nth-child(2) {
+  text-align: right;
+}
+
+#main .data-list li .top .infobox .data .item .text-value .value {
+  font-family: 'Arial';
+  color: #64697B;
+  font-size: 0.453333rem;
+  font-style: italic;
+}
+
+#main .data-list li .top .infobox .data .item .text-value .value.warning {
+  color: #E55757;
+}
+
+#main .data-list li .top .infobox .data .item .text-value .warning {
+  color: #F57A23;
+}
+
+#main .data-list li .top.normal .imgbox {
+  width: 0;
+}
+
+#main .data-list li .top.normal .infobox {
+  width: 100%;
+}

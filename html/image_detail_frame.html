@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>image detail frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/glyphicons.css" />
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+    }
+
+    .photos {
+        box-sizing: border-box;
+    }
+
+    .photos .photo {
+        box-sizing: border-box;
+        /*padding: 15px;*/
+        padding: 15px;
+        padding-bottom: 0px;
+    }
+
+    .photos .photo.left {
+        padding-right: 8px;
+    }
+
+    .photos .photo.right {
+        padding-left: 8px;
+    }
+
+    .photos img {
+        height: 165px;
+        width: 100%;
+        border-radius: 5px;
+    }
+
+    .photos .photo-title {
+        font-size: 15px;
+        color: rgba(34, 35, 40, 1);
+        line-height: 18px;
+    }
+
+    .photos .datetime {
+        height: 18px;
+        font-size: 12px;
+        color: rgba(126, 135, 173, 1);
+        line-height: 18px;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="main">
+        <div class="photos"></div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/onlinefile.js"></script>
+<script type="text/javascript" src="../script/underscore-min.js"></script>
+<script type="text/javascript" src="../script/templates.js"></script>
+<script type="text/javascript">
+var photoBrowser = null,
+    photoImages = [],
+    $photo = document.querySelector('#main .photos');
+
+apiready = function() {
+    photoBrowser = api.require('photoBrowser');
+
+    loadPhoto();
+};
+
+function loadPhoto() {
+    app.ajax({
+        url: app.urls.LoadImageListByDeviceId,
+        data: {
+            devicesId: api.pageParam.deviceId,
+            pageIndex: 1,
+            pageSize: 18
+        },
+        template: JST.image_detail,
+        debug: false,
+        loadFilter: function(data) {
+            return data.Rows;
+        },
+        template_data: function(row, rows, index) {
+            row.SavePath = app.rootDomain + '/irrigation/api/ImageMonitor/Image/' + row.Key;
+            row.RowIndex = index;
+            photoImages.push(row.SavePath);
+            return row;
+        },
+        success: function(data, html) {
+            api.hideProgress();
+            app.refreshHeaderLoadDone();
+            $photo.innerHTML = html;
+        },
+        error: function(err) {
+            alert(JSON.stringify(err));
+        }
+    });
+}
+
+function openPhoto(activeIndex) {
+    photoBrowser.open({
+        images: photoImages,
+        activeIndex: activeIndex || 0,
+        bgColor: '#000'
+    }, function(ret, err) {
+        if (ret) {
+            if (ret.eventType == 'click') {
+                photoBrowser.close();
+            }
+        } else {
+            alert(JSON.stringify(err));
+        }
+    });
+}
+</script>
+
+</html>

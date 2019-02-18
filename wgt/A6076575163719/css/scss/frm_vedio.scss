@@ -1,0 +1,81 @@
+@import "common.scss";
+html,body{
+    height: 100%;
+}
+
+#vedioPage{
+  height: 100%;
+  background-color: #999;
+  position: relative;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  .header{
+      height: 1.17rem;
+      line-height: 1.17rem;
+      position: relative;
+      text-align: center;
+      background-color: #343851;
+      @include fontStyle(0.48rem,#fff);
+      .comeBack{
+          @include allArrow($type:left,$right:0.4rem,$color: #fff);
+          height: 1.17rem;
+          float: left;
+          left: 0.3rem;
+      }
+  }
+
+}
+#addressView{
+    height:1.46rem;
+    // line-height: 1.46rem;
+    background-color: #FCFDFF;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    span{
+        @include fontStyle(0.4rem,#7E87AD);
+    }
+    .projectName{
+        color: #64697B;
+        padding-left: 0.4rem;
+    }
+    .gateName{
+        padding-left: 0.533333rem;
+    }
+
+    .rightArrow{
+        @include allArrow($type:right,$right:0.4rem,$color: #979797);
+        position: absolute !important;
+        right: 0.86rem;
+    }
+}
+.active{
+
+}
+#vedio-content{
+    position: relative;
+    // background-color: #666;
+    &:after{
+        content: '请选择视频站点';
+        @include fontStyle(0.32rem,#64697B);
+        position: absolute;
+        margin: auto;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+    }
+}
+#myplayer{
+    width: 100%;
+    height: 100%;
+}
+.noVedio{
+    height:calc(100% - 2.7rem);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    @include fontStyle(0.32rem,#64697B);
+    background-color: #999;
+}

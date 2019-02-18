@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+        <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+        <script type="text/javascript" src="../script/lib/flexible.js"></script>
+        <link rel="stylesheet" type="text/css" href="../css/api.css" />
+        <link rel="stylesheet" type="text/css" href="../css/lib/mint-ui.css" />
+        <link rel="stylesheet" type="text/css" href="../css/css/frm_project_gate.css" />
+        <title>视频监控-检测仪</title>
+        <style>
+            #gatePage{
+                height: 100%;
+            }
+            .mint-searchbar-core{
+                text-align: center;
+            }
+            .mint-search{
+                height: auto;
+            }
+            .mint-search-list{
+                padding-top: 0px;
+                top: 66px;
+                background-color: #fff;
+                z-index: 11111;
+            }
+            #gatePage ul li{
+                 font-size: 0.373333rem;
+                 color: #64697B;
+                 border-top:1px solid #E4E7F0;
+                 padding: 0.4rem;
+            }
+            #gatePage ul li:last-child{
+                border-bottom:1px solid #E4E7F0;
+            }
+            .noVedioList{
+                height:2rem;
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-size: 0.32rem;
+                color:#64697B;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="gatePage" v-cloak>
+            <div class="header">
+                <mt-search v-model="inputVal" placeholder="关键词搜索" :result.sync="pojectResult" style="font-size:14px;">
+                    <!-- <mt-cell v-for="item in result" :title="item.title" :value="item.value"></mt-cell> -->
+                </mt-search>
+            </div>
+            <div class="select-group-wrap">
+                <div class="name">
+                    最近选择：
+                </div>
+                <div class="btn-wrap" v-if="historyCatch[0]">
+                    <mt-button type="default" class="resetBtn" v-for="(item,index) in historyCatch" @click="openVedioPage(item)">{{item.Name}}</mt-button>
+                </div>
+                <div class="btn-wrap" v-else>
+                    <span class="content">暂无选择</span>
+                </div>
+            </div>
+            <ul infinite-scroll-disabled="loading" infinite-scroll-distance="20">
+              <li v-for="(item,index) in listVideoStation" @click="openVedioPage(item)">{{ item.Name }}</li>
+            </ul>
+            <div class="noVedioList" v-if="noVedioList">
+                暂无视频
+            </div>
+        </div>
+    </body>
+    <script type="text/javascript" src="../script/api.js"></script>
+    <script type="text/javascript" src="../script/vue.min.js"></script>
+    <script src="https://unpkg.com/mint-ui/lib/index.js"></script>
+    <script type="text/javascript" src="../script/wj-framework.js"></script>
+    <script type="text/javascript" src="../script/wj-ajax.js"></script>
+    <script type="text/javascript">
+    // var vm=new Vue({
+    //     el:'#gatePage',
+    //     data:{
+    //         // projectId:projectObj.ProjectId,
+    //         isloaderror: false, //是否加载异常
+    //         loaderrortype: 0, //加载异常类型,1:工程加载异常,2.闸门加载异常
+    //         finishinitvideo: false,
+    //
+    //         loading:true,
+    //
+    //         zmData:[1,23,45,6,78,9,78,6],
+    //
+    //             historyCatch:[],
+    //             pojectResult:[],
+    //             inputVal:'',
+    //     },})
+        apiready=function(){
+            $api.fixStatusBar($api.dom('.header'));
+            api.setStatusBarStyle({
+                style: 'light',
+                color: '#fff'
+            });
+
+            var gateObj=api.pageParam.name;
+            var vm=new Vue({
+                el:'#gatePage',
+                data:{
+                    isloaderror: false, //是否加载异常
+                    loaderrortype: 0, //加载异常类型,1:工程加载异常,2.闸门加载异常
+                    finishinitvideo: false,
+
+                    loading:true,
+
+                    zmData:[],
+                    historyCatch:[],
+                    pojectResult:[],
+                    inputVal:'',
+                    // listVideoStation:gateObj?gateObj:{},
+                    listVideoStation:[],
+                    gateObj:gateObj,
+
+                    noVedioList:false,
+                },
+                mounted:function(){
+                    this.getCatch();
+                    this.getVedioList(this.gateObj);
+                },
+                methods:{
+                    getCatch:function(){
+                        var that=this;
+                        api.getPrefs({
+                            key: 'vedio'
+                        }, function(ret, err) {
+                            console.log(JSON.stringify(ret.value));
+                            if(ret.value){
+                                that.historyCatch=JSON.parse(ret.value);
+                            }else{
+                                that.historyCatch=[];
+                            }
+                        });
+                    },
+                    getVedioList:function(params){
+                        var that=this;
+                        if(!params)return;
+                        console.log(JSON.stringify(params));
+                        that.$indicator.open('加载中...');
+                        wjget("VideoStationSet/GetListByGroupId?projectId=" + params.ProjectId+"&groupId="+params.GroupId, function(ret, err) {
+                            that.$indicator.close();
+                            console.log(JSON.stringify(ret));
+                            console.log(JSON.stringify(err));
+                            if (ret) {
+                                if (ret.Code == 200 && ret.Data) {
+                                    that.isloaderror = false;
+                                    if (ret.Data&&ret.Data[0]) {
+                                        that.listVideoStation =ret.Data;
+                                        that.noVedioList=false;
+                                    } else {
+                                        that.noVedioList=true;
+                                        that.listVideoStation = [];
+                                    }
+                                } else {
+                                    that.noVedioList=true;
+                                    that.isloaderror = true;
+                                    that.loaderrortype = 2;
+                                    api.alert({
+                                        msg: '数据加载失败!'
+                                    });
+                                }
+                            } else {
+                                that.noVedioList=true;
+                                that.isloaderror = true;
+                                that.loaderrortype = 2;
+                                api.alert({
+                                    msg: '网络异常,请重新加载!'
+                                });
+                            }
+                        });
+                    },
+                    openVedioPage:function(params){
+                        var pName=params;
+                        // if(Object.prototype.toString.call(params) === "[object String]"){
+                        //     pName=params;
+                        // }else{
+                        //     pName=params.Name;
+                        // }
+                        var result={},arr=[],mark=true;
+                        api.getPrefs({
+                            key: 'vedio'
+                        }, function(ret, err) {
+                            if(ret.value){
+                                arr=JSON.parse(ret.value);
+                            }
+                            for(var i=0;i<arr.length;i++){
+                                if(pName.RelationId===arr[i].RelationId){
+                                    var j=arr[0];
+                                    arr[0]=arr[i];
+                                    arr[i]=j;
+                                    mark=false;
+                                    break;
+                                }
+                            }
+                            if(mark){
+                                if(arr.length>=4){
+                                    arr.splice(3,arr.length);
+                                    arr.unshift(pName);
+                                }else{
+                                    arr.unshift(pName);
+                                }
+                            }
+                            api.setPrefs({
+                                key: 'vedio',
+                                value: arr
+                            });
+                        });
+                        this.openZmFrm(params);
+                    },
+                    openZmFrm:function(params){
+                        if(!params.VideoUrl){
+                            this.$toast({
+                                 message: params.Name+'视频地址为空',
+                                 position: 'top',
+                                 duration: 1000
+                            });
+                            return false;
+                        }
+                        var str=JSON.stringify(params);
+                        var jsfun = "videoPlay("+str+");";
+                        api.execScript({
+                            frameName: 'frm_vedio',
+                            script: jsfun
+                        });
+                        api.execScript({
+                            name: 'win_home',
+                            script: "cleanFrameArr()"
+                        });
+                        setTimeout(function(){
+                            var frameNameArr=['frm_project','frm_project_gate','frm_project_vedio'];
+                            for(var i=0;i<frameNameArr.length;i++){
+                                api.closeFrame({
+                                    name: frameNameArr[i]
+                                });
+                            }
+                        },500)
+                    }
+                }
+            })
+        }
+    </script>
+</html>

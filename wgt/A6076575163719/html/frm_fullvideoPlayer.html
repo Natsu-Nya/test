@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>视频全屏</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui-pull-refresh.css" />
+    <link rel="stylesheet" type="text/css" href="../css/wj-framework.css" />
+    <style>
+        * {
+            box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            /* Firefox */
+            -webkit-box-sizing: border-box;
+            /* Safari */
+        }
+
+        .empty {
+            text-align: center;
+            padding: 120px 0;
+        }
+
+        html,
+        body,
+        #content {
+            height: 100%;
+            background: #fff;
+        }
+
+        body {
+            background-color: #fff;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+
+<body>
+
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript">
+    apiready = function() {
+        var videoPlayer = api.require('videoPlayer');
+        var pageParamdata = api.pageParam.data; //接收传递的参数
+        var VideoUrl = pageParamdata.VideoUrl;
+        videoPlayer.open({
+            rect: {
+                x: 0,
+                y: 0,
+                w: api.winWidth,
+                h: api.winHeight
+            },
+            bg: '#555',
+            fixedOn: 'frm_fullvideoPlayer', //必须设置，否则会默认贴在window上，导致全屏显示
+            path: VideoUrl,
+            //path: 'http://171.221.202.126:6709/ncg00/rtsp://192.168.0.169:557/pag://192.168.0.169:7302:001086:0:MAIN:TCP?cnid=1&pnid=0/live.m3u8?ncgMode=0&reqAuthIdentify=MagMedia', //（可选项）字符串类型；文档的路径，支持网络和本地（fs://）路径；默认：未传值时不播放
+            //在 android 平台上不支持 widget://
+            autoPlay: true //（可选项）布尔类型；打开时是否自动播放；默认：true（自动播放）
+        }, function(ret, err) {
+            if (ret) {
+                videoPlayer.fullScreen();
+            } else {
+                alert('视频加载失败！'); //JSON.stringify(err)
+            }
+        });
+    };
+</script>
+
+</html>

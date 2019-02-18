@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>river detail frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/glyphicons.css" />
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+    }
+
+    table.grid {
+        font-size: 13px;
+        color: #A1A6BB;
+        border-width: 1px;
+        border-color: #666666;
+        border-collapse: collapse;
+        table-layout: fixed;
+        width: 100%;
+    }
+
+    table.grid th {
+        border-bottom: 1px solid #E4E7F0;
+        height: 35px;
+        line-height: 35px;
+        text-indent: 15px;
+        text-align: left;
+    }
+
+    table.grid td {
+        height: 44px;
+        line-height: 44px;
+        font-size: 15px;
+        color: #222328;
+        border-bottom: 1px solid #E4E7F0;
+        text-indent: 15px;
+        text-align: left;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="main">
+        <div id="filter">
+            <div class="filter-warp">
+                <div id="intvWrap" class="filter-item" tapmode>
+                    <span id="intv"></span><span class="glyphicon glyphicon-triangle-bottom"></span>
+                </div>
+                <div class="filter-item">
+                </div>
+                <div class="filter-item"></div>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="chart-block">
+                <div class="chart-block-header">
+                    <div class="title">24H水位过程线</div>
+                </div>
+                <div class="chart-block-main">
+                    <div id="chart_main" style="height: 280px;"></div>
+                </div>
+                <div class="line-dotted"></div>
+                <div class="chart-block-footer clearfix">
+                    <div class="btn pull-right" tapmode="highlight" onclick="fullChart();">全屏查看</div>
+                </div>
+            </div>
+        </div>
+        <div class="panel">
+            <div class="panel-heading">
+                <h2>24小时水位记录</h2>
+            </div>
+            <div id="hour24"></div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/highcharts.js"></script>
+<script type="text/javascript" src="../script/underscore-min.js"></script>
+<script type="text/javascript" src="../script/moment.min.js"></script>
+<script type="text/javascript" src="../script/templates.js"></script>
+<script type="text/javascript" src="../script/charts.js"></script>
+<script type="text/javascript">
+var datePicker = null,
+    chart = null,
+    $intvWrap = document.querySelector('#intvWrap'),
+    $intv = document.querySelector('#intv'),
+    $hour24 = document.querySelector('#hour24');
+
+
+apiready = function() {
+    var UIDatePicker = api.require('UIDatePicker');
+    datePicker = new app.DatePicker(UIDatePicker, {
+        success: function(value, text, format, ret) {
+            $intv.innerHTML = text;
+            loadChart();
+        }
+    });
+    $intv.innerHTML = datePicker.getSelectedText();
+    $intvWrap.onclick = function() {
+        openDatePicker('date');
+    };
+
+    chart = new app.Charts.RiverWater('chart_main');
+    loadChart();
+};
+
+function loadChart() {
+    chart.load24Hour({
+        stcd: api.pageParam.id,
+        dateTime: datePicker.getSelectedValue(),
+        success: function(data) {
+            rows = _.sortBy(data.data, 'TM').reverse();
+            $hour24.innerHTML = JST.river_24hour({ 'rows': rows });
+        }
+    });
+}
+
+function fullChart() {
+    api.setScreenOrientation({
+        orientation: 'landscape_left'
+    });
+    api.openFrame({
+        name: 'river_chart_frame',
+        url: 'river_chart_frame.html',
+        rect: {
+            x: 0,
+            y: 0,
+            w: 'auto',
+            h: 'auto'
+        },
+        pageParam: {
+            data: chart.data
+        },
+        bounces: false
+    });
+}
+
+function openDatePicker(type) {
+    datePicker.open(type);
+}
+</script>
+
+</html>

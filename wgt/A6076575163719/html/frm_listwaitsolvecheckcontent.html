@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>待解决的检测内容列表</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui-pull-refresh.css" />
+    <link rel="stylesheet" type="text/css" href="../css/wj-framework.css" />
+    <style>
+        .btnreport {
+            border-radius: 4px;
+            padding: 4px 6px;
+            margin-right: 4px;
+            font-size: 0.7rem;
+            color: #fff;
+            background-color: rgb(185, 0, 0);
+        }
+
+        .aui-list .aui-list-item-media {
+            width: 33.3% !important;
+        }
+
+        .remarktext {
+            font-size: 0.8rem !important;
+            color: #212121 !important;
+            word-break: break-all !important;
+            text-overflow: ellipsis !important;
+            display: -webkit-box !important;
+            /*对象作为伸缩盒子模型显示*/
+            -webkit-box-orient: vertical !important;
+            /** 设置或检索伸缩盒对象的子元素的排列方式 **/
+            -webkit-line-clamp: 2 !important;
+            /** 显示的行数 **/
+            overflow: hidden !important;
+            /** 隐藏超出的内容 **/
+        }
+
+        .timetext {
+            font-size: 0.7rem !important;
+            color: #757575 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="content" v-cloak>
+        <section class="aui-refresh-content" style="position: absolute;top: 0px;bottom: 0px;left: 0px;right: 0px;">
+            <div class="aui-content aui-margin-b-15" v-show="!(isloaderror&&pageIndex==1)">
+                <div class="aui-content aui-margin-b-15">
+                    <ul class="aui-list aui-media-list">
+                        <li class="aui-list-item" v-for="(item,index) in listitem">
+                            <div class="aui-media-list-item-inner">
+                                <div class="aui-list-item-inner">
+                                    <div class="aui-list-item-text remarktext">{{item.ContentRemark}}</div>
+                                    <div class="aui-list-item-title" style="margin-top:0.5rem;">
+                                        <span class="btnreport" v-on:click="errorsolve(item)">
+                                   问题处理
+                               </span>
+                                        <span class="timetext">{{item.LogTime}}</span>
+                                    </div>
+                                </div>
+                                <div class="aui-list-item-media">
+                                    <img v-bind:src="getimage(item.firstContentImage)">
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div v-show="loadfinished&&listitem.length<1" class="aui-card-list">
+                    <div class="aui-card-list-footer aui-text-center">
+                        暂无数据
+                    </div>
+                </div>
+                <div v-show="!isloaderror&&!isloadalldata&&pageIndex>1" class="aui-card-list" v-on:click="loaddata(false)">
+                    <div class="aui-card-list-footer aui-text-center">
+                        加载更多...
+                    </div>
+                </div>
+                <div v-show="isloaderror&&!isloadalldata&&pageIndex>1" class="aui-card-list" v-on:click="loaddata(false)">
+                    <div class="aui-card-list-footer aui-text-center">
+                        网络异常,点击加载更多...
+                    </div>
+                </div>
+            </div>
+            <div v-show="isloaderror&&pageIndex==1" class="recovery" v-on:click="loaddata(false)">
+                <div>
+                    <span><img src="../image/wifi.png"/></span>
+                    <p>网络异常</p>
+                    <p>点击屏幕,重新加载</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/aui-toast.js"></script>
+<script type="text/javascript" src="../script/aui-pull-refresh.js"></script>
+<script type="text/javascript" src="../script/aui-scroll.js"></script>
+<script type="text/javascript" src="../script/wj-framework.js"></script>
+<script type="text/javascript" src="../script/wj-ajax.js"></script>
+<script type="text/javascript">
+    ////更新dom属性
+    function upadtedocument() {
+        //注意在渲染后获取高度
+        var listimgitemplane = $api.domAll('img');
+        for (var i = 0; i < listimgitemplane.length; i++) {
+            var el = listimgitemplane[i];
+            var strimgpanelheight = $api.cssVal(el, 'width').replace("px", "");
+            var imgpanelheight = parseInt(strimgpanelheight);
+            $api.css(el, "height:" + (imgpanelheight * 3.0 / 4.0) + "px");
+        }
+    }
+
+    function openwin_errorsolve(LogItemId, ContentName) {
+        api.openWin({
+            name: 'win_errorsolve',
+            url: 'win_errorsolve.html',
+            bounces: false,
+            slidBackEnabled: true,
+            vScrollBarEnabled: false,
+            pageParam: {
+                data: {
+                    LogItemId: LogItemId,
+                    ContentName: ContentName,
+                    parentview: 'frm_listwaitsolvecheckcontent'
+                }
+            }
+        });
+    };
+
+    ////设置问题描述内容
+    function RefreshData() {
+        myvue.loaddata(true, '刷新中...', true);
+    }
+
+    var myvue;
+    apiready = function() {
+        var pageParamdata = api.pageParam.data; //接收传递的参数
+        var rootserviceurl = $api.getStorage('rootserviceurl');
+        var toast = new auiToast();
+        ////处理业务
+        myvue = new Vue({
+            el: '#content',
+            data: {
+                listitem: [],
+                isloadalldata: false, //是否已经加载了所有数据
+                loadfinished: true, //当次数据加载是否完成
+                pageIndex: 1,
+                pageSize: 30,
+                totalpage: 1,
+                isloaderror: false, //是否加载异常
+                normalCheck: true, //正常
+                exceptionCheck: true, //异常
+            },
+            methods: {
+                getimage: function(item) {
+                    if (!item) {
+                        return "../image/noneimg.png";
+                    } else {
+                        return rootserviceurl + item; //+"?v="+new Date().getTime();
+                    }
+                },
+                errorsolve: function(item) {
+                    var that = this;
+                    openwin_errorsolve(item.LogItemId, pageParamdata.ContentName);
+                },
+                showerrorsolve: function(item) {
+                    var that = this;
+                    openwin_listhischeckitem(item);
+                },
+                loaddata: function(isrefresh, title,ishidetoast) {
+                    var that = this;
+                    if (!this.loadfinished) {
+                        return; //上次没有请求完，不能执行当前请求
+                    }
+                    if (isrefresh) {
+                        //刷新数据,注意恢复默认值
+                        this.pageIndex = 1;
+                        this.totalpage = 1;
+                        this.isloadalldata = false;
+                    }
+
+                    if (this.isloadalldata) {
+                        return; //没有数据了，不要加载
+                    }
+
+                    this.loadfinished = false; //标识开始加载数据
+                    if (!ishidetoast) {
+                        toast.loading({
+                            title: title || "加载中...",
+                            duration: 20000 //等待20秒
+                        });
+                    }
+
+                    var that = this;
+                    wjget("AppPolling/GetListWaitSolveCheckContentByLogItemId?LogItemId=" + pageParamdata.LogItemId + "&PageSize=" + this.pageSize + "&PageIndex=" + this.pageIndex, function(ret, err) {
+                        toast.hide();
+                        that.loadfinished = true; //标识已加载完成数据
+                        if (ret) {
+                            if (ret.Code == 200 && ret.Data) {
+                                if (isrefresh) {
+                                    that.listitem = []; //注意刷新操作需要清空数据
+                                }
+
+                                that.totalpage = Math.ceil(ret.Data.Total / that.pageSize); //向上取整获取页总数
+                                that.pageIndex = that.pageIndex + 1; //预备下一页
+                                ////将至页数大于当前总页数,不用加载了
+                                if (that.pageIndex > that.totalpage) {
+                                    that.isloadalldata = true; //标识已经加载了所有数据
+                                }
+
+                                for (var i = 0; i < ret.Data.Rows.length; i++) {
+                                    that.listitem.push(ret.Data.Rows[i]); //注意是追加数据
+                                }
+
+                                that.isloaderror = false; //标识加载正常
+                            } else {
+                                that.isloaderror = true; //标识加载异常
+                                if (!ishidetoast) {
+                                    api.alert({
+                                        msg: '数据加载失败!'
+                                    });
+                                }
+                            }
+                        } else {
+                            that.isloaderror = true; //标识加载异常
+                            if (!ishidetoast) {
+                                api.alert({
+                                    msg: '网络异常,请重新加载!'
+                                });
+                            }
+                        }
+                    });
+                }
+            },
+            created: function() {
+                this.loaddata(true);
+            },
+            mounted: function() {
+                var that = this;
+                upadtedocument();
+                ////实现下拉刷新
+                PullToRefresh(this);
+                ////实现加载更多数据
+                LoadMoreData(this);
+            },
+            updated: function() {
+                ////注意计算高度应该在数据绑定之后，因为没数据时dom高度是0
+                upadtedocument();
+            }
+        });
+    };
+    //apiready();
+</script>
+
+</html>

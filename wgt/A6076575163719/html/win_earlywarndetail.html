@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>故障预警详情</title>
+    <link rel="stylesheet" type="text/css" href="../css/css/header.css" />
+    <script type="text/javascript" src="../script/lib/api.js"></script>
+    <script type="text/javascript" src="../script/lib/vue.min.js"></script>
+    <script type="text/javascript" src="../script/lib/flexible.js"></script>
+    <script type="text/javascript" src="../script/wj-ajax.js"></script>
+    <style type="text/css">
+    </style>
+</head>
+<body>
+    <div id="earlywarn">
+        <header class="type1" id="header">
+            <ul>
+                <li class="type2">
+                    <div class="item-left" onclick="closeWin()"></div>
+                    <div class="item-center">
+                        <div class="title">故障预警详情</div>
+                    </div>
+                    <div class="item-right" onclick="openWinPage('home')">返回首页</div>
+                </li>
+            </ul>
+        </header>
+    </div>
+</body>
+
+<script type="text/javascript">
+    function closeWin() {
+      api.closeWin();
+    }
+    function openWinPage(name,data) {
+        api.openWin({
+            name: 'win_'+name,
+            url: 'win_'+name+'.html',
+            bounces: false,
+            slidBackEnabled: true,
+            vScrollBarEnabled: false,
+            pageParam: {
+                data: data
+            }
+        });
+    }
+    apiready = function() {//处理业务
+        var header = $api.byId('header');
+        $api.fixStatusBar(header); //可以解决ios和一些安卓状态栏重贴问题
+        var headerPos = $api.offset(header);
+        api.setStatusBarStyle({
+            style: 'light',
+            color: '#1875F0'
+        });
+
+        api.openFrame({
+            name: 'frm_earlywarndetail',
+            url: 'frm_earlywarndetail.html',//注意此处用相对路径，否则下拉无效
+            bounces: false,
+            rect: {
+                x: 0,
+                y: headerPos.h,
+                w: 'auto',
+                h: 'auto'
+            },
+        //     pageParam: {
+        //       data: pageParamdata
+        //   }
+        });
+    };
+</script>
+
+</html>

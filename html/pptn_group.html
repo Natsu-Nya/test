@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>pptn group frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+    }
+    </style>
+</head>
+
+<body class="flex-box-v">
+    <header id="header">
+        <div class="back" tapmode onclick="api.closeWin();">
+            <img src="../image/back.png">
+        </div>
+        <div id="title" class="title">降雨信息</div>
+    </header>
+    <div id="nav" class="scroll-nav">
+        <div class="scroll-nav-main">
+            <ul>
+                <li class="nav-item active" tapmode>雨情信息</li>
+                <li class="nav-item" tapmode>统计查询</li>
+                <!--  <li class="nav-item" tapmode>预警信息</li> -->
+            </ul>
+        </div>
+    </div>
+    <div id="main" class="flex-1">
+    </div>
+    <footer id="footer">
+    </footer>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/scrollnav.js"></script>
+<script type="text/javascript">
+var scrollNav = new LDScrollNav('nav', function(index) {
+    api.setFrameGroupIndex({
+        name: 'pptnFrameGroup',
+        index: index,
+        scroll: true
+    });
+});
+
+apiready = function() {
+    var param = api.pageParam;
+    document.querySelector('#title').innerHTML = param.name;
+
+    var header = $api.byId('header'),
+        footer = $api.byId('footer'),
+        nav = $api.byId('nav'),
+        headerH = $api.fixStatusBar(header),
+        footerH = $api.fixTabBar(footer),
+        navH = $api.offset(nav).h;
+
+    var frames = [];
+    frames.push({ name: 'pptn_rtdata_detail_frame', url: 'pptn_rtdata_detail_frame.html', pageParam: { id: param.id, name: param.name, data: param.data } });
+    frames.push({ name: 'pptn_chart_detail_frame', url: 'pptn_chart_detail_frame.html', pageParam: { id: param.id, name: param.name } });
+    // frames.push({ name: 'pptn_warn_frame', url: 'pptn_warn_frame.html', pageParam: { id: param.id, name: param.name } });
+
+    api.openFrameGroup({
+        name: 'pptnFrameGroup',
+        scrollEnabled: false,
+        rect: {
+            marginTop: headerH + navH,
+            marginBottom: footerH,
+            w: 'auto',
+            h: 'auto'
+        },
+        index: 0,
+        frames: frames,
+        preload: frames.length
+    }, function(ret, err) {
+        scrollNav.setIndex(ret.index);
+    });
+};
+</script>
+
+</html>

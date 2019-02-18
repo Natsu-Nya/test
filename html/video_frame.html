@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>video frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/glyphicons.css" />
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+    }
+
+    .filter-warp {
+        border: 1px solid #E4E7F0;
+    }
+
+    .video-warp {
+        box-sizing: content-box;
+        padding: 15px;
+        padding-top: 0px;
+    }
+
+    .video {
+        box-sizing: content-box;
+    }
+
+    .video .title {
+        box-sizing: content-box;
+        height: 21px;
+        line-height: 21px;
+        font-size: 15px;
+        color: #222328;
+        padding: 10px 0px;
+    }
+
+    .video .photo {
+        position: relative;
+    }
+
+    .video .photo img {
+        border-radius: 2px;
+    }
+
+    .video .photo::after {
+        position: absolute;
+        right: 0px;
+        bottom: 0px;
+        left: 0px;
+        top: 0px;
+        height: 150px;
+
+        background: url(../image/play.png);
+        background-size: 64px 64px;
+        background-position: center center;
+        background-repeat: no-repeat;
+        -webkit-transition: 200ms;
+        transition: 200ms;
+        content: ' ';
+    }
+
+    .video.active {
+        opacity: 0.7;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="filter">
+        <div class="filter-warp">
+            <div class="filter-item" tapmode onclick="openVideoSelectorFrame();">
+                <span id="project"></span>
+                <span id="group"></span><span class="glyphicon glyphicon-triangle-bottom"></span>
+            </div>
+            <div class="filter-item"></div>
+            <div class="filter-item">
+            </div>
+        </div>
+    </div>
+    <div id="main" class="video-warp">
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/underscore-min.js"></script>
+<script type="text/javascript" src="../script/templates.js"></script>
+<script type="text/javascript">
+var playObj = null,
+    actionSelectorDatas = null,
+    UIActionSelector = null,
+    $project = document.querySelector('#project'),
+    $group = document.querySelector('#group'),
+    $container = document.querySelector('#main');
+
+apiready = function() {
+    api.addEventListener({
+        name: 'tabbar_changed'
+    }, function(ret, err) {
+        if (playObj != null) {
+            if (ret.value.selectedIndex == 1) {
+                // playObj.start(function(ret, err) {});
+            } else {
+                playObj.stop(function(ret, err) {});
+            }
+        }
+    });
+
+    api.addEventListener({
+        name: 'video_stop'
+    }, function(ret, err) {
+        if (playObj != null) {
+            playObj.stop(function(ret, err) {});
+        }
+    });
+
+    api.addEventListener({
+        name: 'video_exit_full_screen'
+    }, function(ret, err) {
+        if (playObj != null) {
+            playObj.unfull(function(ret, err) {});
+        }
+    });
+
+    UIActionSelector = api.require('UIActionSelector');
+
+    init();
+};
+
+function init() {
+    app.ajax({
+        url: app.urls.GetListWH_ProjectByVideo,
+        data: {},
+        success: function(projects) {
+            // app.console.json(projects);
+            app.ajax({
+                url: app.urls.GetVideoStationGroupListByProjectId,
+                data: {},
+                debug: false,
+                success: function(groups) {
+
+                    // 将数据整理为父与子的及联关系
+                    var arr = [];
+                    _.each(projects, function(p) {
+                        // 暂时屏蔽，只显示视频，不显示图像。
+                        //if (p.ProjectId == '995869692096811008') {
+
+                        var item = {
+                            "name": p.Name,
+                            "ProjectId": p.ProjectId,
+                            "CategoryId": p.CategoryId,
+                            "sub": []
+                        };
+
+                        _.each(groups, function(g) {
+                            if (p.ProjectId == g.ProjectId) {
+                                item.sub.push({
+                                    "name": g.Name,
+                                    "ProjectId": g.ProjectId,
+                                    "GroupId": g.GroupId
+                                });
+                            }
+                        });
+
+                        // 工程下面必须要有分组，才添加。
+                        if (item.sub.length > 0) {
+                            arr.push(item);
+                        }
+
+                        //}
+                    });
+
+                    arr = _.sortBy(arr, function(item) { return item.CategoryId; }).reverse();
+                    actionSelectorDatas = arr;
+
+                    // 获取第一项，然后加载列表
+                    if (arr.length > 0) {
+                        var defProject = arr[0];
+                        var defGroup = defProject.sub[0];
+
+                        $project.innerHTML = defProject.name;
+                        $group.innerHTML = defGroup.name;
+
+                        loadDeviceList(defGroup.ProjectId, defGroup.GroupId, defProject.CategoryId);
+                    }
+                }
+            });
+        }
+    });
+}
+
+function playVideo(target, videoUrl) {
+    // var photo = target.querySelector('.photo');
+    var rect = $api.offset(target);
+
+    playObj = api.require('playModule');
+    playObj.stop(function(ret, err) {
+        playObj.play({
+            rect: {
+                x: rect.l,
+                y: rect.t,
+                h: rect.h,
+                w: rect.w
+            },
+            fixedOn: api.frameName,
+            title: videoUrl,
+            url: videoUrl,
+            defaultBtn: true,
+            enableFull: false,
+            isTopView: false,
+            isAutoPlay: true,
+            fixed: false
+        }, function(ret, err) {});
+    });
+
+    // 进入全屏事件
+    playObj.addEventListener({
+        name: 'full'
+    }, function(ret, err) {
+        sendVideoFullScreenEvent('full');
+    });
+
+    // 退出全屏事件
+    playObj.addEventListener({
+        name: 'unfull'
+    }, function(ret, err) {
+        sendVideoFullScreenEvent('unfull');
+    });
+}
+
+function playImage(target, deviceId, name) {
+    api.openWin({
+        name: 'image_detail',
+        url: 'image_detail.html',
+        pageParam: {
+            name: name,
+            deviceId: deviceId
+        }
+    });
+}
+
+function sendVideoFullScreenEvent(state) {
+    api.sendEvent({
+        name: 'video_full_screen_state',
+        extra: {
+            'state': state
+        }
+    });
+}
+
+function loadDeviceList(projectId, groupId, categoryId) {
+    var t = null;
+    if (categoryId == 8) {
+        t = JST.video_list;
+    } else {
+        t = JST.image_list;
+    }
+
+    app.ajax({
+        url: app.urls.GetListByGroupId,
+        data: {
+            'projectId': projectId,
+            'groupId': groupId
+        },
+        template: t,
+        debug: false,
+        success: function(data, html) {
+            // app.refreshHeaderLoadDone();
+            api.hideProgress();
+            $container.innerHTML = html;
+
+            if (playObj != null) {
+                playObj.stop(function(ret, err) {});
+            }
+        }
+    });
+}
+
+function openVideoSelectorFrame() {
+    UIActionSelector.open({
+        datas: actionSelectorDatas,
+        layout: {
+            row: 5,
+            col: 2,
+            height: 30,
+            size: 12,
+            sizeActive: 14,
+            rowSpacing: 5,
+            colSpacing: 10,
+            maskBg: 'rgba(0,0,0,0.2)',
+            bg: '#fff',
+            color: '#888',
+            colorActive: '#f00',
+            colorSelected: '#f00'
+        },
+        animation: true,
+        cancel: {
+            text: '取消',
+            size: 12,
+            w: 90,
+            h: 35,
+            bg: '#fff',
+            bgActive: '#ccc',
+            color: '#888',
+            colorActive: '#fff'
+        },
+        ok: {
+            text: '确定',
+            size: 12,
+            w: 90,
+            h: 35,
+            bg: '#fff',
+            bgActive: '#ccc',
+            color: '#888',
+            colorActive: '#fff'
+        },
+        title: {
+            text: '请选择',
+            size: 12,
+            h: 44,
+            bg: '#eee',
+            color: '#888'
+        },
+        fixedOn: api.frameName
+    }, function(ret, err) {
+        if (ret && ret.eventType == 'ok') {
+            var projectInfo = ret.selectedInfo[0];
+            var groupInfo = ret.selectedInfo[1];
+            $project.innerHTML = projectInfo.name;
+            $group.innerHTML = groupInfo.name;
+
+            loadDeviceList(projectInfo.ProjectId, groupInfo.GroupId, projectInfo.CategoryId);
+        }
+    });
+}
+</script>
+
+</html>

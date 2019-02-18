@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no, email=no, date=no, address=no">
+    <title>pptn list frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/glyphicons.css" />
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+    }
+    </style>
+</head>
+
+<body class="flex-box-v">
+    <div id="search" tapmode onclick="openSearchWindow();">
+        <div class="search-warp">
+            <input type="text" placeholder="输入关键字名称查找" readonly="readonly">
+        </div>
+    </div>
+    <div id="filter">
+        <div class="filter-warp">
+            <div class="filter-item" tapmode onclick="openUnitActionSheet();">
+                <span id="unit"></span><span class="glyphicon glyphicon-triangle-bottom"></span>
+            </div>
+            <div class="filter-item" tapmode onclick="openPptnIntvActionSheet();">
+                <span id="pptnIntv"></span><span class="glyphicon glyphicon-triangle-bottom"></span>
+            </div>
+            <div class="filter-item"></div>
+        </div>
+    </div>
+    <div id="main">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h2>当前期间降雨情况统计</h2>
+                <div class="panel-arrow"></div>
+            </div>
+            <div class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <div class="flex-box-h">
+                        <div class="flex-1">
+                            <div class="list-block">
+                                <div class="list-block-main">
+                                    <div class="row">
+                                        无降雨：<em id="p0">--</em>个雨量站
+                                    </div>
+                                    <div class="row">
+                                        小雨：<em id="p1">--</em>个雨量站
+                                    </div>
+                                    <div class="row small">
+                                        <small>(小于等于10mm以下)</small>
+                                    </div>
+                                    <div class="row">
+                                        中雨: <em id="p2">--</em>个雨量站
+                                    </div>
+                                    <div class="row small">
+                                        <small>(10.1~25mm)</small>
+                                    </div>
+                                    <div class="row">
+                                        大雨: <em id="p3">--</em>个雨量站
+                                    </div>
+                                    <div class="row small">
+                                        <small>(25.1~50mm)</small>
+                                    </div>
+                                    <div class="row">
+                                        暴雨: <em id="p4">--</em>个雨量站
+                                    </div>
+                                    <div class="row small">
+                                        <small>(50.1~100mm)</small>
+                                    </div>
+                                    <div class="row">
+                                        大暴雨: <em id="p5">--</em>个雨量站
+                                    </div>
+                                    <div class="row small">
+                                        <small>(100.1~200mm)</small>
+                                    </div>
+                                    <div class="row">
+                                        特大暴雨: <em id="p6">--</em>个雨量站
+                                    </div>
+                                    <div class="row small">
+                                        <small>(大于200mm以上)</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <div id="chart_main" style="min-width:150px; min-height:250px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="listview">
+        </div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/searchbar.js"></script>
+<script type="text/javascript" src="../script/underscore-min.js"></script>
+<script type="text/javascript" src="../script/templates.js"></script>
+<script type="text/javascript" src="../script/highcharts.js"></script>
+<script type="text/javascript" src="../script/charts.js"></script>
+<script type="text/javascript">
+var Collapse = (function() {
+    var Constr = function(container) {
+        var container = document.querySelector(container);
+        var arrow = container.querySelector('.panel-arrow');
+        var collapse = container.querySelector('.panel-collapse');
+
+        arrow.onclick = (function() {
+            return function() {
+                collapse.classList.toggle('in');
+                arrow.classList.toggle('in');
+            };
+        })();
+    };
+    return Constr;
+})();
+
+var searchBar = null,
+    chart = null,
+    $container = document.querySelector('#listview'),
+    $unit = document.querySelector('#unit'),
+    $pptnIntv = document.querySelector('#pptnIntv'),
+    pptnIntvSheet = createPptnIntvActionSheet(),
+    sheet = app.unitActionSheet('#unit', function(selectedIndex, selectedValue, selectedItem) {
+        loadData()
+    });
+
+var collapse = new Collapse('.panel');
+
+var list_data = [];
+
+apiready = function() {
+    var UISearchBar = api.require('UISearchBar');
+    searchBar = new LDSearchBar(UISearchBar, '输入关键字名称查找', function(ret) {
+        loadData(ret.text);
+    });
+
+    chart = new app.Charts.PptnPie('chart_main');
+
+    app.setRefreshHeaderInfo(loadData);
+    loadData();
+
+    chart.reflow();
+};
+
+function loadData(name) {
+    var intv = pptnIntvSheet.getSelectedItem().code;
+    var intvName = pptnIntvSheet.getSelectedItem().name;
+
+    app.ajax({
+        url: app.urls.pptn_list,
+        data: {
+            pptnIntv: pptnIntvSheet.getSelectedItem().code,
+            name: name || ''
+        },
+        template_data: function (row) {
+            if (intv == '0') {
+                row.DRPdec = row.HourRainfall_24H;
+            } else if (intv == '1') {
+                row.DRPdec = row.DayRainfall;
+            } else if (intv == '2') {
+                row.DRPdec = row.YestdayRainfall;
+            } else if (intv == '3') {
+                row.DRPdec = row.HourRainfall_12H;
+            } else if (intv == '4') {
+                row.DRPdec = row.HourRainfall_6H;
+            } else if (intv == '5') {
+                row.DRPdec = row.HourRainfall_3H;
+            } else if (intv == '6') {
+                row.DRPdec = row.HourRainfall_1H;
+            } else if (intv == '8') {
+                row.DRPdec = row.ACCPCurrentMonth;
+            } else if (intv == '9') {
+                row.DRPdec = row.ACCPLastMont;
+            }
+            row.IntvName = intvName;
+            return row;
+        },
+        template: JST.pptn_list,
+        debug: false,
+        sortBy: function (data) {
+            if (intv == '0') {
+                return _.sortBy(data, 'HourRainfall_24H').reverse();
+            } else if (intv == '1') {
+                return _.sortBy(data, 'DayRainfall').reverse();
+            } else if (intv == '2') {
+                return _.sortBy(data, 'YestdayRainfall').reverse();
+            } else if (intv == '3') {
+                return _.sortBy(data, 'HourRainfall_12H').reverse();
+            } else if (intv == '4') {
+                return _.sortBy(data, 'HourRainfall_6H').reverse();
+            } else if (intv == '5') {
+                return _.sortBy(data, 'HourRainfall_3H').reverse();
+            } else if (intv == '6') {
+                return _.sortBy(data, 'HourRainfall_1H').reverse();
+            } else if (intv == '8') {
+                return _.sortBy(data, 'ACCPCurrentMonth').reverse();
+            } else if (intv == '9') {
+                return _.sortBy(data, 'ACCPLastMont').reverse();
+            }
+            return _.sortBy(data, 'Name');
+        },
+        success: function(data, html) {
+            list_data = data;
+
+            var p0 = _.filter(data, function(item) { return item.DRPdec == 0 || item.DRPdec == null }).length;
+            var p1 = _.filter(data, function(item) { return item.DRPdec <= 10 && item.DRPdec > 0}).length;
+            var p2 = _.filter(data, function(item) { return item.DRPdec > 10 && item.DRPdec <= 25; }).length;
+            var p3 = _.filter(data, function(item) { return item.DRPdec > 25 && item.DRPdec <= 50; }).length;
+            var p4 = _.filter(data, function(item) { return item.DRPdec > 50 && item.DRPdec <= 100; }).length;
+            var p5 = _.filter(data, function(item) { return item.DRPdec > 100 && item.DRPdec <= 200; }).length;
+            var p6 = _.filter(data, function(item) { return item.DRPdec > 200 }).length;
+
+            document.querySelector('#p0').innerHTML = p0;
+            document.querySelector('#p1').innerHTML = p1;
+            document.querySelector('#p2').innerHTML = p2;
+            document.querySelector('#p3').innerHTML = p3;
+            document.querySelector('#p4').innerHTML = p4;
+            document.querySelector('#p5').innerHTML = p5;
+            document.querySelector('#p6').innerHTML = p6;
+
+            var chartData = [
+                ['无降雨', p0],
+                ['小雨', p1],
+                ['中雨', p2],
+                ['大雨', p3],
+                ['暴雨', p4],
+                ['大暴雨', p5],
+                ['特大暴雨', p6]
+            ];
+
+            chart.update({
+                series: [{
+                    data: chartData
+                }]
+            });
+
+            api.hideProgress();
+            app.refreshHeaderLoadDone();
+            $container.innerHTML = html;
+        }
+    });
+}
+
+function createPptnIntvActionSheet() {
+    var data = [
+        { 'code': '0', 'name': '最近24小时' },
+        { 'code': '1', 'name': '今日' },
+        { 'code': '2', 'name': '昨日' },
+        { 'code': '3', 'name': '12H' },
+        { 'code': '4', 'name': '6H' },
+        { 'code': '5', 'name': '3H' },
+        { 'code': '6', 'name': '1H' },
+        { 'code': '8', 'name': '本月' },
+        { 'code': '9', 'name': '上月' }
+    ];
+
+    var sheet = new app.ActionSheet({
+        title: '切换降雨时段',
+        cancelTitle: '取消',
+        dataSource: data,
+        fieldName: 'name',
+        success: function(selectedIndex, selectedValue, selectedItem) {
+            $pptnIntv.innerHTML = selectedValue;
+            loadData();
+        }
+    });
+    $pptnIntv.innerHTML = sheet.getSelectedValue();
+    return sheet;
+}
+
+function openSearchWindow() {
+    searchBar.open();
+}
+
+function openUnitActionSheet() {
+    sheet.open();
+}
+
+function openPptnIntvActionSheet() {
+    pptnIntvSheet.open();
+}
+
+function openGroupFrames(id, name) {  
+    var lst = _.filter(list_data, function(item) { return item.StationId == id});
+    api.openWin({
+        name: 'pptn_group',
+        url: 'pptn_group.html',
+        pageParam: {
+            id: id,
+            name: name,
+            data: lst[0]
+        }
+    });
+}
+</script>
+
+</html>

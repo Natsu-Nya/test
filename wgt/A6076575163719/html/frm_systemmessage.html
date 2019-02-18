@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <meta name="format-detection" content="telephone=no,email=no,date=no,address=no">
+    <title>通知</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/aui-pull-refresh.css" />
+    <link rel="stylesheet" type="text/css" href="../css/wj-framework.css" />
+    <style>
+        body {
+            background-color: rgb(238, 241, 246);
+        }
+
+        .aui-list-item,
+        .aui-list-item-input,
+        .aui-list-item-label {
+            padding-left: 0rem !important;
+            padding-right: 0rem !important;
+            text-align: center !important;
+            font-size: 0.7rem !important;
+        }
+
+        .aui-list-header {
+            font-size: 0.7rem !important;
+            background-color: rgb(239, 242, 247) !important;
+        }
+
+        .aui-list-item-inner {
+            border-top: 1px solid #e8e9eb;
+        }
+
+        .itemlable {
+            width: 50% !important;
+            min-width: 3rem !important;
+            border-right: 1px solid #e8e9eb;
+            display: inline-block !important;
+        }
+
+        .divpanel {
+            border-radius: 4px;
+            border: 6px solid #fff;
+            margin: 10px;
+            background-color: #fff;
+            padding: 5px;
+        }
+
+        .detaillable {
+            float: right;
+            color: rgb(25, 171, 222);
+        }
+
+        .messagetext {
+            font-size: 0.7rem !important;
+            line-height: 1rem;
+            height: 1rem;
+            text-align: left;
+            color: rgb(105, 105, 105) !important;
+            word-break: break-all !important;
+            text-overflow: ellipsis !important;
+            display: -webkit-box !important;
+            -webkit-box-flex: 1;
+            /*对象作为伸缩盒子模型显示*/
+            -webkit-box-orient: vertical !important;
+            /** 设置或检索伸缩盒对象的子元素的排列方式 **/
+            -webkit-line-clamp: 1 !important;
+            /** 显示的行数 **/
+            overflow: hidden !important;
+            /** 隐藏超出的内容 **/
+        }
+
+        .wrap {
+            display: -webkit-box;
+            -webkit-box-orient: horizontal;
+            margin-top: 5px;
+        }
+
+        .rounddot {
+            background-color: rgb(33, 172, 219);
+            width: 0.6rem;
+            height: 0.6rem;
+            line-height: 0.6rem;
+            border-radius: 0.3rem;
+            -moz-border-radius: 0.3rem;
+            /* Mozilla浏览器的私有属性 */
+            -webkit-border-radius: 0.3rem;
+            /* Webkit浏览器的私有属性 */
+        }
+    </style>
+</head>
+
+<body>
+    <div id="content" v-cloak>
+        <section class="aui-refresh-content" style="position: absolute;top: 0px;bottom: 0px;left: 0px;right: 0px;background-color: rgb(238, 241, 246);">
+            <div class="aui-content" style="background-color: rgb(238, 241, 246);" v-show="!(isloaderror&&pageIndex==1)">
+                <div class="divpanel" v-for="(item,index) in listitem" v-on:click="showdetail(item,index)">
+                    <div>
+                        <div style="font-size:0.8rem;"><span v-show="!isread(item)" class="rounddot" style="margin-right: 0.5rem;">&nbsp;</span><span>{{item.Title}}</span></div>
+                    </div>
+                    <div class="wrap">
+                        <div class="messagetext">
+                            {{item.Content}}
+                        </div>
+                        <div style="font-size: 0.7rem !important;line-height: 1rem; height: 1rem;color: rgb(105,105,105);margin-left: 1rem;">{{item.TimeName}}</div>
+                    </div>
+                </div>
+                <div v-show="loadfinished&&listitem.length<1" class="aui-card-list" style="margin: 10px;">
+                    <div class="aui-card-list-footer aui-text-center">
+                        暂无数据
+                    </div>
+                </div>
+                <div v-show="!isloaderror&&!isloadalldata&&pageIndex>1" class="aui-card-list" style="margin: 10px;" v-on:click="loaddata(false)">
+                    <div class="aui-card-list-footer aui-text-center">
+                        加载更多...
+                    </div>
+                </div>
+                <div v-show="isloaderror&&!isloadalldata&&pageIndex>1" class="aui-card-list" style="margin: 10px;" v-on:click="loaddata(false)">
+                    <div class="aui-card-list-footer aui-text-center">
+                        网络异常,点击加载更多...
+                    </div>
+                </div>
+            </div>
+            <div v-show="isloaderror&&pageIndex==1" class="recovery" v-on:click="loaddata(false)">
+                <div>
+                    <span><img src="../image/wifi.png"/></span>
+                    <p>网络异常</p>
+                    <p>点击屏幕,重新加载</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/vue.min.js"></script>
+<script type="text/javascript" src="../script/aui-toast.js"></script>
+<script type="text/javascript" src="../script/aui-pull-refresh.js"></script>
+<script type="text/javascript" src="../script/aui-scroll.js"></script>
+<script type="text/javascript" src="../script/wj-framework.js"></script>
+<script type="text/javascript" src="../script/wj-ajax.js"></script>
+<script type="text/javascript">
+    ////更新dom属性
+    function upadtedocument() {
+
+    }
+
+    function openmessagedetaildialog(data) {
+        api.openFrame({
+            name: 'messagedetaildialog',
+            url: '../html/messagedetaildialog.html',
+            rect: {
+                x: 0,
+                y: 0,
+                w: api.winWidth,
+                h: api.winHeight
+            },
+            bgColor: 'rgba(0,0,0,0.6)',
+            bounces: false,
+            pageParam: {
+                data: data
+            }
+        });
+    };
+
+    apiready = function() {
+        var pageParamdata = api.pageParam.data; //接收传递的参数
+        var toast = new auiToast();
+        var lastmessagetime = $api.getStorage("lastmessagetime");
+        var lastsystemmessagetime = lastmessagetime.lastsystemmessagetime;
+        ////处理业务
+        new Vue({
+            el: '#content',
+            data: {
+                listitem: [],
+                isloadalldata: false, //是否已经加载了所有数据
+                loadfinished: true, //当次数据加载是否完成
+                pageIndex: 1,
+                pageSize: 10,
+                totalpage: 1,
+                isloaderror: false, //是否加载异常
+                normalCheck: true, //正常
+                exceptionCheck: true, //异常
+            },
+            methods: {
+                isread: function(item) {
+                    var ret = daysCompare(item.Time, lastsystemmessagetime); //注意此次用lastsystemmessagetime，不用lastmessagetime.lastsystemmessagetime
+                    if (ret > 0 && !item.ishaslook) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                },
+                showdetail: function(item, index) {
+                    var that = this;
+                    item.ishaslook = true; //是否已经查看
+                    this.listitem.splice(index, 1, item);
+                    openmessagedetaildialog(item);
+                },
+                checkChange: function() { //复选框变化
+                    this.loaddata(true);
+                },
+                loaddata: function(isrefresh, title) {
+                    var that = this;
+                    if (!this.loadfinished) {
+                        return; //上次没有请求完，不能执行当前请求
+                    }
+                    if (isrefresh) {
+                        //刷新数据,注意恢复默认值
+                        this.pageIndex = 1;
+                        this.totalpage = 1;
+                        this.isloadalldata = false;
+                    }
+
+                    if (this.isloadalldata) {
+                        return; //没有数据了，不要加载
+                    }
+
+                    this.loadfinished = false; //标识开始加载数据
+                    toast.loading({
+                        title: title || "加载中...",
+                        duration: 20000 //等待20秒
+                    });
+
+                    var param = {
+                        PageSize: this.pageSize,
+                        PageIndex: this.pageIndex
+                    };
+
+                    var that = this;
+                    wjpost("AppHome/GetListSystemMessage", param, function(ret, err) {
+                        toast.hide();
+                        that.loadfinished = true; //标识已加载完成数据
+                        if (ret) {
+                            if (ret.Code == 200 && ret.Data) {
+                                if (isrefresh) {
+                                    lastsystemmessagetime = lastmessagetime.lastsystemmessagetime; //注意刷新后更新查看时间
+                                    that.listitem = []; //注意刷新操作需要清空数据
+                                }
+
+                                that.totalpage = Math.ceil(ret.Data.Total / that.pageSize); //向上取整获取页总数
+                                that.pageIndex = that.pageIndex + 1; //预备下一页
+                                ////将至页数大于当前总页数,不用加载了
+                                if (that.pageIndex > that.totalpage) {
+                                    that.isloadalldata = true; //标识已经加载了所有数据
+                                }
+
+                                if (ret.Data.Rows && ret.Data.Rows.length > 0) {
+                                    for (var i = 0; i < ret.Data.Rows.length; i++) {
+                                        that.listitem.push(ret.Data.Rows[i]); //注意是追加数据
+                                    }
+                                }
+
+                                that.isloaderror = false; //标识加载正常
+                                if (ret.Data.Rows &&ret.Data.Rows.length > 0) {
+                                    var Maxmessagetime = ret.Data.Rows[0].Time;
+                                    var ret = daysCompare(Maxmessagetime, lastmessagetime.lastsystemmessagetime);
+                                    if (ret > 0) {
+                                        lastmessagetime.lastsystemmessagetime = Maxmessagetime;
+                                        $api.setStorage('lastmessagetime', lastmessagetime); //更新最后查看时间
+                                    }
+                                }
+                            } else {
+                                that.isloaderror = true; //标识加载异常
+                                api.alert({
+                                    msg: '数据加载失败!'
+                                });
+                            }
+                        } else {
+                            that.isloaderror = true; //标识加载异常
+                            api.alert({
+                                msg: '网络异常,请重新加载!'
+                            });
+                        }
+                    });
+                }
+            },
+            created: function() {
+                this.loaddata(true);
+            },
+            mounted: function() {
+                var that = this;
+                upadtedocument();
+                ////实现下拉刷新
+                PullToRefresh(this);
+                ////实现加载更多数据
+                LoadMoreData(this);
+            },
+            updated: function() {
+                ////注意计算高度应该在数据绑定之后，因为没数据时dom高度是0
+                upadtedocument();
+            }
+        });
+    };
+    //apiready();
+</script>
+
+</html>

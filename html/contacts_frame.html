@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>contacts frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/glyphicons.css" />
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+    }
+    </style>
+</head>
+
+<body class="flex-box-v">
+    <div id="search" tapmode onclick="openSearchWindow();">
+        <div class="search-warp">
+            <input type="text" placeholder="查找联系人" readonly="readonly">
+        </div>
+    </div>
+    <div id="filter">
+        <div class="filter-warp">
+            <div class="filter-item" tapmode onclick="openUnitActionSheet();">
+                <span id="unit"></span><span class="glyphicon glyphicon-triangle-bottom"></span>
+            </div>
+            <div class="filter-item"></div>
+            <div class="filter-item"></div>
+        </div>
+    </div>
+    <div id="contacts" class="flex-1">
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/searchbar.js"></script>
+<script type="text/javascript" src="../script/underscore-min.js"></script>
+<script type="text/javascript">
+var searchBar = null,
+    UIListContacts = null,
+    sheet = app.unitActionSheet('#unit', function(selectedIndex, selectedValue, selectedItem) {
+        loadData();
+    });
+
+apiready = function() {
+    var UISearchBar = api.require('UISearchBar');
+    searchBar = new LDSearchBar(UISearchBar, '输入关键字名称查找', function(ret) {
+        loadData(ret.text);
+    });
+
+    initUIListContacts();
+
+    // app.setRefreshHeaderInfo(loadData);
+    loadData();
+};
+
+function initUIListContacts() {
+    var $contacts = $api.byId('contacts');
+    var rect = $api.offset($contacts);
+    UIListContacts = api.require('UIListContacts');
+    UIListContacts.open({
+        rect: {
+            x: 0,
+            y: rect.t,
+            w: api.frameWidth,
+            h: rect.h
+        },
+        contacts: [],
+        fixedOn: api.frameName
+    }, function(ret) {
+        if (ret) {
+            if (ret.eventType != 'show') {
+                var contact = ret.contact.item,
+                    confirmMsg = contact.Telphone;
+
+                if (contact.DutyName) {
+                    confirmMsg = confirmMsg + '\n' + contact.DutyName;
+                }
+
+                api.confirm({
+                    title: contact.Name,
+                    msg: confirmMsg,
+                    buttons: ['取消', '拨打']
+                }, function(ret, err) {
+                    var index = ret.buttonIndex;
+                    if (index == 2) {
+                        api.call({
+                            type: 'tel',
+                            number: contact.Telphone
+                        });
+                    }
+                });
+
+            }
+        }
+    });
+}
+
+function loadData(name) {
+    app.ajax({
+        url: app.urls.contacts_list,
+        data: {
+            AreaId: sheet.getSelectedItem().Id,
+            Name: name || ''
+        },
+        debug: false,
+        success: function(data, html) {
+            api.hideProgress();
+            app.refreshHeaderLoadDone();
+
+            /*
+            内部字段：
+            [{               
+                   remark: '艾雪瑞',           // 字符串类型；条目的标题，不传则不显示
+                   phonetic: 'aixuerui',      // 字符串类型；标题的拼音表示
+                   dept_name: '创达集团',      // 字符串类型；条目的子标题，不传则不显示
+                   position: '员工'           // 字符串类型；条目的职位，不传则不显示
+            }]
+            */
+            var contacts = _.map(data, function(item) {
+                return {
+                    'remark': item.Name,
+                    'dept_name': item.AreaName,
+                    'position': '',
+                    'item': item
+                };
+            });
+
+            UIListContacts.reloadData({
+                contacts: contacts
+            });
+        }
+    });
+}
+
+function openUnitActionSheet() {
+    sheet.open();
+}
+
+function openSearchWindow() {
+    searchBar.open();
+}
+</script>
+
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width,initial-scale=1.0" />
+    <title>gate detail frame</title>
+    <link rel="stylesheet" type="text/css" href="../css/api.css" />
+    <link rel="stylesheet" type="text/css" href="../css/glyphicons.css" />
+    <style type="text/css">
+    html,
+    body {
+        height: 100%;
+    }
+
+    .list-block {
+        border-top: none;
+    }
+
+    .video-warp {
+        padding: 15px;
+        padding-bottom: 0px;
+    }
+
+    .video {}
+
+    .video .title {
+        height: 21px;
+        line-height: 21px;
+        font-size: 15px;
+        color: #222328;
+        padding: 10px 0px;
+    }
+
+    .video .photo {
+        position: relative;
+    }
+
+    .video .photo img {
+        border-radius: 2px;
+    }
+
+    .video .photo::after {
+        position: absolute;
+        right: 0px;
+        bottom: 0px;
+        left: 0px;
+        top: 0px;
+        height: 150px;
+
+        background: url(../image/play.png);
+        background-size: 64px 64px;
+        background-position: center center;
+        background-repeat: no-repeat;
+        -webkit-transition: 200ms;
+        transition: 200ms;
+        content: ' ';
+    }
+
+    .video.active {
+        opacity: 0.7;
+    }
+
+    .footer .left,
+    .right {
+        height: 50px;
+        line-height: 50px;
+        font-size: 18px;
+        text-align: center;
+        text-align: center;
+        width: 50%;
+    }
+
+    .footer .left {
+        background: rgba(255, 255, 255, 1);
+        border: 1px solid rgba(229, 87, 87, 1);
+        color: rgba(229, 87, 87, 1);
+    }
+
+    .footer .right {
+        background: rgba(24, 117, 240, 1);
+        border: 1px solid rgba(24, 117, 240, 1);
+        color: rgba(255, 255, 255, 1);
+    }
+    </style>
+</head>
+
+<body class="flex-box-v">
+    <div id="main" class="main">
+    </div>
+    <div class="flex-1"></div>
+    <div class="footer flex-box-h">
+        <div class="left flex-1" tapmode onclick="fnOpenControlFrame();">急停</div>
+        <div class="right flex-1" tapmode onclick="fnOpenControlFrame();">闸门控制</div>
+    </div>
+</body>
+<script type="text/javascript" src="../script/api.js"></script>
+<script type="text/javascript" src="../script/underscore-min.js"></script>
+<script type="text/javascript" src="../script/templates.js"></script>
+<script type="text/javascript">
+var playObj = null,
+    $container = document.querySelector('#main');
+
+apiready = function() {
+    loadData(api.pageParam.gateInfo.gate_sn);
+
+    api.addEventListener({
+        name: 'video_stop'
+    }, function(ret, err) {
+        if (playObj != null) {
+            playObj.stop(function(ret, err) {});
+        }
+    });
+
+    api.addEventListener({
+        name: 'video_exit_full_screen'
+    }, function(ret, err) {
+        if (playObj != null) {
+            playObj.unfull(function(ret, err) {});
+        }
+    });
+};
+
+function loadData(gate_sn) {
+    app.ajax({
+        url: app.urls.gate_info_details,
+        data: {
+            stcd: gate_sn
+        },
+        template: JST.gate_detail,
+        debug: false,
+        template_data: function(row) {
+            return row;
+        },
+        success: function(data, html) {
+            api.hideProgress();
+            $container.innerHTML = html;
+        }
+    });
+}
+
+function playVideo(target, videoUrl) {
+    var photo = target.querySelector('.photo');
+    var rect = $api.offset(photo);
+
+    playObj = api.require('playModule');
+    playObj.stop(function(ret, err) {
+        playObj.play({
+            rect: {
+                x: rect.l,
+                y: rect.t,
+                w: rect.w,
+                h: rect.h
+            },
+            fixedOn: api.frameName,
+            title: videoUrl,
+            url: videoUrl,
+            defaultBtn: true,
+            enableFull: false,
+            isTopView: false,
+            isAutoPlay: true,
+            fixed: false
+        }, function(ret, err) {});
+    });
+
+    // 进入全屏事件
+    playObj.addEventListener({
+        name: 'full'
+    }, function(ret, err) {
+        sendVideoFullScreenEvent('full');
+    });
+
+    // 退出全屏事件
+    playObj.addEventListener({
+        name: 'unfull'
+    }, function(ret, err) {
+        sendVideoFullScreenEvent('unfull');
+    });
+}
+
+function sendVideoFullScreenEvent(state) {
+    api.sendEvent({
+        name: 'video_full_screen_state',
+        extra: {
+            'state': state
+        }
+    });
+}
+
+function fnOpenControlFrame() {
+    api.openFrame({
+        name: 'gate_control_frame',
+        url: 'gate_control_frame.html',
+        pageParam: {
+            gateInfo: api.pageParam.gateInfo
+        },
+        bgColor: 'rgba(0, 0, 0, 0.5)'
+    });
+}
+</script>
+</html>
